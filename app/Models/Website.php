@@ -6,15 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Website extends Model
 {
-    protected $fillable = ['url', 'username', 'password','token_id','title','logo','website_up_down','website_status'];
+    protected $fillable = ['url', 'username', 'password', 'token_id', 'title', 'logo', 'website_up_down', 'website_status'];
     public function getPasswordAttribute($value)
     {
-        return decrypt($value);
+        return !empty($value)
+            ? decrypt($value)
+            : null;
+        // return decrypt($value);
     }
 
     public function getSharedSecretAttribute($value)
     {
-        return decrypt($value);
+        return !empty($value)
+            ? decrypt($value)
+            : null;
+        // return decrypt($value);
     }
 
     public function setPasswordAttribute($value)
@@ -26,5 +32,4 @@ class Website extends Model
     {
         $this->attributes['token_id'] = encrypt($value);
     }
-
 }

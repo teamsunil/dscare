@@ -11,9 +11,12 @@ class WebsiteController extends Controller
 {
     public function listWebsite()
     {
-        $websites=Website::get();
-         foreach ($websites as $website) {
-            $website->decrypted_password = decrypt($website->password);
+        $websites = Website::get();
+        foreach ($websites as $website) {
+            $website->decrypted_password = !empty($website->password)
+                ? decrypt($website->password)
+                : null;
+            // $website->decrypted_password = decrypt($website->password);
             // $response = Http::timeout(2000)->get($website->url);
 
             // if ($response->successful()) {
@@ -21,11 +24,10 @@ class WebsiteController extends Controller
             // } else {
             //      $website->status= 'down';
             // }
-                 $website->status= 'up';
-
+            $website->status = 'up';
         }
         // dd($websites);
-        return view('admin.website-list',['result'=>$websites]);
+        return view('admin.website-list', ['result' => $websites]);
     }
     public function showUrlForm()
     {
@@ -72,24 +74,21 @@ class WebsiteController extends Controller
             'url' => rtrim(url('/'), '/'),
             'redirect' => '',
         ]);
-        $data= Http::get($wpSsoUrl . '?' . $query);
-        if(!empty($data))
-        {
-             Website::create([
+        $data = Http::get($wpSsoUrl . '?' . $query);
+        if (!empty($data)) {
+            Website::create([
                 'url' => rtrim($url, '/'),
                 'username' => $request->username,
                 'password' => encrypt($request->password), // Encrypt the password
                 'token_id' => encrypt($sharedSecret), // Encrypt the shared secret
-                'title'=>$request->title,
-                'logo'=>$request->logo,
+                'title' => $request->title,
+                'logo' => $request->logo,
             ]);
             // Clear session
             $request->session()->forget('website_url');
-            return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : '.$sharedSecret);
-        }
-        else
-        {
-            return back()->with('error','Wordpress Plugins Isseus');
+            return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : ' . $sharedSecret);
+        } else {
+            return back()->with('error', 'Wordpress Plugins Isseus');
         }
 
         // Save to DB
@@ -119,7 +118,7 @@ class WebsiteController extends Controller
         return response()->json(['success' => true]);
     }
 
-   public function loginToWordPress($id)
+    public function loginToWordPress($id)
     {
         $website = Website::find($id);
         $payload = [
@@ -131,7 +130,7 @@ class WebsiteController extends Controller
             'nonce' => bin2hex(random_bytes(8)),
         ];
 
-       $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
 
 
         // Use the shared secret exactly as stored in DB/WordPress
@@ -151,7 +150,7 @@ class WebsiteController extends Controller
     }
 
     // Here code for list websites
-   public function listWebsites($id)
+    public function listWebsites($id)
     {
         $result = Website::find($id);
         if (!$result) {
@@ -207,20 +206,17 @@ class WebsiteController extends Controller
         return view('admin.website.manage-user');
     }
 
-    public function updateWebsiteData($data,$id)
+    public function updateWebsiteData($data, $id)
     {
-        if(!empty($data))
-        {
-            $site_name=data_get($data, 'site.name', '');
+        if (!empty($data)) {
+            $site_name = data_get($data, 'site.name', '');
 
-            Website::where('id',$id)->update([
-                'title'=>$site_name,
-                'data'=>$data
+            Website::where('id', $id)->update([
+                'title' => $site_name,
+                'data' => $data
             ]);
             return true;
         }
         return false;
     }
-
-
 }
