@@ -4,9 +4,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
 
-Route::middleware('guest')->group(function () {
-    Route::view('/login', 'login')->name('login');
-    Route::view('/', 'login');
+Route::middleware('guestUser')->group(function () {
+    Route::get('/', function () {
+        return view('login');
+    });
+
+    Route::get('/login', function () {
+        return view('login');
+    })->name('login');
 });
 
 Route::middleware('auth')->group(function () {

@@ -15,7 +15,7 @@ class WebsiteController extends Controller
          foreach ($websites as $website) {
             $website->decrypted_password = decrypt($website->password);
             // $response = Http::timeout(2000)->get($website->url);
-            
+
             // if ($response->successful()) {
             //    $website->status= 'up';
             // } else {
@@ -146,7 +146,7 @@ class WebsiteController extends Controller
             'sig' => $sig,
             'redirect' => '',
         ]);
-    
+
         return redirect($wpSsoUrl . '?' . $query);
     }
 
@@ -157,8 +157,8 @@ class WebsiteController extends Controller
         if (!$result) {
             abort(404, 'Website not found.');
         }
-        $iss = rtrim(url('/'), '/'); 
-        $secret = decrypt($result->token_id); 
+        $iss = rtrim(url('/'), '/');
+        $secret = decrypt($result->token_id);
         $sig = base64_encode(hash_hmac('sha256', $iss, $secret, true));
         $final_url = rtrim($result->url, '/') . '/wp-json/laravel-sso/v1/status';
 
@@ -212,7 +212,7 @@ class WebsiteController extends Controller
         if(!empty($data))
         {
             $site_name=data_get($data, 'site.name', '');
-           
+
             Website::where('id',$id)->update([
                 'title'=>$site_name,
                 'data'=>$data
@@ -220,7 +220,7 @@ class WebsiteController extends Controller
             return true;
         }
         return false;
-    }   
-   
+    }
+
 
 }
