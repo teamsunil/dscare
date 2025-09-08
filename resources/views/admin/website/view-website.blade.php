@@ -414,13 +414,6 @@
             background: #17a2b8 !important;
         }
 
-        .modal-body {
-            max-height: 500px;
-            /* Adjust as needed */
-            overflow-y: auto;
-            padding: 0;
-        }
-
         .table td a {
             color: #007bff;
             /* Bootstrap primary blue */
@@ -609,7 +602,7 @@
 
     <div class="modal fade" id="managePluginModal" tabindex="-1" aria-labelledby="managePluginModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        {{-- <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="managePluginModalLabel">Manage Plugins</h5>
@@ -636,7 +629,44 @@
                 </div>
 
             </div>
+        </div> --}}
+        <div class="modal-dialog modal-xl" style="max-height: 90vh;">
+            <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold fs-4">Manage Plugins</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                        <table class="table table-striped align-middle">
+                            <thead style="position: sticky; top: 0; z-index: 2; background: #f8f9fa;">
+                                <tr>
+                                    <th
+                                        style="width: 60px; text-align: center; font-size: 16px; font-weight: bold; color:#000;">
+                                        Icon
+                                    </th>
+                                    <th style="font-size: 16px; font-weight: bold; color:#000;">Name</th>
+                                    <th style="text-align: center; font-size: 16px; font-weight: bold; color:#000;">
+                                        Version
+                                    </th>
+                                    <th style="font-size: 16px; font-weight: bold; color:#000;">Author</th>
+                                    <th style="text-align: center; font-size: 16px; font-weight: bold; color:#000;">
+                                        Active
+                                    </th>
+                                    <th style="text-align: center; font-size: 16px; font-weight: bold; color:#000;">
+                                        Update
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="pluginTableBody">
+                                <!-- Rows injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 
 
@@ -774,7 +804,7 @@
                                 <img src="${plugin.icon_url}"
                                     alt="${plugin.name}"
                                     width="40" height="40"
-                                    onerror="this.onerror=null;this.src='{{asset('assets/images/wp-default-icon.png')}}';">
+                                    onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
                             </td>
                             <td>
                                 <strong>${plugin.name}</strong><br>
