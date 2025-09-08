@@ -29,7 +29,7 @@ class UserController extends Controller
                 // Authentication passed...
                 $request->session()->regenerate();
 
-                return redirect()->intended('admin')
+                return redirect()->intended('admin/website-list')
                     ->with('success', 'Login successful!');
             }
 
