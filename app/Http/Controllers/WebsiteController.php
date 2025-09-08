@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Website;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 
@@ -13,9 +14,11 @@ class WebsiteController extends Controller
     {
         $websites = Website::get();
         foreach ($websites as $website) {
-            $website->decrypted_password = !empty($website->password)
-                ? decrypt($website->password)
-                : null;
+            try {
+                $website->decrypted_password = decrypt($website->password);
+            } catch (DecryptException $e) {
+                $website->decrypted_password = null;
+            }
             // $website->decrypted_password = decrypt($website->password);
             // $response = Http::timeout(2000)->get($website->url);
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 
 class Website extends Model
@@ -9,9 +10,11 @@ class Website extends Model
     protected $fillable = ['url', 'username', 'password', 'token_id', 'title', 'logo', 'website_up_down', 'website_status'];
     // public function getPasswordAttribute($value)
     // {
-    //     return !empty($value)
-    //         ? decrypt($value)
-    //         : null;
+    //     try {
+    //         return decrypt($this->attributes['password']);
+    //     } catch (DecryptException $e) {
+    //         return null;
+    //     }
     //     // return decrypt($value);
     // }
 
