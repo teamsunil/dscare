@@ -602,34 +602,6 @@
 
     <div class="modal fade" id="managePluginModal" tabindex="-1" aria-labelledby="managePluginModalLabel"
         aria-hidden="true">
-        {{-- <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="managePluginModalLabel">Manage Plugins</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 60px;">Icon</th>
-                                    <th>Name</th>
-                                    <th style="width: 150px;">Version</th>
-                                    <th style="width: 200px;">Author</th>
-                                    <th style="width: 100px;">Active</th>
-                                    <th style="width: 150px;">Update</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pluginTableBody">
-                                <!-- Filled dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-        </div> --}}
         <div class="modal-dialog modal-xl" style="max-height: 90vh;">
             <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
                 <div class="modal-header">
