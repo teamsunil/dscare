@@ -763,10 +763,24 @@
                 var button = $(event.relatedTarget);
                 var response = button.data('plugin-response');
 
-                var data = (typeof response === 'string') ? JSON.parse(response) : response;
+                // Parse response safely
+                var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
+                    response;
 
                 var tbody = $('#pluginTableBody');
                 tbody.empty(); // Clear old rows
+
+                // Check if data or data.items exists
+                if (!data || !data.items || data.items.length === 0) {
+                    tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <strong>No plugin data found</strong>
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
 
                 $.each(data.items, function(index, plugin) {
 
