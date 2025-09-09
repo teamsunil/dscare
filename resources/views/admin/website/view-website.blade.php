@@ -569,10 +569,15 @@
                             <span class="stat-label">Active</span>
                         </div>
                     </div>
-                    <a href="{{ url('admin/manage/theme-' . $result->id) }}" class="manage-btn">
+                    <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#manageThemesModal" data-theme-response = '@json(data_get($response, 'themes', null))'
+                        data-theme-id="{{ $result->id }}">
+                        <i class="fas fa-brush"></i> Manage
+                    </button>
+                    {{-- <a href="{{ url('admin/manage/theme-' . $result->id) }}" class="manage-btn">
                         <i class="fas fa-brush"></i>
                         Manage
-                    </a>
+                    </a> --}}
                 </div>
 
                 <!-- Users Card -->
@@ -591,15 +596,21 @@
                             <span class="stat-label">Admins</span>
                         </div>
                     </div>
-                    <a href="{{ url('admin/manage/user-' . $result->id) }}" class="manage-btn">
+                    <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#manageUserModal" data-user-response = '@json(data_get($response, 'users', null))'
+                        data-user-id="{{ $result->id }}">
+                        <i class="fas fa-user-cog"></i> Manage
+                    </button>
+                    {{-- <a href="{{ url('admin/manage/user-' . $result->id) }}" class="manage-btn">
                         <i class="fas fa-user-cog"></i>
                         Manage
-                    </a>
+                    </a> --}}
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Plugins Modal -->
     <div class="modal fade" id="managePluginModal" tabindex="-1" aria-labelledby="managePluginModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-xl" style="max-height: 90vh;">
@@ -631,6 +642,87 @@
                                 </tr>
                             </thead>
                             <tbody id="pluginTableBody">
+                                <!-- Rows injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Themes Modal -->
+    <div class="modal fade" id="manageThemesModal" tabindex="-1" aria-labelledby="manageThemesModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="max-height: 90vh;">
+            <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold fs-4">Manage Themes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                        <table class="table table-striped align-middle">
+                            <thead style="position: sticky; top: 0; z-index: 2; background: #f8f9fa;">
+                                <tr>
+                                    <th
+                                        style="width: 60px; text-align: left; font-size: 16px; font-weight: bold; color:#000;">
+                                        Screenshot
+                                    </th>
+                                    <th style="text-align: left; font-size: 16px; font-weight: bold; color:#000;">Name
+                                    </th>
+                                    <th style="text-align: left; font-size: 16px; font-weight: bold; color:#000;">Slug
+                                    </th>
+                                    <th style="text-align: left; font-size: 16px; font-weight: bold; color:#000;">
+                                        Version
+                                    </th>
+                                    <th style="text-align: left; font-size: 16px; font-weight: bold; color:#000;">
+                                        Author</th>
+                                    <th style="text-align: center; font-size: 16px; font-weight: bold; color:#000;">
+                                        Active
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="themeTableBody">
+                                <!-- Rows injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Modal -->
+    <div class="modal fade" id="manageUserModal" tabindex="-1" aria-labelledby="manageUserModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="max-height: 90vh;">
+            <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold fs-4">Manage Users</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                        <table class="table table-striped align-middle">
+                            <thead style="position: sticky; top: 0; z-index: 2; background: #f8f9fa;">
+                                <tr>
+                                    <th
+                                        style="width: 60px; font-size: 16px; font-weight: bold; color:#000;">
+                                        ID
+                                    </th>
+                                    <th style="font-size: 16px; font-weight: bold; color:#000;">Name</th>
+                                    <th style="font-size: 16px; font-weight: bold; color:#000;">
+                                        Username
+                                    </th>
+                                    <th style="font-size: 16px; font-weight: bold; color:#000;">Roles</th>
+                                    {{-- <th style="text-align: center; font-size: 16px; font-weight: bold; color:#000;">
+                                        Active
+                                    </th> --}}
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
                                 <!-- Rows injected dynamically -->
                             </tbody>
                         </table>
@@ -810,6 +902,120 @@
                                     ? `<span class="badge bg-warning">Update to ${plugin.update.new_version}</span>`
                                     : '<span class="badge bg-info">Latest</span>'}
                             </td>
+                        </tr>
+                    `;
+
+                    tbody.append(row);
+                });
+            });
+
+
+
+            // Manage Theme Model
+            $('#manageThemesModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var response = button.data('theme-response');
+
+                // Parse response safely
+                var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
+                    response;
+
+                var tbody = $('#themeTableBody');
+                tbody.empty(); // Clear old rows
+
+                // Check if data or data.items exists
+                if (!data || !data.items || data.items.length === 0) {
+                    tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <strong>No theme data found</strong>
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
+                const themeRoundVersion = (v, decimals = 2) => v.split('.').map(p => {
+                    // Check if the part is purely numeric and longer than desired decimals
+                    if (/^\d+$/.test(p) && p.length > decimals) {
+                        return p.substring(0, decimals);
+                    }
+                    return p;
+                }).join('.');
+                $.each(data.items, function(index, theme) {
+                    var row = `
+                        <tr>
+                            <td>
+                                <img src="${theme.screenshot}"
+                                    alt="${theme.name}"
+                                    width="40" height="40"
+                                    onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                            </td>
+                            <td>${theme.slug || '-'}</td>
+                            <td>
+                                <strong>${theme.name}</strong><br>
+                                ${theme.theme_uri ? `<a href="${theme.theme_uri}" target="_blank">${theme.theme_uri}</a>` : ''}
+                            </td>
+                            <td>
+                                ${themeRoundVersion(theme.version)} ${theme.update ? ` <span class="text-muted">→</span> <strong>${theme.update.new_version}</strong>` : ''}
+                            </td>
+                            <td>${theme.author || '-'}</td>
+                            <td>
+                                ${theme.is_active
+                                    ? '<span class="badge bg-success">Active</span>'
+                                    : '<span class="badge bg-secondary">Inactive</span>'}
+                            </td>
+                        </tr>
+                    `;
+
+                    tbody.append(row);
+                });
+            });
+
+
+
+            // Manage User Model
+            $('#manageUserModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var response = button.data('user-response');
+                console.log(response);
+
+                // Parse response safely
+                var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
+                    response;
+
+                    console.log(data);
+
+
+                var tbody = $('#userTableBody');
+                tbody.empty(); // Clear old rows
+
+                // Check if data or data.items exists
+                if (!data || !data.items || data.items.length === 0) {
+                    tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <strong>No user data found</strong>
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
+
+                $.each(data.items, function(index, user) {
+
+                    var row = `
+                        <tr>
+                            <td>
+                                <strong>${user.id}</strong><br>
+                            </td>
+                            <td>
+                                <strong>${user.name}</strong><br>
+                                ${user.email ? user.email : ''}
+                            </td>
+                            <td>
+                                ${user.username || '-'}
+                            </td>
+                            <td>${user.roles || '-'}</td>
                         </tr>
                     `;
 
