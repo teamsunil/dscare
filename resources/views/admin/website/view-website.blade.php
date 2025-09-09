@@ -16,21 +16,99 @@
     <!-- Fancybox CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
 
+
+
+
+
     <style>
         * {
             margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+padding: 0;
+box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            min-height: 100vh;
-            color: #2c3e50;
-            overflow-x: hidden;
-            padding: 2rem 0;
-        }
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+background: #2C437C;
+min-height: 100vh;
+color: #2c3e50;
+overflow-x: hidden;
+padding: 2rem 0;
+}
+
+
+
+/* Card */
+.dashboard_table {width: 100%;max-width: var(--max-width);border: 1px solid rgba(255, 255, 255, 0.06);border-radius: var(--radius-lg)overflow:hidden;}
+
+
+
+
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(6px)
+}
+
+to {
+opacity: 1;
+transform: translateY(0)
+}
+}
+
+.dashboard_table .card-panel {background: var(--glass);border-radius: 12px;padding: 16px;border: 1px solid rgba(255, 255, 255, 0.04);}
+
+/* Tab container */
+.dashboard_table .tabs {}
+.dashboard_table .tablist_btns {
+height: calc(var(--tab-height) + 12px);
+background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 50%, rgba(248, 250, 252, 0.95) 100%);
+width: 100%; padding:0 20px
+}
+
+.dashboard_table .tablist {display: grid;grid-template-columns: repeat(4, 1fr);gap: 8px;border-radius: 0;padding: 26px;position: relative;
+align-items: center;max-width: 700px;margin: auto;}
+
+.dashboard_table .tab {position: relative;z-index: 2;height: var(--tab-height);display: flex;align-items: center;gap: 10px;justify-content: center;text-align: center;
+padding:11px 10px;border-radius: 10px;cursor: pointer;font-weight:normal;color: rgba(230, 238, 248, 0.85);background: transparent;border: none;
+outline: none;transition: color .18s ease;user-select: none; background: #2c437c; overflow:hidden}
+.dashboard_table .tab svg {width: 18px;height: 18px;opacity: 0.92; z-index: 9;}
+.dashboard_table .tab span {z-index: 9;color: #fff;}
+.dashboard_table .tab:hover:after {width: 100%;height: 100%;opacity: 1;border-radius: 0;}
+.dashboard_table .tab:after {content: "";position: absolute;top: 50%;left: 50%;width: 0;height: 0;background: rgb(113 141 211 / 54%);border-radius: 50%;transform: translate(-50%, -50%);
+transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
+.dashboard_table .tab.active:hover:after {opacity: 0;}
+
+/* Selected tab text color */
+.dashboard_table .tab[aria-selected="true"] {color: #fff;}
+
+/* Panels */
+.dashboard_table .panels {margin-top: 18px;min-height: 220px; padding: 0px 20px;}
+
+.panel {display: none;animation: fadeIn .28s ease both;}
+.dashboard_table .panel[data-active="true"] {display: block;}
+
+
+.dashboard_table .table-container {max-width: 1100px;margin: auto;background: #fff;border-radius: 16px;overflow:hiddenll;box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);}
+.dashboard_table .table-container table {width: 100%;border-collapse: collapse;}
+.dashboard_table .table-container thead {background: #2c437c}
+.dashboard_table .table-container th, td {padding: 16px 18px;text-align: left;font-size: 15px;color: #000;}
+.dashboard_table .table-container th {font-weight: 600;letter-spacing: 0.5px;color: #fff;}
+.dashboard_table .table-container tbody tr {transition: background 0.3s ease;}
+.dashboard_table .table-container tbody tr:nth-child(even) {background: #f9fbfd;}
+.dashboard_table .table-container tbody tr:hover {background: #eef7ff;}
+.dashboard_table .table-container .plugin-name a {font-weight: normal;color: #000;text-decoration: none;transition: color 0.3s;}
+.dashboard_table .table-container .plugin-name a:hover {color: #f48226;text-decoration: underline;}
+.dashboard_table .table-container .badge {display: inline-block;padding: 6px 12px;border-radius: 20px;font-size: 12px;font-weight: 600;text-align: center;white-space: nowrap;}
+.dashboard_table .table-container .active {background: #28a745;color: #fff;}
+.dashboard_table .table-container .inactive {background: #6c757d;color: #fff;}
+.dashboard_table .table-container .update {background: #ff9800;color: #fff;}
+.dashboard_table .table-container .latest {background: #2c437c;color: #fff;}
+.dashboard_table .table-container .version-highlight {font-weight: bold;color: #0073aa;}
+.dashboard_table .table-container img.plugin-icon {width: 26px;height: 26px;border-radius: 6px;}
+.dashboard_table .tab.active{background: #F48226;border-radius: 0;border-radius: 10px; font-weight:normal;}
+
+
 
         .website-details-container {
             min-height: 100vh;
@@ -73,7 +151,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(90deg, #2C437C 0%, #405792ff 50%, #F48226 100%);
         }
 
         .website-logo {
@@ -99,7 +177,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: #F48226;
             color: white;
             font-size: 2.5rem;
         }
@@ -107,7 +185,7 @@
         .website-title {
             font-size: 2.2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: #2C437C;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -139,24 +217,6 @@
             margin-top: 1rem;
         }
 
-        .php-badge {
-            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 15px rgba(78, 84, 200, 0.3);
-        }
-
-        .php-badge img {
-            height: 18px;
-            filter: brightness(0) invert(1);
-        }
-
         /* Management Cards Grid */
         .management-grid {
             display: grid;
@@ -181,6 +241,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
 
         .management-card::before {
@@ -260,29 +321,36 @@
         }
 
         .card-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+        align-items: center;
         }
 
         .stat-item {
-            display: flex;
-            flex-direction: column;
+    display: flex
+;
+    flex-direction: column;
+    background: #eff3fb;
+    border-radius: 10px;
+    padding: 5px 10px;
+        border: 1px solid #e0e2ff;
+    text-align: center;
         }
 
         .stat-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #2d3436;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2d3436;
         }
 
         .stat-label {
-            font-size: 0.8rem;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
+    font-size: 0.6rem;
+    color: #2c437c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
         }
 
         .version-badge {
@@ -296,10 +364,10 @@
         }
 
         .manage-btn {
-            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            background: #2c437c;
             border: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 18px;
+            border-radius: 10px;
             color: white;
             font-weight: 600;
             font-size: 0.9rem;
@@ -308,28 +376,25 @@
             align-items: center;
             gap: 0.5rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.3);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .manage-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 176, 155, 0.4);
             color: white;
+            background: #f48226;
         }
 
         .wp-admin-btn {
-            background: linear-gradient(135deg, #21759b 0%, #0073aa 100%);
-            box-shadow: 0 4px 15px rgba(33, 117, 155, 0.3);
+            background:#f48226;
         }
 
         .wp-admin-btn:hover {
-            box-shadow: 0 8px 25px rgba(33, 117, 155, 0.4);
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.9);
+            background:#2c437c;
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 0.8rem 1.5rem;
@@ -342,7 +407,6 @@
             gap: 0.5rem;
             transition: all 0.3s ease;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         .back-btn:hover {
@@ -446,6 +510,12 @@
             }
         }
 
+        @media (max-width: 991px) {
+.dashboard_table .tablist{overflow: scroll; padding: 20px 0; width:800px}
+.dashboard_table .table-container{overflow: scroll;}
+.dashboard_table .tablist_btns{overflow: scroll;}
+}
+
         @media (max-width: 768px) {
             .management-grid {
                 grid-template-columns: 1fr;
@@ -471,38 +541,342 @@
         <div class="floating-element-1"></div>
         <div class="floating-element-2"></div>
 
+        <!-- Beautiful Header -->
+        <header class="main-header">
+
+            <main class="dashboard_table" role="main">
+
+                <section class="tabs" aria-labelledby="tabs-heading">
+
+                    <!-- Tablist -->
+                    <div class="tablist_btns">
+                        <div class="tablist" role="tablist" aria-label="Main tabs" id="tablist">
+                   
+
+                            <button class="tab tabchnage" role="tab" data-id="tab-overview" id="tab-overview"
+                                aria-controls="panel-overview" aria-selected="true" tabindex="0" data-index="0">
+                                <!-- home icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                    <path fill="#ffffff"
+                                        d="M125.7 233.4L227.2 511.4C156.2 477 107.3 404.2 107.3 320C107.3 289.1 113.9 259.9 125.7 233.4zM463.6 309.3C463.6 283 454.2 264.8 446.1 250.6C435.3 233.1 425.2 218.2 425.2 200.7C425.2 181.1 440 162.9 460.9 162.9C461.8 162.9 462.7 163 463.7 163.1C425.8 128.4 375.4 107.2 320 107.2C245.7 107.2 180.3 145.3 142.2 203.1C147.2 203.3 151.9 203.4 155.9 203.4C178.1 203.4 212.6 200.7 212.6 200.7C224.1 200 225.4 216.9 214 218.2C214 218.2 202.5 219.5 189.7 220.2L267.2 450.6L313.8 311L280.7 220.2C269.2 219.5 258.4 218.2 258.4 218.2C246.9 217.5 248.3 200 259.7 200.7C259.7 200.7 294.8 203.4 315.7 203.4C337.9 203.4 372.4 200.7 372.4 200.7C383.9 200 385.2 216.9 373.8 218.2C373.8 218.2 362.3 219.5 349.5 220.2L426.4 448.9L447.6 378C456.6 348.6 463.6 327.5 463.6 309.3zM323.7 338.6L259.9 524.1C279 529.7 299.1 532.8 320 532.8C344.8 532.8 368.5 528.5 390.6 520.7C390 519.8 389.5 518.8 389.1 517.8L323.7 338.6zM506.7 217.9C507.6 224.7 508.1 231.9 508.1 239.8C508.1 261.4 504.1 285.6 491.9 316L426.9 503.9C490.2 467 532.7 398.5 532.7 320C532.7 283 523.3 248.2 506.7 217.9zM72 320C72 183 183 72 320 72C457 72 568 183 568 320C568 457 457 568 320 568C183 568 72 457 72 320zM556.6 320C556.6 189.3 450.7 83.4 320 83.4C189.3 83.4 83.4 189.3 83.4 320C83.4 450.7 189.3 556.6 320 556.6C450.7 556.6 556.6 450.7 556.6 320z" />
+                                </svg>
+                                <span>WordPress</span>
+                            </button>
+
+                            <button class="tab tabchnage" role="tab" data-id="tab-features"  id="tab-features"
+                                aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1">
+                                <!-- grid icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                    <path fill="#ffffff"
+                                        d="M224 32C241.7 32 256 46.3 256 64L256 160L384 160L384 64C384 46.3 398.3 32 416 32C433.7 32 448 46.3 448 64L448 160L512 160C529.7 160 544 174.3 544 192C544 209.7 529.7 224 512 224L512 288C512 383.1 442.8 462.1 352 477.3L352 544C352 561.7 337.7 576 320 576C302.3 576 288 561.7 288 544L288 477.3C197.2 462.1 128 383.1 128 288L128 224C110.3 224 96 209.7 96 192C96 174.3 110.3 160 128 160L192 160L192 64C192 46.3 206.3 32 224 32z" />
+                                </svg>
+                                <span>Plugins</span>
+                            </button>
+
+                            <button class="tab tabchnage" role="tab" data-id="tab-gallery"  id="tab-gallery" aria-controls="panel-gallery"
+                                aria-selected="false" tabindex="-1" data-index="2">
+                                <!-- image icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                    <path fill="#ffffff"
+                                        d="M576 320C576 320.9 576 321.8 576 322.7C575.6 359.2 542.4 384 505.9 384L408 384C381.5 384 360 405.5 360 432C360 435.4 360.4 438.7 361 441.9C363.1 452.1 367.5 461.9 371.8 471.8C377.9 485.6 383.9 499.3 383.9 513.8C383.9 545.6 362.3 574.5 330.5 575.8C327 575.9 323.5 576 319.9 576C178.5 576 63.9 461.4 63.9 320C63.9 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320zM192 352C192 334.3 177.7 320 160 320C142.3 320 128 334.3 128 352C128 369.7 142.3 384 160 384C177.7 384 192 369.7 192 352zM192 256C209.7 256 224 241.7 224 224C224 206.3 209.7 192 192 192C174.3 192 160 206.3 160 224C160 241.7 174.3 256 192 256zM352 160C352 142.3 337.7 128 320 128C302.3 128 288 142.3 288 160C288 177.7 302.3 192 320 192C337.7 192 352 177.7 352 160zM448 256C465.7 256 480 241.7 480 224C480 206.3 465.7 192 448 192C430.3 192 416 206.3 416 224C416 241.7 430.3 256 448 256z" />
+                                </svg>
+                                <span>Themes</span>
+                            </button>
+
+                            <button class="tab tabchnage" role="tab" data-id="tab-settings"  id="tab-settings"
+                                aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-index="3">
+                                <!-- settings icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                    <path fill="#ffffff"
+                                        d="M320 312C386.3 312 440 258.3 440 192C440 125.7 386.3 72 320 72C253.7 72 200 125.7 200 192C200 258.3 253.7 312 320 312zM290.3 368C191.8 368 112 447.8 112 546.3C112 562.7 125.3 576 141.7 576L498.3 576C514.7 576 528 562.7 528 546.3C528 447.8 448.2 368 349.7 368L290.3 368z" />
+                                </svg>
+                                <span>Users</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Panels -->
+                    <div class="panels" id="panels">
+                        <!-- Overview -->
+                        <section id="panel-overview" class="panel" role="tabpanel" aria-labelledby="tab-overview"
+                            data-active="true">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Icon</th>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                            <th>Author</th>
+                                            <th>Status</th>
+                                            <th>Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://4divi.com/">4DIVI Masonry
+                                                    Gallery</a></td>
+                                            <td>2.0.1</td>
+                                            <td>Design Green Cat</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://www.advancedcustomfields.com/wp-content/uploads/2020/12/acf-logo.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://www.advancedcustomfields.com">Advanced Custom
+                                                    Fields</a></td>
+                                            <td>6.4.0.1 → <span class="version-highlight">6.5.0</span></td>
+                                            <td>WP Engine</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 6.5.0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://wordpress.org/plugins/tinymce-advanced/">Advanced
+                                                    Editor Tools</a></td>
+                                            <td>5.9.2</td>
+                                            <td>Automattic</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://servmask.com/">All-in-One WP
+                                                    Migration and Backup</a></td>
+                                            <td>7.97 → <span class="version-highlight">7.99</span></td>
+                                            <td>ServMask</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 7.99</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- Features -->
+                        <section id="panel-features" class="panel" role="tabpanel" aria-labelledby="tab-features"
+                            data-active="false">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Icon</th>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                            <th>Author</th>
+                                            <th>Status</th>
+                                            <th>Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://4divi.com/">4DIVI Masonry
+                                                    Gallery</a></td>
+                                            <td>2.0.1</td>
+                                            <td>Design Green Cat</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://www.advancedcustomfields.com/wp-content/uploads/2020/12/acf-logo.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://www.advancedcustomfields.com">Advanced Custom
+                                                    Fields</a></td>
+                                            <td>6.4.0.1 → <span class="version-highlight">6.5.0</span></td>
+                                            <td>WP Engine</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 6.5.0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://wordpress.org/plugins/tinymce-advanced/">Advanced
+                                                    Editor Tools</a></td>
+                                            <td>5.9.2</td>
+                                            <td>Automattic</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://servmask.com/">All-in-One WP
+                                                    Migration and Backup</a></td>
+                                            <td>7.97 → <span class="version-highlight">7.99</span></td>
+                                            <td>ServMask</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 7.99</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- Gallery -->
+                        <section id="panel-gallery" class="panel" role="tabpanel" aria-labelledby="tab-gallery"
+                            data-active="false">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Icon</th>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                            <th>Author</th>
+                                            <th>Status</th>
+                                            <th>Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://4divi.com/">4DIVI Masonry
+                                                    Gallery</a></td>
+                                            <td>2.0.1</td>
+                                            <td>Design Green Cat</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://www.advancedcustomfields.com/wp-content/uploads/2020/12/acf-logo.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://www.advancedcustomfields.com">Advanced Custom
+                                                    Fields</a></td>
+                                            <td>6.4.0.1 → <span class="version-highlight">6.5.0</span></td>
+                                            <td>WP Engine</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 6.5.0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://wordpress.org/plugins/tinymce-advanced/">Advanced
+                                                    Editor Tools</a></td>
+                                            <td>5.9.2</td>
+                                            <td>Automattic</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://servmask.com/">All-in-One WP
+                                                    Migration and Backup</a></td>
+                                            <td>7.97 → <span class="version-highlight">7.99</span></td>
+                                            <td>ServMask</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 7.99</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- Settings -->
+                        <section id="panel-settings" class="panel" role="tabpanel" aria-labelledby="tab-settings"
+                            data-active="false">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Icon</th>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                            <th>Author</th>
+                                            <th>Status</th>
+                                            <th>Update</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://4divi.com/">4DIVI Masonry
+                                                    Gallery</a></td>
+                                            <td>2.0.1</td>
+                                            <td>Design Green Cat</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://www.advancedcustomfields.com/wp-content/uploads/2020/12/acf-logo.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://www.advancedcustomfields.com">Advanced Custom
+                                                    Fields</a></td>
+                                            <td>6.4.0.1 → <span class="version-highlight">6.5.0</span></td>
+                                            <td>WP Engine</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 6.5.0</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a
+                                                    href="https://wordpress.org/plugins/tinymce-advanced/">Advanced
+                                                    Editor Tools</a></td>
+                                            <td>5.9.2</td>
+                                            <td>Automattic</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge latest">Latest</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><img class="plugin-icon"
+                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
+                                            </td>
+                                            <td class="plugin-name"><a href="https://servmask.com/">All-in-One WP
+                                                    Migration and Backup</a></td>
+                                            <td>7.97 → <span class="version-highlight">7.99</span></td>
+                                            <td>ServMask</td>
+                                            <td><span class="badge active">Active</span></td>
+                                            <td><span class="badge update">Update to 7.99</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </section>
+            </main>
+        </header>
+
+
         <div class="container-fluid px-4">
             <!-- Back Button -->
-            <a href="{{ url()->previous() }}" class="back-btn">
+           <!-- <a href="{{ url()->previous() }}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
-            </a>
+            </a>-->
 
-            <!-- Website Header -->
-            <div class="page-header">
-                <div class="website-logo">
-                    @if (!empty($response['site_logo_url']))
-                        <img src="{{ $response['site_logo_url'] }}" alt="Site Logo">
-                    @else
-                        <div class="logo-placeholder">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                    @endif
-                </div>
-
-                <h1 class="website-title">{{ data_get($response, 'site.name', 'Website') }}</h1>
-                <a href="{{ $result->url }}" target="_blank" class="website-url">
-                    {{ $result->url }}
-                    <i class="fas fa-external-link-alt"></i>
-                </a>
-
-                <div class="status-info-bar">
-                    <div class="php-badge">
-                        <i class="fab fa-php"></i>
-                        PHP {{ data_get($response, 'php_version', '8.2') }}
-                    </div>
-                </div>
-            </div>
 
             <!-- Management Cards -->
             <div class="management-grid">
@@ -518,7 +892,7 @@
                             <span class="stat-label">Current Version</span>
                         </div>
                         @if (data_get($response, 'wordpress_update_available'))
-                            <div class="stat-item">
+                            <div>
                                 <span class="version-badge">Update Available</span>
                             </div>
                         @endif
@@ -1119,6 +1493,43 @@
         });
     </script>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Get all tab buttons
+  const tabs = document.querySelectorAll(".tabchnage");
+  const panels = document.querySelectorAll(".panel");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      const target = tab.getAttribute("data-id"); // ✅ get data-id
+
+      // Deactivate all tabs
+      tabs.forEach(t => {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+      });
+
+      // Deactivate all panels
+      panels.forEach(p => {
+        p.classList.remove("active");
+        p.setAttribute("data-active", "false");
+      });
+
+      // Activate clicked tab
+      tab.classList.add("active");
+      tab.setAttribute("aria-selected", "true");
+
+      // Activate target panel
+    const panel = document.querySelector(`[aria-labelledby="${target}"]`);
+if (panel) {
+  panel.classList.add("active");
+  panel.setAttribute("data-active", "true");
+}
+    });
+  });
+});
+</script>
 
 </body>
 
