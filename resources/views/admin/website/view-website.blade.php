@@ -13,6 +13,9 @@
 
 <body>
 
+    <!-- Fancybox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
+
     <style>
         * {
             margin: 0;
@@ -425,6 +428,11 @@
             text-decoration: underline;
         }
 
+        .fancybox__container {
+            z-index: 2000 !important;
+            /* higher than Bootstrap modal */
+        }
+
 
         @keyframes float {
 
@@ -705,11 +713,14 @@
                 </div>
                 <div class="modal-body p-0">
                     <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+                        <div class="d-flex justify-content-end mt-2 mb-2">
+                            <input type="text" id="roleSearch" class="form-control w-25"
+                                placeholder="Search by role...">
+                        </div>
                         <table class="table table-striped align-middle">
                             <thead style="position: sticky; top: 0; z-index: 2; background: #f8f9fa;">
                                 <tr>
-                                    <th
-                                        style="width: 60px; font-size: 16px; font-weight: bold; color:#000;">
+                                    <th style="width: 60px; font-size: 16px; font-weight: bold; color:#000;">
                                         ID
                                     </th>
                                     <th style="font-size: 16px; font-weight: bold; color:#000;">Name</th>
@@ -738,9 +749,35 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Fancybox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
 
     <script>
         $(document).ready(function() {
+            // Fancybox initialize
+            Fancybox.bind("[data-fancybox='theme-gallery']", {
+                Toolbar: {
+                    display: [{
+                            id: "zoom",
+                            position: "center"
+                        },
+                        {
+                            id: "download",
+                            position: "center"
+                        },
+                        {
+                            id: "close",
+                            position: "right"
+                        }
+                    ]
+                },
+                Thumbs: false,
+                infinite: false,
+                compact: false, // keeps toolbar full width
+                animated: true, // smooth animation
+            });
+
+
             // Add smooth animations on page load
             $('.management-card').each(function(index) {
                 $(this).css({
@@ -945,10 +982,12 @@
                     var row = `
                         <tr>
                             <td>
-                                <img src="${theme.screenshot}"
-                                    alt="${theme.name}"
-                                    width="40" height="40"
-                                    onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                                <a href="${theme.screenshot}"  data-fancybox="theme-gallery"  data-caption="${theme.name}">
+                                    <img src="${theme.screenshot}"
+                                        alt="${theme.name}"
+                                        width="40" height="40"
+                                        onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                                </a>
                             </td>
                             <td>${theme.slug || '-'}</td>
                             <td>
@@ -977,20 +1016,13 @@
             $('#manageUserModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget);
                 var response = button.data('user-response');
-                console.log(response);
-
-                // Parse response safely
                 var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
                     response;
 
-                    console.log(data);
-
-
                 var tbody = $('#userTableBody');
-                tbody.empty(); // Clear old rows
+                tbody.empty();
 
-                // Check if data or data.items exists
-                if (!data || !data.items || data.items.length === 0) {
+                if (!data || !Array.isArray(data.items) || data.items.length === 0) {
                     tbody.append(`
                         <tr>
                             <td colspan="6" class="text-center text-muted py-4">
@@ -1001,27 +1033,89 @@
                     return;
                 }
 
-                $.each(data.items, function(index, user) {
+                var allUsers = data.items;
 
-                    var row = `
-                        <tr>
-                            <td>
-                                <strong>${user.id}</strong><br>
-                            </td>
-                            <td>
-                                <strong>${user.name}</strong><br>
-                                ${user.email ? user.email : ''}
-                            </td>
-                            <td>
-                                ${user.username || '-'}
-                            </td>
-                            <td>${user.roles || '-'}</td>
-                        </tr>
-                    `;
+                // Normalize roles to a sorted, comma-separated string
+                function normalizeRoles(roles) {
+                    if (!roles) return '';
+                    // If it's an array, try to extract a name/role string from each element
+                    if (Array.isArray(roles)) {
+                        var arr = roles.map(function(r) {
+                            if (typeof r === 'string') return r;
+                            if (r && typeof r === 'object') {
+                                // common property names: name, role, roleName
+                                return r.name || r.role || r.roleName || '';
+                            }
+                            return String(r);
+                        }).filter(Boolean);
+                        // sort alphabetically and join with comma
+                        return arr.sort(function(a, b) {
+                            return a.localeCompare(b, undefined, {
+                                sensitivity: 'base'
+                            });
+                        }).join(', ');
+                    }
 
-                    tbody.append(row);
+                    // If it's an object (like {admin: true, user: false}), join the truthy keys
+                    if (typeof roles === 'object') {
+                        return Object.keys(roles).filter(function(k) {
+                            return roles[k];
+                        }).sort().join(', ');
+                    }
+
+                    // fallback: string/number -> return as string
+                    return String(roles);
+                }
+
+                function renderUsers(users) {
+                    tbody.empty();
+                    if (users.length === 0) {
+                        tbody.append(`
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    <strong>No matching users found</strong>
+                                </td>
+                            </tr>
+                        `);
+                        return;
+                    }
+
+                    users.forEach(function(user) {
+                        var rolesStr = normalizeRoles(user.roles);
+
+                        // Use jQuery element creation and .text() for roles to avoid XSS issues
+                        var $tr = $('<tr>');
+                        $tr.append($('<td>').html('<strong>' + (user.id || '') + '</strong>'));
+                        $tr.append($('<td>').html('<strong>' + (user.name || '') + '</strong><br>' +
+                            (user.email || '')));
+                        $tr.append($('<td>').text(user.username || '-'));
+                        $tr.append($('<td>').text(rolesStr || '-'));
+
+                        tbody.append($tr);
+                    });
+                }
+
+                // initial render
+                renderUsers(allUsers);
+
+                // Role search filter (case-insensitive)
+                $('#roleSearch').off('keyup').on('keyup', function() {
+                    var searchVal = $(this).val().toLowerCase().trim();
+                    if (searchVal === '') {
+                        renderUsers(allUsers);
+                        return;
+                    }
+
+                    var filtered = allUsers.filter(function(user) {
+                        var rolesStr = normalizeRoles(user.roles).toLowerCase();
+                        return rolesStr.indexOf(searchVal) !== -1;
+                    });
+
+                    renderUsers(filtered);
                 });
             });
+
+
         });
     </script>
 
