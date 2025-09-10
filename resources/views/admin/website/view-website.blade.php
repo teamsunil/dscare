@@ -16,97 +16,261 @@
     <!-- Fancybox CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
 
-
-
-
-
     <style>
         * {
             margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-background: #2C437C;
-min-height: 100vh;
-color: #2c3e50;
-overflow-x: hidden;
-padding: 2rem 0;
-}
-
-
-
-/* Card */
-.dashboard_table {width: 100%;max-width: var(--max-width);border: 1px solid rgba(255, 255, 255, 0.06);border-radius: var(--radius-lg)overflow:hidden;}
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #2C437C;
+            min-height: 100vh;
+            color: #2c3e50;
+            overflow-x: hidden;
+            padding: 2rem 0;
+        }
 
 
 
-
-@keyframes fadeIn {
-from {
-opacity: 0;
-transform: translateY(6px)
-}
-
-to {
-opacity: 1;
-transform: translateY(0)
-}
-}
-
-.dashboard_table .card-panel {background: var(--glass);border-radius: 12px;padding: 16px;border: 1px solid rgba(255, 255, 255, 0.04);}
-
-/* Tab container */
-.dashboard_table .tabs {}
-.dashboard_table .tablist_btns {
-height: calc(var(--tab-height) + 12px);
-background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 50%, rgba(248, 250, 252, 0.95) 100%);
-width: 100%; padding:0 20px
-}
-
-.dashboard_table .tablist {display: grid;grid-template-columns: repeat(4, 1fr);gap: 8px;border-radius: 0;padding: 26px;position: relative;
-align-items: center;max-width: 700px;margin: auto;}
-
-.dashboard_table .tab {position: relative;z-index: 2;height: var(--tab-height);display: flex;align-items: center;gap: 10px;justify-content: center;text-align: center;
-padding:11px 10px;border-radius: 10px;cursor: pointer;font-weight:normal;color: rgba(230, 238, 248, 0.85);background: transparent;border: none;
-outline: none;transition: color .18s ease;user-select: none; background: #2c437c; overflow:hidden}
-.dashboard_table .tab svg {width: 18px;height: 18px;opacity: 0.92; z-index: 9;}
-.dashboard_table .tab span {z-index: 9;color: #fff;}
-.dashboard_table .tab:hover:after {width: 100%;height: 100%;opacity: 1;border-radius: 0;}
-.dashboard_table .tab:after {content: "";position: absolute;top: 50%;left: 50%;width: 0;height: 0;background: rgb(113 141 211 / 54%);border-radius: 50%;transform: translate(-50%, -50%);
-transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
-.dashboard_table .tab.active:hover:after {opacity: 0;}
-
-/* Selected tab text color */
-.dashboard_table .tab[aria-selected="true"] {color: #fff;}
-
-/* Panels */
-.dashboard_table .panels {margin-top: 18px;min-height: 220px; padding: 0px 20px;}
-
-.panel {display: none;animation: fadeIn .28s ease both;}
-.dashboard_table .panel[data-active="true"] {display: block;}
+        /* Card */
+        .dashboard_table {
+            width: 100%;
+            max-width: var(--max-width);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-lg)overflow:hidden;
+        }
 
 
-.dashboard_table .table-container {max-width: 1100px;margin: auto;background: #fff;border-radius: 16px;overflow:hiddenll;box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);}
-.dashboard_table .table-container table {width: 100%;border-collapse: collapse;}
-.dashboard_table .table-container thead {background: #2c437c}
-.dashboard_table .table-container th, td {padding: 16px 18px;text-align: left;font-size: 15px;color: #000;}
-.dashboard_table .table-container th {font-weight: 600;letter-spacing: 0.5px;color: #fff;}
-.dashboard_table .table-container tbody tr {transition: background 0.3s ease;}
-.dashboard_table .table-container tbody tr:nth-child(even) {background: #f9fbfd;}
-.dashboard_table .table-container tbody tr:hover {background: #eef7ff;}
-.dashboard_table .table-container .plugin-name a {font-weight: normal;color: #000;text-decoration: none;transition: color 0.3s;}
-.dashboard_table .table-container .plugin-name a:hover {color: #f48226;text-decoration: underline;}
-.dashboard_table .table-container .badge {display: inline-block;padding: 6px 12px;border-radius: 20px;font-size: 12px;font-weight: 600;text-align: center;white-space: nowrap;}
-.dashboard_table .table-container .active {background: #28a745;color: #fff;}
-.dashboard_table .table-container .inactive {background: #6c757d;color: #fff;}
-.dashboard_table .table-container .update {background: #ff9800;color: #fff;}
-.dashboard_table .table-container .latest {background: #2c437c;color: #fff;}
-.dashboard_table .table-container .version-highlight {font-weight: bold;color: #0073aa;}
-.dashboard_table .table-container img.plugin-icon {width: 26px;height: 26px;border-radius: 6px;}
-.dashboard_table .tab.active{background: #F48226;border-radius: 0;border-radius: 10px; font-weight:normal;}
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .dashboard_table .card-panel {
+            background: var(--glass);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Tab container */
+        .dashboard_table .tabs {}
+
+        .dashboard_table .tablist_btns {
+            height: calc(var(--tab-height) + 12px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.90) 50%, rgba(248, 250, 252, 0.95) 100%);
+            width: 100%;
+            padding: 0 20px
+        }
+
+        .dashboard_table .tablist {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            border-radius: 0;
+            padding: 26px;
+            position: relative;
+            align-items: center;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .dashboard_table .tab {
+            position: relative;
+            z-index: 2;
+            height: var(--tab-height);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            text-align: center;
+            padding: 11px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: normal;
+            color: rgba(230, 238, 248, 0.85);
+            background: transparent;
+            border: none;
+            outline: none;
+            transition: color .18s ease;
+            user-select: none;
+            background: #2c437c;
+            overflow: hidden
+        }
+
+        .dashboard_table .tab svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.92;
+            z-index: 9;
+        }
+
+        .dashboard_table .tab span {
+            z-index: 9;
+            color: #fff;
+        }
+
+        .dashboard_table .tab:hover:after {
+            width: 100%;
+            height: 100%;
+            opacity: 1;
+            border-radius: 0;
+        }
+
+        .dashboard_table .tab:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgb(113 141 211 / 54%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
+            opacity: 0;
+        }
+
+        .dashboard_table .tab.active:hover:after {
+            opacity: 0;
+        }
+
+        /* Selected tab text color */
+        .dashboard_table .tab[aria-selected="true"] {
+            color: #fff;
+        }
+
+        /* Panels */
+        .dashboard_table .panels {
+            margin-top: 18px;
+            min-height: 220px;
+            padding: 0px 20px;
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn .28s ease both;
+        }
+
+        .dashboard_table .panel[data-active="true"] {
+            display: block;
+        }
+
+
+        .dashboard_table .table-container {
+            max-width: 1100px;
+            margin: auto;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hiddenll;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .dashboard_table .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dashboard_table .table-container thead {
+            background: #2c437c
+        }
+
+        .dashboard_table .table-container th,
+        td {
+            padding: 16px 18px;
+            text-align: left;
+            font-size: 15px;
+            color: #000;
+        }
+
+        .dashboard_table .table-container th {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
+        .dashboard_table .table-container tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        .dashboard_table .table-container tbody tr:nth-child(even) {
+            background: #f9fbfd;
+        }
+
+        .dashboard_table .table-container tbody tr:hover {
+            background: #eef7ff;
+        }
+
+        .dashboard_table .table-container .plugin-name a {
+            font-weight: normal;
+            color: #000;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .dashboard_table .table-container .plugin-name a:hover {
+            color: #f48226;
+            text-decoration: underline;
+        }
+
+        .dashboard_table .table-container .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .dashboard_table .table-container .active {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .dashboard_table .table-container .inactive {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .dashboard_table .table-container .update {
+            background: #ff9800;
+            color: #fff;
+        }
+
+        .dashboard_table .table-container .latest {
+            background: #2c437c;
+            color: #fff;
+        }
+
+        .dashboard_table .table-container .version-highlight {
+            font-weight: bold;
+            color: #0073aa;
+        }
+
+        .dashboard_table .table-container img.plugin-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+        }
+
+        .dashboard_table .tab.active {
+            background: #F48226;
+            border-radius: 0;
+            border-radius: 10px;
+            font-weight: normal;
+        }
 
 
 
@@ -321,36 +485,35 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
         }
 
         .card-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-        align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
         }
 
         .stat-item {
-    display: flex
-;
-    flex-direction: column;
-    background: #eff3fb;
-    border-radius: 10px;
-    padding: 5px 10px;
-        border: 1px solid #e0e2ff;
-    text-align: center;
+            display: flex;
+            flex-direction: column;
+            background: #eff3fb;
+            border-radius: 10px;
+            padding: 5px 10px;
+            border: 1px solid #e0e2ff;
+            text-align: center;
         }
 
         .stat-value {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #2d3436;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2d3436;
         }
 
         .stat-label {
-    font-size: 0.6rem;
-    color: #2c437c;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
+            font-size: 0.6rem;
+            color: #2c437c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .version-badge {
@@ -387,14 +550,13 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
         }
 
         .wp-admin-btn {
-            background:#f48226;
+            background: #f48226;
         }
 
-        .wp-admin-btn:hover {
-        }
+        .wp-admin-btn:hover {}
 
         .back-btn {
-            background:#2c437c;
+            background: #2c437c;
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 0.8rem 1.5rem;
@@ -511,10 +673,20 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
         }
 
         @media (max-width: 991px) {
-.dashboard_table .tablist{overflow: scroll; padding: 20px 0; width:800px}
-.dashboard_table .table-container{overflow: scroll;}
-.dashboard_table .tablist_btns{overflow: scroll;}
-}
+            .dashboard_table .tablist {
+                overflow: scroll;
+                padding: 20px 0;
+                width: 800px
+            }
+
+            .dashboard_table .table-container {
+                overflow: scroll;
+            }
+
+            .dashboard_table .tablist_btns {
+                overflow: scroll;
+            }
+        }
 
         @media (max-width: 768px) {
             .management-grid {
@@ -551,9 +723,9 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                     <!-- Tablist -->
                     <div class="tablist_btns">
                         <div class="tablist" role="tablist" aria-label="Main tabs" id="tablist">
-                   
 
-                            <button class="tab tabchnage" role="tab" data-id="tab-overview" id="tab-overview"
+
+                            <button class="tab tabchnage active" role="tab" data-id="tab-overview" id="tab-overview"
                                 aria-controls="panel-overview" aria-selected="true" tabindex="0" data-index="0">
                                 <!-- home icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -563,8 +735,10 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                 <span>WordPress</span>
                             </button>
 
-                            <button class="tab tabchnage" role="tab" data-id="tab-features"  id="tab-features"
-                                aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1">
+                            <button class="tab tabchnage" role="tab" data-id="tab-plugins" id="tab-plugins"
+                                aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
+                                data-plugin-response = '@json(data_get($response, 'plugins', null))'
+                                data-plugin-id="{{ $result->id }}">
                                 <!-- grid icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path fill="#ffffff"
@@ -573,8 +747,10 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                 <span>Plugins</span>
                             </button>
 
-                            <button class="tab tabchnage" role="tab" data-id="tab-gallery"  id="tab-gallery" aria-controls="panel-gallery"
-                                aria-selected="false" tabindex="-1" data-index="2">
+                            <button class="tab tabchnage" role="tab" data-id="tab-themes" id="tab-themes"
+                                aria-controls="panel-gallery" aria-selected="false" tabindex="-1" data-index="2"
+                                data-theme-response = '@json(data_get($response, 'themes', null))'
+                                data-theme-id="{{ $result->id }}">
                                 <!-- image icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path fill="#ffffff"
@@ -583,8 +759,9 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                 <span>Themes</span>
                             </button>
 
-                            <button class="tab tabchnage" role="tab" data-id="tab-settings"  id="tab-settings"
-                                aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-index="3">
+                            <button class="tab tabchnage" role="tab" data-id="tab-users" id="tab-users"
+                                aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-index="3"
+                                data-user-response = '@json(data_get($response, 'users', null))' data-user-id="{{ $result->id }}">
                                 <!-- settings icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path fill="#ffffff"
@@ -597,9 +774,133 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
 
                     <!-- Panels -->
                     <div class="panels" id="panels">
-                        <!-- Overview -->
+                        <!-- Wordpress panel -->
                         <section id="panel-overview" class="panel" role="tabpanel" aria-labelledby="tab-overview"
                             data-active="true">
+                            <div class="container-fluid px-4">
+                                <!-- Back Button -->
+                                {{-- <a href="{{ url()->previous() }}" class="back-btn">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Back to Dashboard
+                                </a> --}}
+
+
+                                <!-- Management Cards -->
+                                <div class="management-grid">
+                                    <!-- WordPress Card -->
+                                    <div class="management-card wordpress-card">
+                                        <div class="card-icon">
+                                            <i class="fab fa-wordpress"></i>
+                                        </div>
+                                        <h3 class="card-title">WordPress</h3>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'wordpress_version', 'N/A') }}</span>
+                                                <span class="stat-label">Current Version</span>
+                                            </div>
+                                            @if (data_get($response, 'wordpress_update_available'))
+                                                <div>
+                                                    <span class="version-badge">Update Available</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <a href="{{ url('website/sso-login', $result->id) }}"
+                                            class="manage-btn wp-admin-btn">
+                                            <i class="fas fa-cog"></i>
+                                            WP-Admin
+                                        </a>
+                                    </div>
+
+                                    <!-- Plugins Card -->
+                                    <div class="management-card plugins-card">
+                                        <div class="card-icon">
+                                            <i class="fas fa-plug"></i>
+                                        </div>
+                                        <h3 class="card-title">Plugins</h3>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'plugins.total', 0) }}</span>
+                                                <span class="stat-label">Total</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'plugins.active', 0) }}</span>
+                                                <span class="stat-label">Active</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'plugins.updates', 0) }}</span>
+                                                <span class="stat-label">Updates</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="manage-btn btn btn-primary"
+                                            data-bs-toggle="modal" data-bs-target="#managePluginModal"
+                                            data-plugin-response = '@json(data_get($response, 'plugins', null))'
+                                            data-plugin-id="{{ $result->id }}">
+                                            <i class="fas fa-cogs"></i> Manage
+                                        </button>
+                                    </div>
+
+                                    <!-- Themes Card -->
+                                    <div class="management-card themes-card">
+                                        <div class="card-icon">
+                                            <i class="fas fa-palette"></i>
+                                        </div>
+                                        <h3 class="card-title">Themes</h3>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'themes.total', 0) }}</span>
+                                                <span class="stat-label">Total</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'themes.current', 1) }}</span>
+                                                <span class="stat-label">Active</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="manage-btn btn btn-primary"
+                                            data-bs-toggle="modal" data-bs-target="#manageThemesModal"
+                                            data-theme-response = '@json(data_get($response, 'themes', null))'
+                                            data-theme-id="{{ $result->id }}">
+                                            <i class="fas fa-brush"></i> Manage
+                                        </button>
+                                    </div>
+
+                                    <!-- Users Card -->
+                                    <div class="management-card users-card">
+                                        <div class="card-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <h3 class="card-title">Users</h3>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'users.total', 0) }}</span>
+                                                <span class="stat-label">Total</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'users.admins', 0) }}</span>
+                                                <span class="stat-label">Admins</span>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="manage-btn btn btn-primary"
+                                            data-bs-toggle="modal" data-bs-target="#manageUserModal"
+                                            data-user-response = '@json(data_get($response, 'users', null))'
+                                            data-user-id="{{ $result->id }}">
+                                            <i class="fas fa-user-cog"></i> Manage
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Plugin panel -->
+                        <section id="panel-features" class="panel" role="tabpanel" aria-labelledby="tab-plugins"
+                            data-active="false">
                             <div class="table-container">
                                 <table>
                                     <thead>
@@ -612,7 +913,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                             <th>Update</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="pluginTableBody">
                                         <tr>
                                             <td><img class="plugin-icon"
                                                     src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
@@ -664,22 +965,22 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                             </div>
                         </section>
 
-                        <!-- Features -->
-                        <section id="panel-features" class="panel" role="tabpanel" aria-labelledby="tab-features"
+                        <!-- Theme panel -->
+                        <section id="panel-gallery" class="panel" role="tabpanel" aria-labelledby="tab-themes"
                             data-active="false">
                             <div class="table-container">
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Icon</th>
+                                            <th>Screenshot</th>
+                                            <th>Slug</th>
                                             <th>Name</th>
                                             <th>Version</th>
                                             <th>Author</th>
                                             <th>Status</th>
-                                            <th>Update</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="themeTableBody">
                                         <tr>
                                             <td><img class="plugin-icon"
                                                     src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
@@ -731,89 +1032,23 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                             </div>
                         </section>
 
-                        <!-- Gallery -->
-                        <section id="panel-gallery" class="panel" role="tabpanel" aria-labelledby="tab-gallery"
+                        <!-- Users panel -->
+                        <section id="panel-settings" class="panel" role="tabpanel" aria-labelledby="tab-users"
                             data-active="false">
                             <div class="table-container">
+                                <div class="d-flex justify-content-end mt-2 mb-2">
+                                    <input type="text" id="roleSearch" class="form-control w-25"
+                                        placeholder="Search by role...">
+                                </div>
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Icon</th>
                                             <th>Name</th>
-                                            <th>Version</th>
-                                            <th>Author</th>
-                                            <th>Status</th>
-                                            <th>Update</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><img class="plugin-icon"
-                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
-                                            </td>
-                                            <td class="plugin-name"><a href="https://4divi.com/">4DIVI Masonry
-                                                    Gallery</a></td>
-                                            <td>2.0.1</td>
-                                            <td>Design Green Cat</td>
-                                            <td><span class="badge active">Active</span></td>
-                                            <td><span class="badge latest">Latest</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="plugin-icon"
-                                                    src="https://www.advancedcustomfields.com/wp-content/uploads/2020/12/acf-logo.png">
-                                            </td>
-                                            <td class="plugin-name"><a
-                                                    href="https://www.advancedcustomfields.com">Advanced Custom
-                                                    Fields</a></td>
-                                            <td>6.4.0.1 → <span class="version-highlight">6.5.0</span></td>
-                                            <td>WP Engine</td>
-                                            <td><span class="badge active">Active</span></td>
-                                            <td><span class="badge update">Update to 6.5.0</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="plugin-icon"
-                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
-                                            </td>
-                                            <td class="plugin-name"><a
-                                                    href="https://wordpress.org/plugins/tinymce-advanced/">Advanced
-                                                    Editor Tools</a></td>
-                                            <td>5.9.2</td>
-                                            <td>Automattic</td>
-                                            <td><span class="badge active">Active</span></td>
-                                            <td><span class="badge latest">Latest</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="plugin-icon"
-                                                    src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
-                                            </td>
-                                            <td class="plugin-name"><a href="https://servmask.com/">All-in-One WP
-                                                    Migration and Backup</a></td>
-                                            <td>7.97 → <span class="version-highlight">7.99</span></td>
-                                            <td>ServMask</td>
-                                            <td><span class="badge active">Active</span></td>
-                                            <td><span class="badge update">Update to 7.99</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </section>
-
-                        <!-- Settings -->
-                        <section id="panel-settings" class="panel" role="tabpanel" aria-labelledby="tab-settings"
-                            data-active="false">
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Icon</th>
-                                            <th>Name</th>
-                                            <th>Version</th>
-                                            <th>Author</th>
-                                            <th>Status</th>
-                                            <th>Update</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                    <tbody id="userTableBody">
                                         <tr>
                                             <td><img class="plugin-icon"
                                                     src="https://s.w.org/style/images/about/WordPress-logotype-wmark.png">
@@ -870,126 +1105,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
         </header>
 
 
-        <div class="container-fluid px-4">
-            <!-- Back Button -->
-           <!-- <a href="{{ url()->previous() }}" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-                Back to Dashboard
-            </a>-->
 
-
-            <!-- Management Cards -->
-            <div class="management-grid">
-                <!-- WordPress Card -->
-                <div class="management-card wordpress-card">
-                    <div class="card-icon">
-                        <i class="fab fa-wordpress"></i>
-                    </div>
-                    <h3 class="card-title">WordPress</h3>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'wordpress_version', 'N/A') }}</span>
-                            <span class="stat-label">Current Version</span>
-                        </div>
-                        @if (data_get($response, 'wordpress_update_available'))
-                            <div>
-                                <span class="version-badge">Update Available</span>
-                            </div>
-                        @endif
-                    </div>
-                    <a href="{{ url('website/sso-login', $result->id) }}" class="manage-btn wp-admin-btn">
-                        <i class="fas fa-cog"></i>
-                        WP-Admin
-                    </a>
-                </div>
-
-                <!-- Plugins Card -->
-                <div class="management-card plugins-card">
-                    <div class="card-icon">
-                        <i class="fas fa-plug"></i>
-                    </div>
-                    <h3 class="card-title">Plugins</h3>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'plugins.total', 0) }}</span>
-                            <span class="stat-label">Total</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'plugins.active', 0) }}</span>
-                            <span class="stat-label">Active</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'plugins.updates', 0) }}</span>
-                            <span class="stat-label">Updates</span>
-                        </div>
-                    </div>
-                    <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#managePluginModal" data-plugin-response = '@json(data_get($response, 'plugins', null))'
-                        data-plugin-id="{{ $result->id }}">
-                        <i class="fas fa-cogs"></i> Manage
-                    </button>
-
-                    {{-- <a href="{{ url('admin/manage/plugins-' . $result->id) }}" class="manage-btn">
-                        <i class="fas fa-cogs"></i>
-                        Manage
-                    </a> --}}
-                </div>
-
-                <!-- Themes Card -->
-                <div class="management-card themes-card">
-                    <div class="card-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <h3 class="card-title">Themes</h3>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'themes.total', 0) }}</span>
-                            <span class="stat-label">Total</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'themes.current', 1) }}</span>
-                            <span class="stat-label">Active</span>
-                        </div>
-                    </div>
-                    <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#manageThemesModal" data-theme-response = '@json(data_get($response, 'themes', null))'
-                        data-theme-id="{{ $result->id }}">
-                        <i class="fas fa-brush"></i> Manage
-                    </button>
-                    {{-- <a href="{{ url('admin/manage/theme-' . $result->id) }}" class="manage-btn">
-                        <i class="fas fa-brush"></i>
-                        Manage
-                    </a> --}}
-                </div>
-
-                <!-- Users Card -->
-                <div class="management-card users-card">
-                    <div class="card-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3 class="card-title">Users</h3>
-                    <div class="card-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'users.total', 0) }}</span>
-                            <span class="stat-label">Total</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">{{ data_get($response, 'users.admins', 0) }}</span>
-                            <span class="stat-label">Admins</span>
-                        </div>
-                    </div>
-                    <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#manageUserModal" data-user-response = '@json(data_get($response, 'users', null))'
-                        data-user-id="{{ $result->id }}">
-                        <i class="fas fa-user-cog"></i> Manage
-                    </button>
-                    {{-- <a href="{{ url('admin/manage/user-' . $result->id) }}" class="manage-btn">
-                        <i class="fas fa-user-cog"></i>
-                        Manage
-                    </a> --}}
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Plugins Modal -->
@@ -1023,7 +1139,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody id="pluginTableBody">
+                            <tbody id="pluginTableBodyModal">
                                 <!-- Rows injected dynamically -->
                             </tbody>
                         </table>
@@ -1066,7 +1182,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody id="themeTableBody">
+                            <tbody id="themeTableBodyModal">
                                 <!-- Rows injected dynamically -->
                             </tbody>
                         </table>
@@ -1107,7 +1223,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                                     </th> --}}
                                 </tr>
                             </thead>
-                            <tbody id="userTableBody">
+                            <tbody id="userTableBodyModal">
                                 <!-- Rows injected dynamically -->
                             </tbody>
                         </table>
@@ -1270,7 +1386,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                 var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
                     response;
 
-                var tbody = $('#pluginTableBody');
+                var tbody = $('#pluginTableBodyModal');
                 tbody.empty(); // Clear old rows
 
                 // Check if data or data.items exists
@@ -1331,7 +1447,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                 var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
                     response;
 
-                var tbody = $('#themeTableBody');
+                var tbody = $('#themeTableBodyModal');
                 tbody.empty(); // Clear old rows
 
                 // Check if data or data.items exists
@@ -1393,7 +1509,7 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
                 var data = (typeof response === 'string' && response !== '') ? JSON.parse(response) :
                     response;
 
-                var tbody = $('#userTableBody');
+                var tbody = $('#userTableBodyModal');
                 tbody.empty();
 
                 if (!data || !Array.isArray(data.items) || data.items.length === 0) {
@@ -1490,46 +1606,244 @@ transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;opacity: 0;}
             });
 
 
+
+            // Tab and Panel logic
+            $(document).on('click', '.tabchnage', function() {
+                let button = $(this);
+                let targetPanel = button.data('id'); // e.g. "tab-plugins" -> "panel-features"
+
+                // Detect which type of data
+                if (targetPanel === "tab-plugins") {
+                    let response = button.data('plugin-response');
+                    let data = typeof response === 'string' && response !== '' ? JSON.parse(response) :
+                        response;
+                    let tbody = $('#pluginTableBody').empty();
+
+                    if (!data || data.length === 0) {
+                        tbody.append(
+                            `<tr><td colspan="4" class="text-center text-muted">No plugins found</td></tr>`
+                        );
+                    } else {
+                        $.each(data.items, function(i, plugin) {
+                            console.log(plugin);
+
+                            tbody.append(`
+                                <tr>
+                                    <td>
+                                        <img src="${plugin.icon_url}"
+                                            alt="${plugin.name}"
+                                            width="40" height="40"
+                                            onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                                    </td>
+                                    <td>
+                                        <strong>${plugin.name}</strong><br>
+                                        ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
+                                    </td>
+                                    <td>
+                                        ${plugin.version} ${plugin.update ? ` <span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}
+                                    </td>
+                                    <td>${plugin.author || '-'}</td>
+                                    <td>${plugin.is_active
+                                        ? '<span class="badge bg-success">Active</span>'
+                                        : '<span class="badge bg-secondary">Inactive</span>'}
+                                    </td>
+                                    <td>
+                                        ${plugin.update
+                                            ? `<span class="badge bg-warning">Update to ${plugin.update.new_version}</span>`
+                                            : '<span class="badge bg-info">Latest</span>'}
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    }
+                }
+
+                if (targetPanel === "tab-themes") {
+                    let response = button.data('theme-response');
+                    let data = typeof response === 'string' && response !== '' ? JSON.parse(response) :
+                        response;
+                    let tbody = $('#themeTableBody').empty();
+
+                    if (!data || !data.items || data.items.length === 0) {
+                        tbody.append(
+                            `<tr><td colspan="6" class="text-center text-muted">No themes found</td></tr>`
+                        );
+                    } else {
+                        const themeRoundVersion = (v, decimals = 2) => v.split('.').map(p => {
+                            // Check if the part is purely numeric and longer than desired decimals
+                            if (/^\d+$/.test(p) && p.length > decimals) {
+                                return p.substring(0, decimals);
+                            }
+                            return p;
+                        }).join('.');
+                        $.each(data.items, function(i, theme) {
+                            tbody.append(`
+                                <tr>
+                                    <td>
+                                        <a href="${theme.screenshot}" data-fancybox="theme-gallery" data-caption="${theme.name}">
+                                            <img src="${theme.screenshot}" width="40" height="40"
+                                                onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                                        </a>
+                                    </td>
+                                    <td>${theme.slug || '-'}</td>
+                                    <td><strong>${theme.name}</strong></td>
+                                    <td>${themeRoundVersion(theme.version) || '-'}</td>
+                                    <td>${theme.author || '-'}</td>
+                                    <td>${theme.is_active
+                                        ? '<span class="badge bg-success">Active</span>'
+                                        : '<span class="badge bg-secondary">Inactive</span>'}</td>
+                                </tr>
+                            `);
+                        });
+                    }
+                }
+
+                if (targetPanel === "tab-users") {
+                    let response = button.data('user-response');
+                    let data = typeof response === 'string' && response !== '' ? JSON.parse(response) :
+                        response;
+                    let tbody = $('#userTableBody').empty();
+
+                    if (!data || data.length === 0) {
+                        tbody.append(
+                            `<tr><td colspan="3" class="text-center text-muted">No users found</td></tr>`
+                        );
+                    } else {
+                        // $.each(data.items, function(i, user) {
+                        //     tbody.append(`
+                    //         <tr>
+                    //             <td>${user.name}</td>
+                    //             <td>${user.email}</td>
+                    //             <td>${user.role || '-'}</td>
+                    //         </tr>
+                    //     `);
+                        // });
+
+                        var allUsers = data.items;
+
+                        // Normalize roles to a sorted, comma-separated string
+                        function normalizeRoles(roles) {
+                            if (!roles) return '';
+                            // If it's an array, try to extract a name/role string from each element
+                            if (Array.isArray(roles)) {
+                                var arr = roles.map(function(r) {
+                                    if (typeof r === 'string') return r;
+                                    if (r && typeof r === 'object') {
+                                        // common property names: name, role, roleName
+                                        return r.name || r.role || r.roleName || '';
+                                    }
+                                    return String(r);
+                                }).filter(Boolean);
+                                // sort alphabetically and join with comma
+                                return arr.sort(function(a, b) {
+                                    return a.localeCompare(b, undefined, {
+                                        sensitivity: 'base'
+                                    });
+                                }).join(', ');
+                            }
+
+                            // If it's an object (like {admin: true, user: false}), join the truthy keys
+                            if (typeof roles === 'object') {
+                                return Object.keys(roles).filter(function(k) {
+                                    return roles[k];
+                                }).sort().join(', ');
+                            }
+
+                            // fallback: string/number -> return as string
+                            return String(roles);
+                        }
+
+                        function renderUsers(users) {
+                            tbody.empty();
+                            if (users.length === 0) {
+                                tbody.append(`
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <strong>No matching users found</strong>
+                                        </td>
+                                    </tr>
+                                `);
+                                return;
+                            }
+
+                            users.forEach(function(user) {
+                                var rolesStr = normalizeRoles(user.roles);
+
+                                // Use jQuery element creation and .text() for roles to avoid XSS issues
+                                var $tr = $('<tr>');
+                                // $tr.append($('<td>').html('<strong>' + (user.id || '') +
+                                //     '</strong>'));
+                                $tr.append($('<td>').html('<strong>' + (user.name || '') +
+                                    '</strong><br>' +
+                                    (user.email || '')));
+                                $tr.append($('<td>').text(user.username || '-'));
+                                $tr.append($('<td>').text(rolesStr || '-'));
+
+                                tbody.append($tr);
+                            });
+                        }
+
+                        // initial render
+                        renderUsers(allUsers);
+
+                        // Role search filter (case-insensitive)
+                        $('#roleSearch').off('keyup').on('keyup', function() {
+                            var searchVal = $(this).val().toLowerCase().trim();
+                            if (searchVal === '') {
+                                renderUsers(allUsers);
+                                return;
+                            }
+
+                            var filtered = allUsers.filter(function(user) {
+                                var rolesStr = normalizeRoles(user.roles).toLowerCase();
+                                return rolesStr.indexOf(searchVal) !== -1;
+                            });
+
+                            renderUsers(filtered);
+                        });
+                    }
+                }
+            });
         });
     </script>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Get all tab buttons
-  const tabs = document.querySelectorAll(".tabchnage");
-  const panels = document.querySelectorAll(".panel");
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Get all tab buttons
+            const tabs = document.querySelectorAll(".tabchnage");
+            const panels = document.querySelectorAll(".panel");
 
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      const target = tab.getAttribute("data-id"); // ✅ get data-id
+            tabs.forEach(tab => {
+                tab.addEventListener("click", () => {
+                    const target = tab.getAttribute("data-id"); // ✅ get data-id
 
-      // Deactivate all tabs
-      tabs.forEach(t => {
-        t.classList.remove("active");
-        t.setAttribute("aria-selected", "false");
-      });
+                    // Deactivate all tabs
+                    tabs.forEach(t => {
+                        t.classList.remove("active");
+                        t.setAttribute("aria-selected", "false");
+                    });
 
-      // Deactivate all panels
-      panels.forEach(p => {
-        p.classList.remove("active");
-        p.setAttribute("data-active", "false");
-      });
+                    // Deactivate all panels
+                    panels.forEach(p => {
+                        p.classList.remove("active");
+                        p.setAttribute("data-active", "false");
+                    });
 
-      // Activate clicked tab
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
+                    // Activate clicked tab
+                    tab.classList.add("active");
+                    tab.setAttribute("aria-selected", "true");
 
-      // Activate target panel
-    const panel = document.querySelector(`[aria-labelledby="${target}"]`);
-if (panel) {
-  panel.classList.add("active");
-  panel.setAttribute("data-active", "true");
-}
-    });
-  });
-});
-</script>
+                    // Activate target panel
+                    const panel = document.querySelector(`[aria-labelledby="${target}"]`);
+                    if (panel) {
+                        panel.classList.add("active");
+                        panel.setAttribute("data-active", "true");
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 

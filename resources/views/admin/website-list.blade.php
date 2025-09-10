@@ -1261,14 +1261,6 @@
                         <i class="fas fa-globe"></i>
                         <span>Websites</span>
                     </a>
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Analytics</span>
-                    </a>
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
                 </nav>
 
                 <!-- User Profile Section -->
@@ -1334,6 +1326,14 @@
         <div class="floating-element-2"></div>
         <div class="floating-element-3"></div>
 
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="content-wrapper">
             <div class="container-fluid px-4">
                 <!-- Header Section -->
@@ -1357,14 +1357,6 @@
                         </a>
                     </div>
                 </div>
-
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
 
                 <!-- Websites Grid -->
                 @if ($result->isNotEmpty())
