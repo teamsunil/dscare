@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Website extends Model
 {
-    protected $fillable = ['url', 'username', 'password', 'token_id', 'title', 'logo', 'website_up_down', 'website_status'];
+    protected $fillable = ['url', 'username', 'password', 'token_id', 'title', 'logo', 'website_up_down', 'website_status'
+        , 'pagespeed_screenshot', 'pagespeed_performance', 'pagespeed_seo', 'pagespeed_accessibility', 'pagespeed_best_practices'];
     // public function getPasswordAttribute($value)
     // {
     //     try {

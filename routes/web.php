@@ -12,9 +12,16 @@ Route::middleware('guestUser')->group(function () {
         return view('login');
     })->name('login');
 });
-
+Route::get('list',function(){
+    return view('admin.list');
+});
 Route::middleware('auth')->group(function () {
+    
+    Route::get('admin/index',function(){
+        return view('admin.index');
+    })->name('index');
 
+    Route::get('/admin/website/{id}/upgrade-plugin',[WebsiteController::class,'hitUpgradePlugin']);
     Route::get('/admin/website-list', [WebsiteController::class, 'listWebsite'])->name('dashboard');
     Route::get('/admin/website/add', [WebsiteController::class, 'showUrlForm'])->name('website.add.url');
     Route::post('/admin/website/add', [WebsiteController::class, 'submitUrl'])->name('website.submit.url');
@@ -32,6 +39,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/manage/plugins-{id}', [WebsiteController::class, 'managePlugins']);
     Route::get('/admin/manage/theme-{id}', [WebsiteController::class, 'manageTheme']);
     Route::get('/admin/manage/user-{id}', [WebsiteController::class, 'manageUser']);
+    Route::get('/admin/website/{id}/backup', [WebsiteController::class, 'backupWebsite'])->name('website.backup');
+    Route::post('/admin/website/{id}/check-speed', [WebsiteController::class, 'checkSpeed'])->name('website.check.speed');
+    Route::get('/admin/download', function () {
+        $filePath = public_path('plugins.zip');
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found');
+        }
+        return response()->download($filePath, 'plugins.zip');
+    })->name('download');
+    Route::get('admin/website/{id}/delete-backup', [WebsiteController::class, 'deleteBackup'])->name('website.delete.backup');
 });
 
 
@@ -40,7 +57,7 @@ Route::controller(UserController::class)->prefix('admin')->group(function () {
     Route::post('/login', 'login');
 });
 
-Route::post('/logout', [UserController::class, 'logout']);
+Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('/admin/show-sso-secret/{id}', function ($id) {
     $website = \App\Models\Website::findOrFail($id);
     return response()->json([

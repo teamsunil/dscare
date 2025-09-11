@@ -1,39 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('admin.layouts.app')
+@section('content')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ data_get($response, 'site.name', 'Website Details') }} - WebMaster</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<body>
-
-    <!-- Fancybox CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #2C437C;
-            min-height: 100vh;
-            color: #2c3e50;
-            overflow-x: hidden;
-            padding: 2rem 0;
-        }
-
-
-
         /* Card */
         .dashboard_table {
             width: 100%;
@@ -707,8 +680,10 @@
             }
         }
     </style>
+    @php
+    @endphp
 
-    <div class="website-details-container">
+    <div class="website-details-container ">
         <!-- Floating Decorative Elements -->
         <div class="floating-element-1"></div>
         <div class="floating-element-2"></div>
@@ -737,8 +712,7 @@
 
                             <button class="tab tabchnage" role="tab" data-id="tab-plugins" id="tab-plugins"
                                 aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
-                                data-plugin-response = '@json(data_get($response, 'plugins', null))'
-                                data-plugin-id="{{ $result->id }}">
+                                data-plugin-response = '@json(data_get($response, 'plugins', null))' data-plugin-id="{{ $result->id }}">
                                 <!-- grid icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path fill="#ffffff"
@@ -749,8 +723,7 @@
 
                             <button class="tab tabchnage" role="tab" data-id="tab-themes" id="tab-themes"
                                 aria-controls="panel-gallery" aria-selected="false" tabindex="-1" data-index="2"
-                                data-theme-response = '@json(data_get($response, 'themes', null))'
-                                data-theme-id="{{ $result->id }}">
+                                data-theme-response = '@json(data_get($response, 'themes', null))' data-theme-id="{{ $result->id }}">
                                 <!-- image icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                     <path fill="#ffffff"
@@ -801,6 +774,7 @@
                                             </div>
                                             @if (data_get($response, 'wordpress_update_available'))
                                                 <div>
+
                                                     <span class="version-badge">Update Available</span>
                                                 </div>
                                             @endif
@@ -810,6 +784,14 @@
                                             <i class="fas fa-cog"></i>
                                             WP-Admin
                                         </a>
+                                        {{-- {{dd($response)}} --}}
+                                        {{-- <a href="#" class="manage-btn btn-primary updateBtn" data-type="core"
+                                            data-action="update" data-slug="">Update</a> --}}
+                                        @if (data_get($response, 'wordpress_update_available'))
+                                            <a class="manage-btn btn-primary  updateBtn" data-type="core"
+                                                data-action="update" data-slug="">Update</a>
+                                        @endif
+
                                     </div>
 
                                     <!-- Plugins Card -->
@@ -835,8 +817,8 @@
                                                 <span class="stat-label">Updates</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary"
-                                            data-bs-toggle="modal" data-bs-target="#managePluginModal"
+                                        <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#managePluginModal"
                                             data-plugin-response = '@json(data_get($response, 'plugins', null))'
                                             data-plugin-id="{{ $result->id }}">
                                             <i class="fas fa-cogs"></i> Manage
@@ -861,8 +843,8 @@
                                                 <span class="stat-label">Active</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary"
-                                            data-bs-toggle="modal" data-bs-target="#manageThemesModal"
+                                        <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#manageThemesModal"
                                             data-theme-response = '@json(data_get($response, 'themes', null))'
                                             data-theme-id="{{ $result->id }}">
                                             <i class="fas fa-brush"></i> Manage
@@ -887,13 +869,128 @@
                                                 <span class="stat-label">Admins</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary"
-                                            data-bs-toggle="modal" data-bs-target="#manageUserModal"
+                                        <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#manageUserModal"
                                             data-user-response = '@json(data_get($response, 'users', null))'
                                             data-user-id="{{ $result->id }}">
                                             <i class="fas fa-user-cog"></i> Manage
                                         </button>
                                     </div>
+
+
+                                    <!-- Speed Data Card -->
+                                    <div class="management-card"
+                                        style="--card-gradient: linear-gradient(135deg, #f48226 0%, #2c437c 100%);">
+                                        <div class="card-icon"
+                                            style="background: linear-gradient(135deg, #f48226 0%, #2c437c 100%);">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                        </div>
+                                        <h3 class="card-title">Speed Data</h3>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ $result->pagespeed_performance ?? 'N/A' }}</span>
+                                                <span class="stat-label">Performance</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-value">{{ $result->pagespeed_seo ?? 'N/A' }}</span>
+                                                <span class="stat-label">SEO</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ $result->pagespeed_accessibility ?? 'N/A' }}</span>
+                                                <span class="stat-label">Accessibility</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ $result->pagespeed_best_practices ?? 'N/A' }}</span>
+                                                <span class="stat-label">Best Practices</span>
+                                            </div>
+                                        </div>
+
+                                        <button class="manage-btn btn btn-info mt-2" id="runSpeedBtn" type="button">
+                                            <i class="fas fa-tachometer-alt"></i> Run Speed Test
+                                        </button>
+                                    </div>
+
+                                    <!-- Site Health Card -->
+                                    <div class="management-card users-card"
+                                        style="--card-gradient: linear-gradient(135deg, #44a08d 0%, #4ecdc4 100%);">
+                                        <div class="card-icon"
+                                            style="background: linear-gradient(135deg, #44a08d 0%, #4ecdc4 100%);">
+                                            <i class="fas fa-heartbeat"></i>
+                                        </div>
+                                        <h3 class="card-title">Site Health</h3>
+                                        <div class="card-stats">
+
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'site_health.score', 'N/A') }}</span>
+                                                <span class="stat-label">Score</span>
+                                            </div>
+                                            <div class="stat-item">
+
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'site_health.status_summary.critical', 'N/A') }}</span>
+                                                <span class="stat-label">Critical</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'site_health.status_summary.recommended', 'N/A') }}</span>
+                                                <span class="stat-label">Recommended</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'site_health.status_summary.good', 'N/A') }}</span>
+                                                <span class="stat-label">Good</span>
+                                            </div>
+                                          
+                                            
+                                        </div>    
+                                 
+                                     
+                                        @if (data_get($response, 'site_health.description'))
+                                            <div style="margin-top:1rem; color:#2c437c; font-size:0.95rem;">
+                                                {{ data_get($response, 'site_health.description') }}
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <!-- Backup Card -->
+                                    <div class="management-card plugins-card">
+                                        <div class="card-icon">
+                                            <i class="fas fa-cogs"></i>
+                                        </div>
+                                        <h3 class="card-title">Backup</h3>
+                                        <div class="card-stats" >
+                                            {{-- <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'backup.last_backup', 'N/A') }}</span>
+                                                <span class="stat-label">Last Backup</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'backup.size', 'N/A') }}</span>
+                                                <span class="stat-label">Size</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span
+                                                    class="stat-value">{{ data_get($response, 'backup.status', 'N/A') }}</span>
+                                                <span class="stat-label">Status</span>
+                                            </div> --}}
+                                        </div>
+                                        <button type="button" class="manage-btn btn btn-primary" data-toggle="modal"
+                                            data-target="#backupTypeModal"
+                                            data-backup-response = '@json(data_get($response, 'backup', null))'
+                                            data-backup-id="{{ $result->id }}">
+                                            <i class="fas fa-brush"></i> Backup
+                                        </button>
+                                        <button type="button" onclick="deleteBackup()" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Remove Backup
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
                         </section>
@@ -973,8 +1070,9 @@
                                     <thead>
                                         <tr>
                                             <th>Screenshot</th>
-                                            <th>Slug</th>
                                             <th>Name</th>
+                                            <th>Slug</th>
+
                                             <th>Version</th>
                                             <th>Author</th>
                                             <th>Status</th>
@@ -1235,14 +1333,165 @@
     </div>
 
 
+    {{-- -- Modal --> --}}
+    <div class="modal fade" id="backupTypeModal" tabindex="-1" role="dialog" aria-labelledby="backupTypeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="backupTypeModalLabel">Select Backup Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <select id="backupTypeSelect" class="form-control">
+                        <option value="both">Full Backup</option>
+                        <option value="db">Database Only</option>
+                        <option value="files">Files Only</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirmBackupBtn" class="btn btn-primary">Confirm Backup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        //    Handle backup type selection and submit 
+        $(document).on('click', '#confirmBackupBtn', function() {
+            var $btn = $(this);
+            var backupType = $('#backupTypeSelect').val();
+            $btn.prop('disabled', true).text('Backing up...');
+            $.ajax({
+                url: '/admin/website/' + {{ $result->id }} + '/backup',
+                method: 'GET',
+                data: {
+                    type: backupType
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $btn.text('Backup Created!').addClass('btn-success');
+                        // Handle file downloads
+
+                        const files = response.data.files;
+
+                        // Download db_backup after 0ms
+                        if (files.db_backup) {
+                            triggerDownload(files.db_backup, 0);
+                        }
+
+                        // Download site_backup after 1000ms
+                        if (files.site_backup) {
+                            triggerDownload(files.site_backup, 1000);
+                        }
+
+                        setTimeout(function() {
+                            $btn.prop('disabled', false).text('Confirm Backup').removeClass(
+                                'btn-success');
+                            $('#backupTypeModal').modal('hide');
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        $btn.text('Failed!').addClass('btn-danger');
+                        setTimeout(function() {
+                            $btn.prop('disabled', false).text('Confirm Backup').removeClass(
+                                'btn-danger');
+                        }, 2000);
+                        alert(response.error || 'Backup failed.');
+                    }
+                },
+                error: function() {
+                    $btn.text('Error!').addClass('btn-danger');
+                    setTimeout(function() {
+                        $btn.prop('disabled', false).text('Confirm Backup').removeClass(
+                            'btn-danger');
+                    }, 2000);
+                    alert('Failed to create backup.');
+                }
+            });
+        });
+
+
+
+
+
+
+        // Utility: Trigger file download
+        function triggerDownload(fileUrl, delay = 0) {
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = fileUrl;
+                link.download = ''; // Optional: Let browser decide filename
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }, delay);
+        }
+
+
+        function deleteBackup() {
+            if (!confirm('Are you sure you want to delete old backup?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '/admin/website/' + {{ $result->id }} + '/delete-backup',
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Backup deleted successfully.');
+                        location.reload(); // Optional: refresh UI
+                    } else {
+                        alert(response.error || 'Failed to delete backup.');
+                    }
+                },
+                error: function() {
+                    alert('Error occurred while deleting backup.');
+                }
+            });
+        }
+    </script>
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <!-- Fancybox JS -->
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
 
+
+
+
+
     <script>
+        // reload pages then show current tab with dynamic data
+        $(document).ready(function() {
+            const tabFromUrl = new URLSearchParams(window.location.search).get('tab');
+            const savedTabId = tabFromUrl || localStorage.getItem('activeTabId');
+
+            if (savedTabId) {
+                const $savedTab = $('.tabchnage[data-id="' + savedTabId + '"]');
+                if ($savedTab.length) {
+                    $savedTab.addClass('active').attr('aria-selected', 'true');
+                    const panel = $('[aria-labelledby="' + savedTabId + '"]');
+                    panel.addClass('active').attr('data-active', 'true');
+
+                    loadTabData(savedTabId, $savedTab);
+                } else {
+                    $('.tabchnage').first().trigger('click');
+                }
+            } else {
+                $('.tabchnage').first().trigger('click');
+            }
+        });
+
+
+
         $(document).ready(function() {
             // Fancybox initialize
             Fancybox.bind("[data-fancybox='theme-gallery']", {
@@ -1606,245 +1855,345 @@
             });
 
 
-
+            var data_resp = "{{ $response['site']['url'] ?? '' }}";
             // Tab and Panel logic
             $(document).on('click', '.tabchnage', function() {
                 let button = $(this);
                 let targetPanel = button.data('id'); // e.g. "tab-plugins" -> "panel-features"
-
                 // Detect which type of data
-                if (targetPanel === "tab-plugins") {
-                    let response = button.data('plugin-response');
-                    let data = typeof response === 'string' && response !== '' ? JSON.parse(response) :
-                        response;
-                    let tbody = $('#pluginTableBody').empty();
+                loadTabData(targetPanel, button);
+            });
+        });
 
-                    if (!data || data.length === 0) {
-                        tbody.append(
-                            `<tr><td colspan="4" class="text-center text-muted">No plugins found</td></tr>`
-                        );
-                    } else {
-                        $.each(data.items, function(i, plugin) {
-                            console.log(plugin);
 
-                            tbody.append(`
-                                <tr>
-                                    <td>
-                                        <img src="${plugin.icon_url}"
-                                            alt="${plugin.name}"
-                                            width="40" height="40"
-                                            onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
-                                    </td>
-                                    <td>
-                                        <strong>${plugin.name}</strong><br>
-                                        ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
-                                    </td>
-                                    <td>
-                                        ${plugin.version} ${plugin.update ? ` <span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}
-                                    </td>
-                                    <td>${plugin.author || '-'}</td>
-                                    <td>${plugin.is_active
-                                        ? '<span class="badge bg-success">Active</span>'
-                                        : '<span class="badge bg-secondary">Inactive</span>'}
-                                    </td>
-                                    <td>
-                                        ${plugin.update
-                                            ? `<span class="badge bg-warning">Update to ${plugin.update.new_version}</span>`
-                                            : '<span class="badge bg-info">Latest</span>'}
-                                    </td>
-                                </tr>
-                            `);
-                        });
-                    }
+        // THIS FUNCTION USE FOR DYNAMIC DATA 
+        function loadTabData(tabId, $button = null) {
+            if (tabId === "tab-plugins") {
+                let response = $button?.data('plugin-response');
+                let data = typeof response === 'string' && response !== '' ? JSON.parse(response) : response;
+                let tbody = $('#pluginTableBody').empty();
+
+                if (!data || data.length === 0) {
+                    tbody.append(`<tr><td colspan="6" class="text-center text-muted">No plugins found</td></tr>`);
+                } else {
+                    $.each(data.items, function(i, plugin) {
+                        tbody.append(`
+                    <tr>
+                        <td>
+                            <img src="${plugin.icon_url}" alt="${plugin.name}" width="40" height="40"
+                                onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                        </td>
+                        <td>
+                            <strong>${plugin.name}</strong><br>
+                            ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
+                            <br/>
+                            ${plugin.name !== 'DS Care' ? `
+                                                ${plugin.is_active
+                                                ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                            ` : ''}
+                        </td>
+                        <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
+                        <td>${plugin.author || '-'}</td>
+                        <td>${plugin.is_active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
+                        <td>
+                            ${plugin.update
+                                ? `<button class="btn btn-primary updateBtn" data-type="plugin" data-action="update" data-slug="${plugin.file_path}">Update to ${plugin.update.new_version}</button>`
+                                : '<span class="badge bg-info">Latest</span>'}
+                        </td>
+                    </tr>
+                `);
+                    });
                 }
+            } else if (tabId === "tab-themes") {
+                let response = $button?.data('theme-response');
+                let data = typeof response === 'string' && response !== '' ? JSON.parse(response) : response;
+                let tbody = $('#themeTableBody').empty();
 
-                if (targetPanel === "tab-themes") {
-                    let response = button.data('theme-response');
-                    let data = typeof response === 'string' && response !== '' ? JSON.parse(response) :
-                        response;
-                    let tbody = $('#themeTableBody').empty();
+                if (!data || !data.items || data.items.length === 0) {
+                    tbody.append(`<tr><td colspan="6" class="text-center text-muted">No themes found</td></tr>`);
+                } else {
+                    const themeRoundVersion = (v, decimals = 2) => v.split('.').map(p => {
+                        if (/^\d+$/.test(p) && p.length > decimals) {
+                            return p.substring(0, decimals);
+                        }
+                        return p;
+                    }).join('.');
 
-                    if (!data || !data.items || data.items.length === 0) {
-                        tbody.append(
-                            `<tr><td colspan="6" class="text-center text-muted">No themes found</td></tr>`
-                        );
-                    } else {
-                        const themeRoundVersion = (v, decimals = 2) => v.split('.').map(p => {
-                            // Check if the part is purely numeric and longer than desired decimals
-                            if (/^\d+$/.test(p) && p.length > decimals) {
-                                return p.substring(0, decimals);
-                            }
-                            return p;
-                        }).join('.');
-                        $.each(data.items, function(i, theme) {
-                            tbody.append(`
-                                <tr>
-                                    <td>
-                                        <a href="${theme.screenshot}" data-fancybox="theme-gallery" data-caption="${theme.name}">
-                                            <img src="${theme.screenshot}" width="40" height="40"
-                                                onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
-                                        </a>
-                                    </td>
-                                    <td>${theme.slug || '-'}</td>
-                                    <td><strong>${theme.name}</strong></td>
-                                    <td>${themeRoundVersion(theme.version) || '-'}</td>
-                                    <td>${theme.author || '-'}</td>
-                                    <td>${theme.is_active
-                                        ? '<span class="badge bg-success">Active</span>'
-                                        : '<span class="badge bg-secondary">Inactive</span>'}</td>
-                                </tr>
-                            `);
-                        });
-                    }
+                    $.each(data.items, function(i, theme) {
+                        tbody.append(`
+                    <tr>
+                        <td>
+                            <a href="${theme.screenshot}" data-fancybox="theme-gallery" data-caption="${theme.name}">
+                                <img src="${theme.screenshot}" width="40" height="40"
+                                    onerror="this.onerror=null;this.src='{{ asset('assets/images/wp-default-icon.png') }}';">
+                                    
+                                
+                            </a>
+                        </td>
+                        <td><strong>${theme.name}</strong>
+                            
+                             <br/>
+                                    ${theme.is_active
+                                    ? ``
+                                    : `
+                                                <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                `}
+                                   
+                        </td>
+                        <td>${theme.slug || '-'}</td>
+                        
+                        <td>${themeRoundVersion(theme.version) || '-'}</td>
+                        <td>${theme.author || '-'}</td>
+                        <td>${theme.is_active
+                            ? '<span class="badge bg-success">Active</span>'
+                            : '<span class="badge bg-secondary">Inactive</span>'}</td>
+                    </tr>
+                `);
+                    });
                 }
+            } else if (tabId === "tab-users") {
+                let response = $button?.data('user-response');
+                let data = typeof response === 'string' && response !== '' ? JSON.parse(response) : response;
+                let tbody = $('#userTableBody').empty();
 
-                if (targetPanel === "tab-users") {
-                    let response = button.data('user-response');
-                    let data = typeof response === 'string' && response !== '' ? JSON.parse(response) :
-                        response;
-                    let tbody = $('#userTableBody').empty();
+                if (!data || data.length === 0) {
+                    tbody.append(`<tr><td colspan="3" class="text-center text-muted">No users found</td></tr>`);
+                } else {
+                    var allUsers = data.items;
 
-                    if (!data || data.length === 0) {
-                        tbody.append(
-                            `<tr><td colspan="3" class="text-center text-muted">No users found</td></tr>`
-                        );
-                    } else {
-                        // $.each(data.items, function(i, user) {
-                        //     tbody.append(`
-                    //         <tr>
-                    //             <td>${user.name}</td>
-                    //             <td>${user.email}</td>
-                    //             <td>${user.role || '-'}</td>
-                    //         </tr>
-                    //     `);
-                        // });
-
-                        var allUsers = data.items;
-
-                        // Normalize roles to a sorted, comma-separated string
-                        function normalizeRoles(roles) {
-                            if (!roles) return '';
-                            // If it's an array, try to extract a name/role string from each element
-                            if (Array.isArray(roles)) {
-                                var arr = roles.map(function(r) {
-                                    if (typeof r === 'string') return r;
-                                    if (r && typeof r === 'object') {
-                                        // common property names: name, role, roleName
-                                        return r.name || r.role || r.roleName || '';
-                                    }
-                                    return String(r);
-                                }).filter(Boolean);
-                                // sort alphabetically and join with comma
-                                return arr.sort(function(a, b) {
-                                    return a.localeCompare(b, undefined, {
-                                        sensitivity: 'base'
-                                    });
-                                }).join(', ');
-                            }
-
-                            // If it's an object (like {admin: true, user: false}), join the truthy keys
-                            if (typeof roles === 'object') {
-                                return Object.keys(roles).filter(function(k) {
-                                    return roles[k];
-                                }).sort().join(', ');
-                            }
-
-                            // fallback: string/number -> return as string
-                            return String(roles);
+                    function normalizeRoles(roles) {
+                        if (!roles) return '';
+                        if (Array.isArray(roles)) {
+                            var arr = roles.map(function(r) {
+                                if (typeof r === 'string') return r;
+                                if (r && typeof r === 'object') {
+                                    return r.name || r.role || r.roleName || '';
+                                }
+                                return String(r);
+                            }).filter(Boolean);
+                            return arr.sort(function(a, b) {
+                                return a.localeCompare(b, undefined, {
+                                    sensitivity: 'base'
+                                });
+                            }).join(', ');
                         }
-
-                        function renderUsers(users) {
-                            tbody.empty();
-                            if (users.length === 0) {
-                                tbody.append(`
-                                    <tr>
-                                        <td colspan="6" class="text-center text-muted py-4">
-                                            <strong>No matching users found</strong>
-                                        </td>
-                                    </tr>
-                                `);
-                                return;
-                            }
-
-                            users.forEach(function(user) {
-                                var rolesStr = normalizeRoles(user.roles);
-
-                                // Use jQuery element creation and .text() for roles to avoid XSS issues
-                                var $tr = $('<tr>');
-                                // $tr.append($('<td>').html('<strong>' + (user.id || '') +
-                                //     '</strong>'));
-                                $tr.append($('<td>').html('<strong>' + (user.name || '') +
-                                    '</strong><br>' +
-                                    (user.email || '')));
-                                $tr.append($('<td>').text(user.username || '-'));
-                                $tr.append($('<td>').text(rolesStr || '-'));
-
-                                tbody.append($tr);
-                            });
+                        if (typeof roles === 'object') {
+                            return Object.keys(roles).filter(function(k) {
+                                return roles[k];
+                            }).sort().join(', ');
                         }
+                        return String(roles);
+                    }
 
-                        // initial render
-                        renderUsers(allUsers);
-
-                        // Role search filter (case-insensitive)
-                        $('#roleSearch').off('keyup').on('keyup', function() {
-                            var searchVal = $(this).val().toLowerCase().trim();
-                            if (searchVal === '') {
-                                renderUsers(allUsers);
-                                return;
-                            }
-
-                            var filtered = allUsers.filter(function(user) {
-                                var rolesStr = normalizeRoles(user.roles).toLowerCase();
-                                return rolesStr.indexOf(searchVal) !== -1;
-                            });
-
-                            renderUsers(filtered);
+                    function renderUsers(users) {
+                        tbody.empty();
+                        if (users.length === 0) {
+                            tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <strong>No matching users found</strong>
+                            </td>
+                        </tr>
+                    `);
+                            return;
+                        }
+                        users.forEach(function(user) {
+                            var rolesStr = normalizeRoles(user.roles);
+                            var $tr = $('<tr>');
+                            $tr.append($('<td>').html('<strong>' + (user.name || '') + '</strong><br>' + (user
+                                .email || '')));
+                            $tr.append($('<td>').text(user.username || '-'));
+                            $tr.append($('<td>').text(rolesStr || '-'));
+                            tbody.append($tr);
                         });
                     }
+
+                    renderUsers(allUsers);
+
+                    // Attach search filter if element present
+                    $('#roleSearch').off('keyup').on('keyup', function() {
+                        var searchVal = $(this).val().toLowerCase().trim();
+                        if (searchVal === '') {
+                            renderUsers(allUsers);
+                            return;
+                        }
+                        var filtered = allUsers.filter(function(user) {
+                            var rolesStr = normalizeRoles(user.roles).toLowerCase();
+                            return rolesStr.indexOf(searchVal) !== -1;
+                        });
+                        renderUsers(filtered);
+                    });
+                }
+            }
+        }
+
+
+
+        $(document).on('click', '.updateBtn', function() {
+            var type = $(this).data('type'); // "plugin"
+            var slug = $(this).data('slug'); // plugin slug
+            var action = $(this).data('action'); // plugin slug
+            const savedTabId = localStorage.getItem('activeTabId');
+            const $button = $(this);
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Loading...');
+            $.ajax({
+                url: '/admin/website/' + {{ $result['id'] }} + '/upgrade-plugin', // Laravel endpoint
+                method: 'GET',
+                data: {
+                    type: type,
+                    slug: slug,
+                    action: action,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        if (action == 'update' && type != 'core') {
+                            $button.replaceWith('<span class="badge bg-info">Latest</span>');
+                        } else {
+                            location.reload();
+                        }
+                        // Optionally refresh plugin list or update UI here
+                    } else {
+
+                        alert('Update failed: ' + (response.error || 'Unknown error'));
+                    }
+                },
+                error: function() {
+                    alert('Failed to trigger update.');
+                }
+            });
+
+
+
+
+        });
+
+        // Check Speed button AJAX
+        $(document).on('click', '#checkSpeedBtn', function() {
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Checking...');
+            $.ajax({
+                url: '/admin/website/' + {{ $result->id }} + '/check-speed',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $btn.text('Checked!').addClass('btn-success');
+                        setTimeout(function() {
+                            $btn.prop('disabled', false).text('Check Speed').removeClass(
+                                'btn-success');
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        $btn.text('Failed!').addClass('btn-danger');
+                        setTimeout(function() {
+                            $btn.prop('disabled', false).text('Check Speed').removeClass(
+                                'btn-danger');
+                        }, 2000);
+                        alert(response.error || 'Speed check failed.');
+                    }
+                },
+                error: function() {
+                    $btn.text('Error!').addClass('btn-danger');
+                    setTimeout(function() {
+                        $btn.prop('disabled', false).text('Check Speed').removeClass(
+                            'btn-danger');
+                    }, 2000);
+                    alert('Failed to check speed.');
+                }
+            });
+        });
+
+        // Run Speed Test button AJAX (for new card)
+        $(document).on('click', '#runSpeedBtn', function() {
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Running...');
+            $.ajax({
+                url: '/admin/website/' + {{ $result->id }} + '/check-speed',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $btn.text('Done!').addClass('btn-success');
+                        setTimeout(function() {
+                            $btn.prop('disabled', false).text('Run Speed Test').removeClass(
+                                'btn-success');
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        $btn.text('Failed!').addClass('btn-danger');
+                        setTimeout(function() {
+                            $btn.prop('disabled', false).text('Run Speed Test').removeClass(
+                                'btn-danger');
+                        }, 2000);
+                        alert(response.error || 'Speed test failed.');
+                    }
+                },
+                error: function() {
+                    $btn.text('Error!').addClass('btn-danger');
+                    setTimeout(function() {
+                        $btn.prop('disabled', false).text('Run Speed Test').removeClass(
+                            'btn-danger');
+                    }, 2000);
+                    alert('Failed to run speed test.');
                 }
             });
         });
     </script>
+
+
 
 
     <script>
+        function updateUrlParam(key, value) {
+            const url = new URL(window.location.href);
+            url.searchParams.set(key, value);
+            window.history.replaceState({}, '', url);
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
-            // Get all tab buttons
             const tabs = document.querySelectorAll(".tabchnage");
             const panels = document.querySelectorAll(".panel");
 
+            function activateTabById(tabId) {
+                tabs.forEach(t => {
+                    const target = t.getAttribute("data-id");
+                    const isActive = (target === tabId);
+                    t.classList.toggle("active", isActive);
+                    t.setAttribute("aria-selected", isActive.toString());
+                });
+
+                panels.forEach(p => {
+                    const isActive = (p.getAttribute("aria-labelledby") === tabId);
+                    p.classList.toggle("active", isActive);
+                    p.setAttribute("data-active", isActive.toString());
+                });
+            }
+
+            // 🔁 On click: activate tab and panel + update URL
             tabs.forEach(tab => {
                 tab.addEventListener("click", () => {
-                    const target = tab.getAttribute("data-id"); // ✅ get data-id
-
-                    // Deactivate all tabs
-                    tabs.forEach(t => {
-                        t.classList.remove("active");
-                        t.setAttribute("aria-selected", "false");
-                    });
-
-                    // Deactivate all panels
-                    panels.forEach(p => {
-                        p.classList.remove("active");
-                        p.setAttribute("data-active", "false");
-                    });
-
-                    // Activate clicked tab
-                    tab.classList.add("active");
-                    tab.setAttribute("aria-selected", "true");
-
-                    // Activate target panel
-                    const panel = document.querySelector(`[aria-labelledby="${target}"]`);
-                    if (panel) {
-                        panel.classList.add("active");
-                        panel.setAttribute("data-active", "true");
-                    }
+                    const target = tab.getAttribute("data-id");
+                    activateTabById(target);
+                    updateUrlParam('tab', target);
                 });
             });
+
+            // 🔁 On load: read `tab` from URL and activate it
+            const urlParams = new URLSearchParams(window.location.search);
+            const defaultTab = tabs[0]?.getAttribute("data-id"); // fallback to first tab
+            const tabFromUrl = urlParams.get('tab') || defaultTab;
+
+            activateTabById(tabFromUrl);
         });
     </script>
 
-</body>
 
-</html>
+@stop

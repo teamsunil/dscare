@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Http;
 
 class WebsiteController extends Controller
 {
+    public function checkSpeed(Request $request, $id)
+    {
+        $website = Website::find($id);
+        if (!$website) {
+            return response()->json(['success' => false, 'error' => 'Website not found.'], 404);
+        }
+
+        
+        try {
+            \App\Jobs\AnalyzeWebsiteSpeedJob::dispatch($website);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
     public function listWebsite()
     {
         $websites = Website::get();
@@ -30,7 +45,7 @@ class WebsiteController extends Controller
             $website->status = 'up';
         }
         // dd($websites);
-        return view('admin.website-list', ['result' => $websites]);
+        return view('admin.list', ['result' => $websites]);
     }
     public function showUrlForm()
     {
@@ -188,6 +203,8 @@ class WebsiteController extends Controller
             $error = "Connection error: " . $e->getMessage();
         }
 
+        //  dd($data,$result);
+
         return view('admin.website.view-website', [
             'response' => $data,
             'result' => $result,
@@ -222,4 +239,108 @@ class WebsiteController extends Controller
         }
         return false;
     }
+
+    public function hitUpgradePlugin(Request $request,$id)
+    {
+            $type = $request->input('type');
+            $slug = $request->input('slug');
+            $action = $request->input('action');
+
+            $website = Website::find($id);
+            if (!$website) {
+                return response()->json(['error' => 'Website not found.'], 404);
+            }
+
+            // Prepare signed API call
+            $iss = rtrim(url('/'), '/');
+            $secret = decrypt($website->token_id);
+            $sig = base64_encode(hash_hmac('sha256', $iss, $secret, true));
+            $finalUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/upgrade';
+            // dd($finalUrl);
+            // Build query parameters
+            $queryParams = [
+                'iss' => $iss,
+                'sig' => $sig,
+                'type' => $type,
+                'slug' => $slug,
+                'action' => $action,
+            ];
+
+            try {
+                $response = Http::timeout(30)->get($finalUrl, $queryParams);
+                //  dd($response);
+                if ($response->successful()) {
+                    $data = $response->json();
+                    return response()->json(['success' => true, 'data' => $data]);
+                } else {
+                    return response()->json(['error' => 'Failed to upgrade plugin. HTTP status: ' . $response->status()], $response->status());
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Connection error: ' . $e->getMessage()], 500);
+            }
+    }
+    public function backupWebsite(Request $request, $id)
+    {
+        $website = Website::find($id);
+        // dd($website);
+        if (!$website) {
+            return response()->json(['error' => 'Website not found.'], 404);
+        }
+
+        // Prepare signed API call
+        $iss = rtrim(url('/'), '/');
+        $secret = decrypt($website->token_id);
+        $sig = base64_encode(hash_hmac('sha256', $iss, $secret, true));
+        $finalUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/handle_backup';
+
+        // Build query parameters
+        $queryParams = [
+            'iss' => $iss,
+            'sig' => $sig,
+            'type' => $request->type, // or 'database' based on your requirement
+        ];
+
+        try {
+            $response = Http::timeout(300)->get($finalUrl, $queryParams);
+            // dd($response);
+            if ($response->successful()) {
+                $data = $response->json();
+                return response()->json(['success' => true, 'data' => $data]);
+            } else {
+                return response()->json(['error' => 'Failed to initiate backup. HTTP status: ' . $response->status()], $response->status());
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Connection error: ' . $e->getMessage()], 500);
+        }
+    }   
+    public function deleteBackup(Request $request, $id)
+    {
+        $website = Website::find($id);
+        if (!$website) {
+            return response()->json(['error' => 'Website not found.'], 404);
+        }
+        // Prepare signed API call
+        $iss = rtrim(url('/'), '/');
+        $secret = decrypt($website->token_id);
+        $sig = base64_encode(hash_hmac('sha256', $iss, $secret, true));
+        $finalUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/delete-backup';
+
+        // Build query parameters
+        $queryParams = [
+            'iss' => $iss,
+            'sig' => $sig,
+        ];
+        try {
+            $response = Http::timeout(300)->get($finalUrl, $queryParams);
+            // dd($response);
+            if ($response->successful()) {
+                $data = $response->json();
+                return response()->json(['success' => true, 'data' => $data]);
+            } else {
+                return response()->json(['error' => 'Failed to delete backup. HTTP status: ' . $response->status()], $response->status());
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Connection error: ' . $e->getMessage()], 500);
+        }
+    }       
 }
