@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\WebsiteDetailsController;
 
 Route::middleware('guestUser')->group(function () {
     Route::get('/login', function () {
@@ -21,6 +22,11 @@ Route::middleware('auth')->group(function () {
         return view('admin.index');
     })->name('index');
 
+  Route::get('/admin/website/{id}/details', [WebsiteController::class, 'websiteDetails'])->name('website.details');
+   
+    Route::get('admin/index', [WebsiteController::class, 'dashboardIndex'])->name('index');
+
+    Route::get('admin/website/reload/{id}/data', [WebsiteDetailsController::class, 'reloadData']);
     Route::get('/admin/website/{id}/upgrade-plugin',[WebsiteController::class,'hitUpgradePlugin']);
     Route::get('/admin/website-list', [WebsiteController::class, 'listWebsite'])->name('dashboard');
     Route::get('/admin/website/add', [WebsiteController::class, 'showUrlForm'])->name('website.add.url');

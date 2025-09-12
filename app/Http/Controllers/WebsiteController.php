@@ -7,9 +7,16 @@ use App\Models\Website;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
-
+use App\Models\BackupData;
+use Illuminate\Support\Facades\Storage;
 class WebsiteController extends Controller
 {
+    public function updateSiteStatus($websiteId)
+    {
+        // Dispatch the job to update site status
+        // dd($id);
+         \App\Jobs\UpdateSiteStatusJob::dispatch($id);
+    }
     public function checkSpeed(Request $request, $id)
     {
         $website = Website::find($id);
@@ -94,7 +101,7 @@ class WebsiteController extends Controller
         ]);
         $data = Http::get($wpSsoUrl . '?' . $query);
         if (!empty($data)) {
-            Website::create([
+            $savedData=Website::create([
                 'url' => rtrim($url, '/'),
                 'username' => $request->username,
                 'password' => encrypt($request->password), // Encrypt the password
@@ -104,6 +111,9 @@ class WebsiteController extends Controller
             ]);
             // Clear session
             $request->session()->forget('website_url');
+          
+            $this->updateSiteStatus($savedData->id);
+            
             return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : ' . $sharedSecret);
         } else {
             return back()->with('error', 'Wordpress Plugins Isseus');
@@ -171,6 +181,30 @@ class WebsiteController extends Controller
     public function listWebsites($id)
     {
         $result = Website::find($id);
+        $backupdata = BackupData::where('website_id', $id)->orderBy('id','desc')->first();
+        $backupAllData = BackupData::where('website_id', $id)->get();
+        // dd($backupdata);
+        if (!$result) {
+            abort(404, 'Website not found.');
+        }
+        $data = Website::where('id', $id)->value('data');
+        $data = json_decode($data, true);
+
+        //  dd($data,$result);
+
+        return view('admin.website.view-website', [
+            'response' => $data,
+            'result' => $result,
+            'backupdata' => $backupdata,
+            'backupAllData' => $backupAllData,
+        ]);
+    }
+
+    // here code for update site data our backend
+    public function updateSiteStatusWihotuJob($id)
+    {
+        $result = Website::find($id);
+      
         if (!$result) {
             abort(404, 'Website not found.');
         }
@@ -180,11 +214,11 @@ class WebsiteController extends Controller
         $final_url = rtrim($result->url, '/') . '/wp-json/laravel-sso/v1/status';
 
         try {
-            $response = Http::timeout(10)->get($final_url, [
+            $response = Http::timeout(300)->get($final_url, [
                 'iss' => $iss,
                 'sig' => $sig,
             ]);
-
+           
             if ($response->successful()) {
                 $data = $response->json();
                 if (isset($data['code']) && $data['code'] === 'rest_no_route') {
@@ -192,24 +226,30 @@ class WebsiteController extends Controller
                     $error = "API route not found on WordPress site.";
                 } else {
                     $error = null;
-                    $this->updateWebsiteData($response, $id);
+                     if (!empty($data)) {
+                        $site_name = data_get($data, 'site.name', '');
+
+                        Website::where('id', $id)->update([
+                            'title' => $site_name,
+                            'data' => json_encode($data),
+                        ]);
+                        // dd($data);
+                       
+                    }
+
                 }
+                return response()->json(['success' => true, 'data' => $data]);
             } else {
                 $data = null;
                 $error = "Failed to fetch status. HTTP status: " . $response->status();
+                return response()->json(['success' => false, 'error' => $error], $response->status());
             }
         } catch (\Exception $e) {
             $data = null;
             $error = "Connection error: " . $e->getMessage();
+            return response()->json(['success' => false, 'error' => $error], 500);
         }
 
-        //  dd($data,$result);
-
-        return view('admin.website.view-website', [
-            'response' => $data,
-            'result' => $result,
-            'error' => $error,
-        ]);
     }
 
     // here code for show plugins
@@ -233,8 +273,9 @@ class WebsiteController extends Controller
 
             Website::where('id', $id)->update([
                 'title' => $site_name,
-                'data' => $data
+                'data' => json_encode($data),
             ]);
+            // dd($data);
             return true;
         }
         return false;
@@ -268,9 +309,10 @@ class WebsiteController extends Controller
 
             try {
                 $response = Http::timeout(30)->get($finalUrl, $queryParams);
-                //  dd($response);
+                //   dd($response);
                 if ($response->successful()) {
                     $data = $response->json();
+                    $this->updateSiteStatusWihotuJob($id);
                     return response()->json(['success' => true, 'data' => $data]);
                 } else {
                     return response()->json(['error' => 'Failed to upgrade plugin. HTTP status: ' . $response->status()], $response->status());
@@ -305,6 +347,7 @@ class WebsiteController extends Controller
             // dd($response);
             if ($response->successful()) {
                 $data = $response->json();
+                $this->moveAndStoreBackups($data['files'], $request->type,$id);
                 return response()->json(['success' => true, 'data' => $data]);
             } else {
                 return response()->json(['error' => 'Failed to initiate backup. HTTP status: ' . $response->status()], $response->status());
@@ -312,7 +355,9 @@ class WebsiteController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Connection error: ' . $e->getMessage()], 500);
         }
-    }   
+    } 
+    
+  
     public function deleteBackup(Request $request, $id)
     {
         $website = Website::find($id);
@@ -343,4 +388,160 @@ class WebsiteController extends Controller
             return response()->json(['error' => 'Connection error: ' . $e->getMessage()], 500);
         }
     }       
+
+
+    function moveAndStoreBackups(array $files, string $types = null ,int $id ): array
+    {
+        $results = [];
+        $backupDisk = Storage::disk('public'); // points to storage/app
+
+        foreach (['db_backup', 'site_backup'] as $key) {
+            $fileUrl = $files[$key] ?? null;
+
+            if (!$fileUrl) {
+                $results[$key] = 'No file provided';
+                continue;
+            }
+
+            $fileName = basename(parse_url($fileUrl, PHP_URL_PATH));
+            $destinationPath = 'backups/' . $fileName;
+
+            try {
+                // Download content
+                $content = file_get_contents($fileUrl);
+
+                if ($content === false) {
+                    $results[$key] = "Failed to download file: $fileUrl";
+                    continue;
+                }
+
+                // Save to storage
+                $backupDisk->put($destinationPath, $content);
+
+                // Save record in DB
+                BackupData::create([
+                    'type' =>$types ?? null,
+                    'file_path' => $destinationPath,
+                    'website_id' => $id,
+                ]);
+
+                $results[$key] = 'Stored at: ' . storage_path('app/' . $destinationPath);
+              
+            } catch (\Exception $e) {
+                $results[$key] = 'Error: ' . $e->getMessage();
+            }
+        }
+        // Optionally delete remote backups after successful download
+        $this->deleteBackup(new Request(),$id);
+        return $results;
+    }
+
+
+
+
+    // here code for added more functions
+      public function dashboardIndex()
+{
+    $websites = Website::all();
+ 
+    $totalSites = $websites->count();
+    $activeSites = $websites->where('website_status', 'active')->count();
+    $upSites = $websites->where('website_up_down', 'up')->count();
+ 
+    $allPlugins = collect();
+    $allThemes  = collect();
+    $pluginSiteMap = [];
+    $themeSiteMap  = [];
+    $websitelist   = [];
+ 
+    foreach ($websites as $key => $site) {
+        $websitelist[$key]['url'] = $site->url;
+        $data = json_decode($site->data, true);
+ 
+        $websitelist[$key]['site_name'] = $data['site_name'] ?? '';
+        $websitelist[$key]['wordpress_version'] = $data['wordpress_version'] ?? '';
+        $websitelist[$key]['wordpress_update_available'] = $data['wordpress_update_available'] ?? '';
+ 
+        // Collect plugin data
+        if (isset($data['plugins']['items']) && is_array($data['plugins']['items'])) {
+            foreach ($data['plugins']['items'] as $plugin) {
+                $pluginName = $plugin['name'] ?? null;
+ 
+                if ($pluginName) {
+                    $allPlugins->push($plugin);
+                    $pluginSiteMap[$pluginName][] = $site->url;
+                }
+            }
+        }
+ 
+        // Collect theme data
+        if (isset($data['themes']['items']) && is_array($data['themes']['items'])) {
+            foreach ($data['themes']['items'] as $theme) {
+                $themeName = $theme['name'] ?? null;
+ 
+                if ($themeName) {
+                    $allThemes->push($theme);
+                    $themeSiteMap[$themeName][] = $site->url;
+                }
+            }
+        }
+    }
+ 
+    // Unique by plugin name
+    $uniquePlugins = $allPlugins->unique('name')->values();
+    $uniqueThemes  = $allThemes->unique('name')->values();
+ 
+    // Prepare plugin list with all data
+    $pluginsList = [];
+    foreach ($uniquePlugins as $plugin) {
+        $pluginsList[] = [
+            'name'       => $plugin['name'] ?? '',
+            'version'    => $plugin['version'] ?? '',
+            'author'     => $plugin['author'] ?? '',
+            'plugin_uri' => $plugin['plugin_uri'] ?? '',
+            'icon_url'   => $plugin['icon_url'] ?? null,
+            'is_active'  => $plugin['is_active'] ?? false,
+            'update'     => $plugin['update'] ?? null,
+            'sites'      => $pluginSiteMap[$plugin['name']] ?? [],
+        ];
+    }
+ 
+    // Prepare theme list with all data
+    $themesList = [];
+    foreach ($uniqueThemes as $theme) {
+        $themesList[] = [
+            'name'       => $theme['name'] ?? '',
+            'version'    => $theme['version'] ?? '',
+            'author'     => $theme['author'] ?? '',
+            'theme_uri'  => $theme['theme_uri'] ?? '',
+            'screenshot' => $theme['screenshot'] ?? null,
+            'is_active'  => $theme['is_active'] ?? false,
+            'update'     => $theme['update'] ?? null,
+            'sites'      => $themeSiteMap[$theme['name']] ?? [],
+        ];
+    }
+ 
+ 
+    return view('admin.index', [
+        'totalSites' => $totalSites,
+        'activeSites' => $activeSites,
+        'upSites' => $upSites,
+        'pluginsList' => $pluginsList,
+        'themesList' => $themesList,
+        'websitelist' => $websitelist,
+    ]);
+}
+    public function websiteDetails($id)
+    {
+        $website = Website::findOrFail($id);
+        $data = json_decode($website->data, true);
+        // You can add more logic here to fetch related info, plugins, themes, backups, etc.
+        return view('admin.website.website-details', [
+            'website' => $website,
+            'data' => $data,
+        ]);
+    }
+
+
+
 }

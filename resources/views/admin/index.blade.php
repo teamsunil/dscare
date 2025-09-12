@@ -1,383 +1,198 @@
 @extends('admin.layouts.app')
 
 @section('content')
+<style>
+    body, html { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #f6f8fa 60%, #e3e9f7 100%); }
+    .ds-container { max-width: 1200px; margin: 0 auto; padding: 24px 10px; }
+    .ds-row { display: flex; flex-wrap: wrap; gap: 28px; margin-bottom: 28px; }
+    .ds-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.09);
+        padding: 22px 20px 20px 20px;
+        flex: 1 1 0;
+        min-width: 0;
+        transition: box-shadow 0.18s, transform 0.18s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-top: 4px solid transparent;
+    }
+    .ds-card:hover {
+        box-shadow: 0 10px 32px rgba(0,0,0,0.16);
+        transform: translateY(-3px) scale(1.015);
+    }
+    .ds-icon { font-size: 2.3rem; margin-bottom: 0.3rem; }
+    .ds-title { font-size: 1.13rem; font-weight: 700; color: #222; margin-bottom: 0.2rem; letter-spacing: 0.01em; }
+    .ds-value { font-size: 1.55rem; font-weight: 700; color: #1cc88a; margin-bottom: 0.1rem; }
+    .ds-label { color: #858796; font-size: 1.01rem; margin-bottom: 0.1rem; }
+    .ds-profile-box { position: relative; width: 100%; }
+    .ds-profile-bg {
+        border-radius: 12px;
+        max-height: 90px;
+        object-fit: cover;
+        width: 100%;
+        background: linear-gradient(90deg, #4e73df 0%, #36b9cc 100%);
+    }
+    .ds-profile-img {
+        width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+        border: 2.5px solid #4e73df; position: absolute; top: 18px; right: 18px; background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+    }
+    .ds-btn {
+        border-radius: 22px; font-size: 1.05rem; padding: 0.45em 1.4em; background: linear-gradient(90deg,#4e73df 60%,#36b9cc 100%); color: #fff;
+        border: none; cursor: pointer; margin-bottom: 10px; margin-top: 8px; font-weight: 600; box-shadow: 0 2px 8px rgba(78,115,223,0.08);
+        transition: background 0.18s, box-shadow 0.18s;
+    }
+    .ds-btn:hover { background: linear-gradient(90deg,#375ab7 60%,#1cc88a 100%); box-shadow: 0 4px 16px rgba(54,185,204,0.13); }
+    .ds-profile-content { margin-top: 0.5rem; text-align: center; width: 100%; }
+    .ds-profile-stats { display: flex; justify-content: space-between; margin-top: 18px; }
+    .ds-profile-stats .ds-value { font-size: 1.18rem; margin-bottom: 0; color: #4e73df; }
+    .ds-profile-stats .ds-label { font-size: 0.97rem; margin-bottom: 0; color: #858796; }
+    .ds-list-card { align-items: flex-start; }
+    .ds-list-title { font-weight: 700; color: #343a40; margin-bottom: 1px; font-size: 1.08rem; }
+    .ds-list-meta { font-size: 0.97rem; color: #6c757d; margin-bottom: 0.1rem; }
+    .ds-list-img { width: 36px; height: 36px; border-radius: 7px; object-fit: cover; background: #f8f9fc; border: 1px solid #e3e6f0; margin-top: 2px; margin-right: 10px; }
+    .wp-fallback-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 7px;
+        background: #f8f9fc url('https://s.w.org/style/images/about/WordPress-logotype-wmark.png') center/60% no-repeat;
+        border: 1px solid #e3e6f0;
+        display: inline-block;
+        margin-top: 2px;
+        margin-right: 10px;
+    }
+    .ds-list-scroll { max-height: 340px; overflow-y: auto; width: 100%; }
+    .ds-list-item {
+        display: flex; align-items: flex-start; border-bottom: 1px solid #f1f1f1; padding: 0.7rem 0 0.7rem 0.5rem; gap: 0.7rem;
+        border-left: 4px solid #4e73df; background: #fafdff;
+        transition: background 0.15s, border-color 0.15s;
+    }
+    .ds-list-item:nth-child(even) { background: #f6f8fa; border-left-color: #36b9cc; }
+    .ds-list-item:hover { background: #e9f3ff; border-left-color: #1cc88a; }
+    .ds-list-item:last-child { border-bottom: none; }
+    .ds-list-item a { color: #4e73df; text-decoration: underline; font-size: 0.97rem; }
+    .ds-list-item a:hover { color: #1cc88a; }
+    @media (max-width: 991px) {
+        .ds-row { flex-direction: column; gap: 18px; }
+        .ds-list-scroll { max-height: 220px; }
+    }
+    @media (max-width: 767px) {
+        .ds-container { padding: 10px 2px; }
+        .ds-row { gap: 10px; }
+        .ds-card { padding: 12px 6px; }
+    }
+</style>
 
+<div class="ds-container">
+    <!-- Dashboard Stats -->
+    <div class="ds-row">
+        <div class="ds-card">
+            <div class="ds-icon" style="color:#4e73df"><i class="fa fa-globe"></i></div>
+            <div class="ds-value">{{ $totalSites }}</div>
+            <div class="ds-label">Total Sites</div>
+        </div>
+        <div class="ds-card">
+            <div class="ds-icon" style="color:#36b9cc"><i class="fa fa-rocket"></i></div>
+            <div class="ds-value">{{ $activeSites }}</div>
+            <div class="ds-label">Active Sites</div>
+        </div>
+        <div class="ds-card">
+            <div class="ds-icon" style="color:#1cc88a"><i class="fa fa-arrow-up"></i></div>
+            <div class="ds-value">{{ $upSites }}</div>
+            <div class="ds-label">Up Sites</div>
+        </div>
+        <div class="ds-card">
+            <div class="ds-icon" style="color:#e74a3b"><i class="fa fa-arrow-down"></i></div>
+            <div class="ds-value">{{ $totalSites - $upSites }}</div>
+            <div class="ds-label">Down Sites</div>
+        </div>
+    </div>
 
-     
-        <div class="traffic-analysis-area mg-t-30 ">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                        <div class="social-media-edu">
-                            <i class="fa fa-facebook"></i>
-                            <div class="social-edu-ctn">
-                                <h3>50k Likes</h3>
-                                <p>You main list growing</p>
-                            </div>
+    <!-- User Card & Plugins/Themes -->
+    <div class="ds-row">
+        <div class="ds-card ds-list-card" style="min-width:260px;max-width:340px;flex:1 1 260px;align-items:stretch;">
+            <div class="ds-title" style="width:100%;text-align:left;margin-bottom:10px;">Website List</div>
+            <div class="ds-list-scroll">
+                @forelse ($websitelist as $site)
+                    <div class="ds-list-item" style="border-left:4px solid #4e73df;">
+                        <div style="flex:1;">
+                            <div class="ds-list-title">{{ $site['site_name'] }}</div>
+                            <div class="ds-list-meta"><a href="{{ $site['url'] }}" target="_blank">{{ $site['url'] }}</a></div>
+                            <div class="ds-list-meta">WP Version: {{ $site['wordpress_version'] }}</div>
+                            @if(!empty($site['wordpress_update_available']) && $site['wordpress_update_available'] != $site['wordpress_version'])
+                                <div class="ds-list-meta" style="color:#e74a3b;">Update Available: {{ $site['wordpress_update_available'] }}</div>
+                            @endif
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                        <div class="social-media-edu twitter-cl res-mg-t-30 table-mg-t-pro-n">
-                            <i class="fa fa-twitter"></i>
-                            <div class="social-edu-ctn">
-                                <h3>30k followers</h3>
-                                <p>You main list growing</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                        <div class="social-media-edu linkedin-cl res-mg-t-30 res-tablet-mg-t-30 dk-res-t-pro-30">
-                            <i class="fa fa-linkedin"></i>
-                            <div class="social-edu-ctn">
-                                <h3>7k Connections</h3>
-                                <p>You main list growing</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                        <div class="social-media-edu youtube-cl res-mg-t-30 res-tablet-mg-t-30 dk-res-t-pro-30">
-                            <i class="fa fa-youtube"></i>
-                            <div class="social-edu-ctn">
-                                <h3>50k Subscribers</h3>
-                                <p>You main list growing</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @empty
+                    <p class="ds-label">No websites found.</p>
+                @endforelse
             </div>
         </div>
-        <div class="library-book-area mg-t-30">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                        <div class="single-cards-item">
-                            <div class="single-product-image">
-                                <a href="#"><img src="img/product/profile-bg.jpg" alt=""></a>
-                            </div>
-                            <div class="single-product-text">
-                                <img src="img/product/pro4.jpg" alt="">
-                                <h4><a class="cards-hd-dn" href="#">Angela Dominic</a></h4>
-                                <h5>Web Designer & Developer</h5>
-                                <p class="ctn-cards">Lorem ipsum dolor sit amet, this is a consectetur adipisicing elit</p>
-                                <a class="follow-cards" href="#">Follow</a>
-                                <div class="row">
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="cards-dtn">
-                                            <h3><span class="counter">199</span></h3>
-                                            <p>Articles</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="cards-dtn">
-                                            <h3><span class="counter">599</span></h3>
-                                            <p>Like</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                        <div class="cards-dtn">
-                                            <h3><span class="counter">399</span></h3>
-                                            <p>Comment</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+        <div class="ds-card ds-list-card" style="min-width:260px;max-width:400px;flex:2 1 320px;align-items:stretch;">
+            <div class="ds-title" style="width:100%;text-align:left;margin-bottom:10px;">All Plugins</div>
+            <div class="ds-list-scroll">
+                @forelse ($pluginsList as $plugin)
+                    <div class="ds-list-item">
+                        <img src="{{ $plugin['icon_url'] ?? asset('images/wp-default-icon.png') }}" alt="{{ $plugin['name'] }}" class="ds-list-img" loading="lazy">
+                        <div>
+                            <div class="ds-list-title">{{ $plugin['name'] }}</div>
+                            <div class="ds-list-meta">Version: {{ $plugin['version'] }} | Author: {{ $plugin['author'] }}</div>
+                            <a href="{{ $plugin['plugin_uri'] }}" target="_blank">More Info</a><br>
+                            <span class="ds-list-meta">Used in: {{ implode(', ', $plugin['sites']) }}</span>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                        <div class="single-review-st-item res-mg-t-30 table-mg-t-pro-n">
-                            <div class="single-review-st-hd">
-                                <h2>Reviews</h2>
-                            </div>
-                            <div class="single-review-st-text">
-                                <img src="img/notification/1.jpg" alt="">
-                                <div class="review-ctn-hf">
-                                    <h3>Sarah Graves</h3>
-                                    <p>Highly recommend</p>
-                                </div>
-                                <div class="review-item-rating">
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star-half"></i>
-                                </div>
-                            </div>
-                            <div class="single-review-st-text">
-                                <img src="img/notification/2.jpg" alt="">
-                                <div class="review-ctn-hf">
-                                    <h3>Garbease sha</h3>
-                                    <p>Awesome Pro</p>
-                                </div>
-                                <div class="review-item-rating">
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star-half"></i>
-                                </div>
-                            </div>
-                            <div class="single-review-st-text">
-                                <img src="img/notification/3.jpg" alt="">
-                                <div class="review-ctn-hf">
-                                    <h3>Gobetro pro</h3>
-                                    <p>Great Website</p>
-                                </div>
-                                <div class="review-item-rating">
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star-half"></i>
-                                </div>
-                            </div>
-                            <div class="single-review-st-text">
-                                <img src="img/notification/4.jpg" alt="">
-                                <div class="review-ctn-hf">
-                                    <h3>Siam Graves</h3>
-                                    <p>That's Good</p>
-                                </div>
-                                <div class="review-item-rating">
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star-half"></i>
-                                </div>
-                            </div>
-                            <div class="single-review-st-text">
-                                <img src="img/notification/5.jpg" alt="">
-                                <div class="review-ctn-hf">
-                                    <h3>Sarah Graves</h3>
-                                    <p>Highly recommend</p>
-                                </div>
-                                <div class="review-item-rating">
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star-half"></i>
-                                </div>
-                            </div>
-                            <div class="single-review-st-text">
-                                <img src="img/notification/6.jpg" alt="">
-                                <div class="review-ctn-hf">
-                                    <h3>Julsha Grav</h3>
-                                    <p>Sei Hoise bro</p>
-                                </div>
-                                <div class="review-item-rating">
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star"></i>
-                                    <i class="educate-icon educate-star-half"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                        <div class="single-product-item res-mg-t-30 table-mg-t-pro-n tb-sm-res-d-n dk-res-t-d-n">
-                            <div class="single-product-image">
-                                <a href="#"><img src="img/product/book-4.jpg" alt=""></a>
-                            </div>
-                            <div class="single-product-text edu-pro-tx">
-                                <h4><a href="#">Title Demo Here</a></h4>
-                                <h5>Lorem ipsum dolor sit amet, this is a consec tetur adipisicing elit</h5>
-                                <div class="product-price">
-                                    <h3>$ 45</h3>
-                                    <div class="single-item-rating">
-                                        <i class="educate-icon educate-star"></i>
-                                        <i class="educate-icon educate-star"></i>
-                                        <i class="educate-icon educate-star"></i>
-                                        <i class="educate-icon educate-star"></i>
-                                        <i class="educate-icon educate-star-half"></i>
-                                    </div>
-                                </div>
-                                <div class="product-buttons">
-                                    <button type="button" class="button-default cart-btn">Read More</button>
-                                    <button type="button" class="button-default"><i class="fa fa-heart"></i></button>
-                                    <button type="button" class="button-default"><i class="fa fa-share"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @empty
+                    <p class="ds-label">No plugins found.</p>
+                @endforelse
             </div>
         </div>
-        <div class="product-sales-area mg-tb-30">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
-                        <div class="product-sales-chart">
-                            <div class="portlet-title">
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                        <div class="caption pro-sl-hd">
-                                            <span class="caption-subject"><b>Adminsion Statistic</b></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                        <div class="actions graph-rp actions-graph-rp">
-                                            <a href="#" class="btn btn-dark btn-circle active tip-top" data-toggle="tooltip" title="Refresh">
-													<i class="fa fa-reply" aria-hidden="true"></i>
-												</a>
-                                            <a href="#" class="btn btn-blue-grey btn-circle active tip-top" data-toggle="tooltip" title="Delete">
-													<i class="fa fa-trash-o" aria-hidden="true"></i>
-												</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <ul class="list-inline cus-product-sl-rp">
-                                <li>
-                                    <h5><i class="fa fa-circle" style="color: #006DF0;"></i>Python</h5>
-                                </li>
-                                <li>
-                                    <h5><i class="fa fa-circle" style="color: #933EC5;"></i>PHP</h5>
-                                </li>
-                                <li>
-                                    <h5><i class="fa fa-circle" style="color: #65b12d;"></i>Java</h5>
-                                </li>
-                            </ul>
-                            <div id="morris-area-chart"></div>
+        <div class="ds-card ds-list-card" style="min-width:260px;max-width:400px;flex:2 1 320px;align-items:stretch;">
+            <div class="ds-title" style="width:100%;text-align:left;margin-bottom:10px;">All Themes</div>
+            <div class="ds-list-scroll">
+                @forelse ($themesList as $themes)
+                    <div class="ds-list-item">
+                        <img src="{{ $themes['screenshot'] ?? asset('images/wp-default-icon.png') }}" alt="{{ $themes['name'] }}" class="ds-list-img" loading="lazy">
+                        <div>
+                            <div class="ds-list-title">{{ $themes['name'] }}</div>
+                            <div class="ds-list-meta">Version: {{ $themes['version'] }} | Author: {{ $themes['author'] }}</div>
+                            <a href="{{ $themes['theme_uri'] }}" target="_blank">More Info</a><br>
+                            <span class="ds-list-meta">Used in: {{ implode(', ', $themes['sites']) }}</span>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                        <div class="analysis-progrebar res-mg-t-30 mg-ub-10 table-mg-t-pro-n res-mg-b-30 tb-sm-res-d-n dk-res-t-d-n">
-                            <div class="analysis-progrebar-content">
-                                <h5>Usage</h5>
-                                <h2 class="storage-right"><span class="counter">90</span>%</h2>
-                                <div class="progress progress-mini ug-1">
-                                    <div style="width: 68%;" class="progress-bar"></div>
-                                </div>
-                                <div class="m-t-sm small">
-                                    <p>Server down since 1:32 pm.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="analysis-progrebar reso-mg-b-30 mg-ub-10 res-mg-b-30 tb-sm-res-d-n dk-res-t-d-n">
-                            <div class="analysis-progrebar-content">
-                                <h5>Memory</h5>
-                                <h2 class="storage-right"><span class="counter">70</span>%</h2>
-                                <div class="progress progress-mini ug-2">
-                                    <div style="width: 78%;" class="progress-bar"></div>
-                                </div>
-                                <div class="m-t-sm small">
-                                    <p>Server down since 12:32 pm.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="analysis-progrebar reso-mg-b-30 res-mg-t-30 mg-ub-10 res-mg-b-30 tb-sm-res-d-n dk-res-t-d-n">
-                            <div class="analysis-progrebar-content">
-                                <h5>Data</h5>
-                                <h2 class="storage-right"><span class="counter">50</span>%</h2>
-                                <div class="progress progress-mini ug-3">
-                                    <div style="width: 38%;" class="progress-bar progress-bar-danger"></div>
-                                </div>
-                                <div class="m-t-sm small">
-                                    <p>Server down since 8:32 pm.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="analysis-progrebar res-mg-t-30 table-dis-n-pro tb-sm-res-d-n dk-res-t-d-n">
-                            <div class="analysis-progrebar-content">
-                                <h5>Space</h5>
-                                <h2 class="storage-right"><span class="counter">40</span>%</h2>
-                                <div class="progress progress-mini ug-4">
-                                    <div style="width: 28%;" class="progress-bar progress-bar-danger"></div>
-                                </div>
-                                <div class="m-t-sm small">
-                                    <p>Server down since 5:32 pm.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @empty
+                    <p class="ds-label">No themes found.</p>
+                @endforelse
             </div>
         </div>
-        <div class="courses-area mg-b-15">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                        <div class="white-box">
-                            <h3 class="box-title">Browser Status</h3>
-                            <ul class="basic-list">
-                                <li>Google Chrome <span class="pull-right label-danger label-1 label">95.8%</span></li>
-                                <li>Mozila Firefox <span class="pull-right label-purple label-2 label">85.8%</span></li>
-                                <li>Apple Safari <span class="pull-right label-success label-3 label">23.8%</span></li>
-                                <li>Internet Explorer <span class="pull-right label-info label-4 label">55.8%</span></li>
-                                <li>Opera mini <span class="pull-right label-warning label-5 label">28.8%</span></li>
-                                <li>Mozila Firefox <span class="pull-right label-purple label-6 label">26.8%</span></li>
-                                <li>Safari <span class="pull-right label-purple label-7 label">31.8%</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-                        <div class="white-box res-mg-t-30 table-mg-t-pro-n">
-                            <h3 class="box-title">Visits from countries</h3>
-                            <ul class="country-state">
-                                <li>
-                                    <h2><span class="counter">1250</span></h2> <small>From Australia</small>
-                                    <div class="pull-right">75% <i class="fa fa-level-up text-danger ctn-ic-1"></i></div>
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-danger ctn-vs-1" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:75%;"> <span class="sr-only">75% Complete</span></div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <h2><span class="counter">1050</span></h2> <small>From USA</small>
-                                    <div class="pull-right">48% <i class="fa fa-level-up text-success ctn-ic-2"></i></div>
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-info ctn-vs-2" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:48%;"> <span class="sr-only">48% Complete</span></div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <h2><span class="counter">6350</span></h2> <small>From Canada</small>
-                                    <div class="pull-right">55% <i class="fa fa-level-up text-success ctn-ic-3"></i></div>
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success ctn-vs-3" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:55%;"> <span class="sr-only">55% Complete</span></div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <h2><span class="counter">950</span></h2> <small>From India</small>
-                                    <div class="pull-right">33% <i class="fa fa-level-down text-success ctn-ic-4"></i></div>
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success ctn-vs-4" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:33%;"> <span class="sr-only">33% Complete</span></div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <h2><span class="counter">3250</span></h2> <small>From Bangladesh</small>
-                                    <div class="pull-right">60% <i class="fa fa-level-up text-success ctn-ic-5"></i></div>
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-inverse ctn-vs-5" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:60%;"> <span class="sr-only">60% Complete</span></div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                        <div class="courses-inner res-mg-t-30 table-mg-t-pro-n tb-sm-res-d-n dk-res-t-d-n">
-                            <div class="courses-title">
-                                <a href="#"><img src="img/courses/1.jpg" alt="" /></a>
-                                <h2>Apps Development</h2>
-                            </div>
-                            <div class="courses-alaltic">
-                                <span class="cr-ic-r"><span class="course-icon"><i class="fa fa-clock"></i></span> 1 Year</span>
-                                <span class="cr-ic-r"><span class="course-icon"><i class="fa fa-heart"></i></span> 50</span>
-                                <span class="cr-ic-r"><span class="course-icon"><i class="fa fa-dollar"></i></span> 500</span>
-                            </div>
-                            <div class="course-des">
-                                <p><span><i class="fa fa-clock"></i></span> <b>Duration:</b> 6 Months</p>
-                                <p><span><i class="fa fa-clock"></i></span> <b>Professor:</b> Jane Doe</p>
-                                <p><span><i class="fa fa-clock"></i></span> <b>Students:</b> 100+</p>
-                            </div>
-                            <div class="product-buttons">
-                                <button type="button" class="button-default cart-btn">Read More</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-		
-		
+    </div>
+</div>
 
-@stop
+<script>
+// Simple JS for smooth scroll on plugin/theme lists and WP logo fallback
+// Also handles fallback for plugin/theme images to WordPress logo
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.ds-list-scroll').forEach(function(list) {
+        list.addEventListener('wheel', function(e) {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                list.scrollTop += e.deltaY;
+            }
+        }, { passive: false });
+    });
+    // Fallback for plugin/theme images to WordPress logo
+    document.querySelectorAll('.ds-list-img').forEach(function(img) {
+        img.onerror = function() {
+            if (!this.classList.contains('wp-fallback-logo')) {
+                var logo = document.createElement('div');
+                logo.className = 'wp-fallback-logo';
+                this.replaceWith(logo);
+            }
+        };
+    });
+});
+</script>
+@endsection

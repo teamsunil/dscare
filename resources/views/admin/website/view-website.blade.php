@@ -49,13 +49,13 @@
 
         .dashboard_table .tablist {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(7, 1fr);
             gap: 8px;
             border-radius: 0;
             padding: 26px;
             position: relative;
             align-items: center;
-            max-width: 700px;
+            /* max-width: 700px; */
             margin: auto;
         }
 
@@ -699,8 +699,7 @@
                     <div class="tablist_btns">
                         <div class="tablist" role="tablist" aria-label="Main tabs" id="tablist">
 
-
-                            <button class="tab tabchnage active" role="tab" data-id="tab-overview" id="tab-overview"
+                             <button class="tab tabchnage active" role="tab" data-id="tab-overview" id="tab-overview"
                                 aria-controls="panel-overview" aria-selected="true" tabindex="0" data-index="0">
                                 <!-- home icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -709,6 +708,7 @@
                                 </svg>
                                 <span>WordPress</span>
                             </button>
+                           
 
                             <button class="tab tabchnage" role="tab" data-id="tab-plugins" id="tab-plugins"
                                 aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
@@ -742,6 +742,33 @@
                                 </svg>
                                 <span>Users</span>
                             </button>
+
+
+                            <button class="tab tabchnage" role="tab" data-id="tab-backup" id="tab-backup"
+                                aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
+                                 data-backup-id="{{ $result->id }}">
+                                <!-- grid icon -->
+                                <i class="fas fa-cogs"></i>
+                                <span>View Backup</span>
+                            </button>
+
+                            <a href="{{ route('website.details', $result->id) }}">
+                            <button class="tab tabchnage">
+                                <!-- grid icon -->
+                                <i class="fas fa-book"></i>
+                                <span>View Details</span>
+                            </button>
+                            </a>
+
+                            <a href="{{ url('admin/website/reload', $result->id) .'/data'}}">
+                            <button class="tab" id="refreshPageBtn" type="button">
+                                <!-- grid icon -->
+                                <i class="fas fa-refresh"></i>
+                                <span>Refresh</span>
+                            </button>
+                            </a>
+
+
                         </div>
                     </div>
 
@@ -944,11 +971,11 @@
                                                     class="stat-value">{{ data_get($response, 'site_health.status_summary.good', 'N/A') }}</span>
                                                 <span class="stat-label">Good</span>
                                             </div>
-                                          
-                                            
-                                        </div>    
-                                 
-                                     
+
+
+                                        </div>
+
+
                                         @if (data_get($response, 'site_health.description'))
                                             <div style="margin-top:1rem; color:#2c437c; font-size:0.95rem;">
                                                 {{ data_get($response, 'site_health.description') }}
@@ -963,32 +990,29 @@
                                             <i class="fas fa-cogs"></i>
                                         </div>
                                         <h3 class="card-title">Backup</h3>
-                                        <div class="card-stats" >
-                                            {{-- <div class="stat-item">
-                                                <span
-                                                    class="stat-value">{{ data_get($response, 'backup.last_backup', 'N/A') }}</span>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <span class="stat-value">
+                                                    @if ($date = data_get($backupdata, 'created_at'))
+                                                        {{ date('d M Y', strtotime($date)) }}
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </span>
                                                 <span class="stat-label">Last Backup</span>
                                             </div>
-                                            <div class="stat-item">
+                                            {{-- <div class="stat-item">
                                                 <span
-                                                    class="stat-value">{{ data_get($response, 'backup.size', 'N/A') }}</span>
-                                                <span class="stat-label">Size</span>
-                                            </div>
-                                            <div class="stat-item">
-                                                <span
-                                                    class="stat-value">{{ data_get($response, 'backup.status', 'N/A') }}</span>
-                                                <span class="stat-label">Status</span>
+                                                    class="stat-value">{{ ucfirst(data_get($backupdata, 'type','N/A')) }}</span>
+                                                <span class="stat-label">Type</span>
                                             </div> --}}
+
                                         </div>
                                         <button type="button" class="manage-btn btn btn-primary" data-toggle="modal"
-                                            data-target="#backupTypeModal"
-                                            data-backup-response = '@json(data_get($response, 'backup', null))'
-                                            data-backup-id="{{ $result->id }}">
+                                            data-target="#backupTypeModal">
                                             <i class="fas fa-brush"></i> Backup
                                         </button>
-                                        <button type="button" onclick="deleteBackup()" class="btn btn-danger">
-                                            <i class="fas fa-trash"></i> Remove Backup
-                                        </button>
+
                                     </div>
 
                                 </div>
@@ -1197,6 +1221,58 @@
                                 </table>
                             </div>
                         </section>
+                        <!-- Backup panel -->
+                        <section id="panel-settings" class="panel" role="tabpanel" aria-labelledby="tab-backup"
+                            data-active="false">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Files Name</th>
+                                            <th>Date With Time</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="backupTableBody">
+                                       @if($backupAllData->isNotEmpty())
+
+                                        @foreach ($backupAllData as $backup)
+                                        @php
+                                            $type1 = explode('.', $backup->file_path);
+                                            $files1=explode('/',$backup->file_path);
+                                            
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                @if ( isset($type1[1]) && $type1[1] === 'sql')
+                                                     Database
+                                                @elseif (isset($type1[1]) && $type1[1] === 'zip')
+                                                   Zip
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if (isset($files1[1]))
+                                                    {{ $files1[1] }}    
+                                                @else
+                                                    N/A
+                                                    
+                                                @endif
+                                            </td>
+                                           
+                                            <td>{{ date('d M Y', strtotime($backup->created_at)) }}</td>
+                                             <td><a href="{{ asset('storage/' . $backup->file_path) }}" target="_blank"><b class="fas fa-download"></b></a></td>
+                                        </tr>
+                                        @endforeach
+                                        @else
+
+                                       @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
                     </div>
                 </section>
             </main>
@@ -1375,20 +1451,8 @@
                 success: function(response) {
                     if (response.success) {
                         $btn.text('Backup Created!').addClass('btn-success');
-                        // Handle file downloads
 
                         const files = response.data.files;
-
-                        // Download db_backup after 0ms
-                        if (files.db_backup) {
-                            triggerDownload(files.db_backup, 0);
-                        }
-
-                        // Download site_backup after 1000ms
-                        if (files.site_backup) {
-                            triggerDownload(files.site_backup, 1000);
-                        }
-
                         setTimeout(function() {
                             $btn.prop('disabled', false).text('Confirm Backup').removeClass(
                                 'btn-success');
@@ -1414,23 +1478,6 @@
                 }
             });
         });
-
-
-
-
-
-
-        // Utility: Trigger file download
-        function triggerDownload(fileUrl, delay = 0) {
-            setTimeout(() => {
-                const link = document.createElement('a');
-                link.href = fileUrl;
-                link.download = ''; // Optional: Let browser decide filename
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }, delay);
-        }
 
 
         function deleteBackup() {
@@ -1472,8 +1519,7 @@
         // reload pages then show current tab with dynamic data
         $(document).ready(function() {
             const tabFromUrl = new URLSearchParams(window.location.search).get('tab');
-            const savedTabId = tabFromUrl || localStorage.getItem('activeTabId');
-
+            const savedTabId = tabFromUrl ;
             if (savedTabId) {
                 const $savedTab = $('.tabchnage[data-id="' + savedTabId + '"]');
                 if ($savedTab.length) {
@@ -1888,11 +1934,11 @@
                             ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
                             <br/>
                             ${plugin.name !== 'DS Care' ? `
-                                                ${plugin.is_active
-                                                ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
-                                                : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
-                                                <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
-                                            ` : ''}
+                                                    ${plugin.is_active
+                                                    ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                    : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                    <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                                ` : ''}
                         </td>
                         <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
                         <td>${plugin.author || '-'}</td>
@@ -1938,9 +1984,9 @@
                                     ${theme.is_active
                                     ? ``
                                     : `
-                                                <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
-                                                <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
-                                                `}
+                                                    <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                    <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                    `}
                                    
                         </td>
                         <td>${theme.slug || '-'}</td>
@@ -2027,6 +2073,11 @@
                         renderUsers(filtered);
                     });
                 }
+            }
+            else if (tabId === "tab-backups") {
+                // No dynamic data to load for backups currently
+                return;
+            
             }
         }
 
@@ -2192,6 +2243,45 @@
             const tabFromUrl = urlParams.get('tab') || defaultTab;
 
             activateTabById(tabFromUrl);
+        });
+    </script>
+    <script>
+        // Loader overlay logic
+        function showLoader() {
+            if (!document.getElementById('pageLoader')) {
+            const loader = document.createElement('div');
+            loader.id = 'pageLoader';
+            loader.style.position = 'fixed';
+            loader.style.top = '0';
+            loader.style.left = '0';
+            loader.style.width = '100vw';
+            loader.style.height = '100vh';
+            loader.style.background = 'rgba(255,255,255,0.85)';
+            loader.style.zIndex = '9999';
+            loader.style.display = 'flex';
+            loader.style.alignItems = 'center';
+            loader.style.justifyContent = 'center';
+            loader.innerHTML = `
+                <div style="text-align:center;">
+                <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status"></div>
+                <div style="margin-top:1rem; font-size:1.2rem; color:#2c437c;">Loading...</div>
+                </div>
+            `;
+            document.body.appendChild(loader);
+            }
+        }
+        function hideLoader() {
+            const loader = document.getElementById('pageLoader');
+            if (loader) loader.remove();
+        }
+
+        // Show loader on page load, hide when DOM is ready
+        // showLoader();
+        window.addEventListener('DOMContentLoaded', hideLoader);
+
+        // Show loader on refresh button click
+        document.getElementById('refreshPageBtn').addEventListener('click', function(e) {
+            showLoader();
         });
     </script>
 
