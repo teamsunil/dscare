@@ -844,10 +844,9 @@
                                                 <span class="stat-label">Updates</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#managePluginModal"
-                                            data-plugin-response = '@json(data_get($response, 'plugins', null))'
-                                            data-plugin-id="{{ $result->id }}">
+                                        <button type="button" class="manage-btn btn btn-primary tab tabchnage" role="tab" data-id="tab-plugins" id="tab-plugins"
+                                aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
+                                data-plugin-response = '@json(data_get($response, 'plugins', null))' data-plugin-id="{{ $result->id }}">
                                             <i class="fas fa-cogs"></i> Manage
                                         </button>
                                     </div>
@@ -870,10 +869,9 @@
                                                 <span class="stat-label">Active</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#manageThemesModal"
-                                            data-theme-response = '@json(data_get($response, 'themes', null))'
-                                            data-theme-id="{{ $result->id }}">
+                                        <button type="button" class=" manage-btn btn btn-primary tab tabchnage"role="tab" data-id="tab-themes" id="tab-themes"
+                                aria-controls="panel-gallery" aria-selected="false" tabindex="-1" data-index="2"
+                                data-theme-response = '@json(data_get($response, 'themes', null))' data-theme-id="{{ $result->id }}">
                                             <i class="fas fa-brush"></i> Manage
                                         </button>
                                     </div>
@@ -896,10 +894,9 @@
                                                 <span class="stat-label">Admins</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#manageUserModal"
-                                            data-user-response = '@json(data_get($response, 'users', null))'
-                                            data-user-id="{{ $result->id }}">
+                                        <button type="button" class="manage-btn btn btn-primary tab tabchnage" role="tab" data-id="tab-users" id="tab-users"
+                                aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-index="3"
+                                data-user-response = '@json(data_get($response, 'users', null))' data-user-id="{{ $result->id }}">
                                             <i class="fas fa-user-cog"></i> Manage
                                         </button>
                                     </div>
