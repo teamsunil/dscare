@@ -13,7 +13,7 @@
 <div style="margin: 32px 0 18px 0; display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0 32px;">
 	
 	
-    <a href="{{ url('/admin/list-websites-13') }}" style="
+    <a href="javascript:history.go(-2)" style="
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
