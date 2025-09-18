@@ -16,7 +16,7 @@ class WebsiteController extends Controller
     {
         // Dispatch the job to update site status
         // dd($id);
-        \App\Jobs\UpdateSiteStatusJob::dispatch($id);
+        \App\Jobs\UpdateSiteStatusJob::dispatch($websiteId);
     }
     public function checkSpeed(Request $request, $id)
     {
