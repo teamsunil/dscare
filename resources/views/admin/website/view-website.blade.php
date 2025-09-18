@@ -1454,42 +1454,45 @@ function callBackupApi(auto = false) {
             if (response.success) {
                 var percent = response.data.progress_percent || 0;
                 $('#backupProgressFill').css('width', percent + '%');
-                $('#backupProgressText').text(percent + '% completed');
+                // Show storing status if available, else show percent completed
+                if (response.data.storing_status) {
+                    $('#backupProgressText').text(response.data.storing_status);
+                } else {
+                    $('#backupProgressText').text(percent + '% completed');
+                }
                 if (response.data.status === 'completed' || percent >= 100) {
-                    $btn.text('Backup Created!').addClass('btn-success');
+                    $('#confirmBackupBtn').text('Backup Created!').addClass('btn-success');
                     $('#continueBackupBtn').hide();
                     clearInterval(autoBackupInterval);
                     setTimeout(function() {
-                        $btn.prop('disabled', false).text('Confirm Backup').removeClass('btn-success');
+                        $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup').removeClass('btn-success');
                         $('#backupTypeModal').modal('hide');
                         location.reload();
                     }, 1500);
                 } else {
                     $('#continueBackupBtn').show();
-                    $btn.text('Continue Backup').removeClass('btn-success btn-danger');
-                    $btn.prop('disabled', false);
-                    // Auto-continue if triggered by auto or user
+                    $('#confirmBackupBtn').text('Continue Backup').removeClass('btn-success btn-danger');
+                    $('#confirmBackupBtn').prop('disabled', false);
                     if (auto) {
-                        // Wait 1 second before next batch
                         autoBackupInterval = setTimeout(function() {
                             callBackupApi(true);
                         }, 1000);
                     }
                 }
             } else {
-                $btn.text('Failed!').addClass('btn-danger');
+                $('#confirmBackupBtn').text('Failed!').addClass('btn-danger');
                 clearInterval(autoBackupInterval);
                 setTimeout(function() {
-                    $btn.prop('disabled', false).text('Confirm Backup').removeClass('btn-danger');
+                    $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup').removeClass('btn-danger');
                 }, 2000);
                 alert(response.error || 'Backup failed.');
             }
         },
         error: function() {
-            $btn.text('Error!').addClass('btn-danger');
+            $('#confirmBackupBtn').text('Error!').addClass('btn-danger');
             clearInterval(autoBackupInterval);
             setTimeout(function() {
-                $btn.prop('disabled', false).text('Confirm Backup').removeClass('btn-danger');
+                $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup').removeClass('btn-danger');
             }, 2000);
             alert('Failed to create backup.');
         }
