@@ -655,7 +655,7 @@
 
 <div class="wp-dashboard-container">
     <div class="wp-dashboard-header">
-        <h1><i class="fa fa-wordpress"></i>DS Care - WordPress Dashboard</h1>
+        <h1><i class="fa fa-wordpress"></i> DS Care - WordPress Dashboard</h1>
         <p>Manage all your WordPress sites from one place</p>
     </div>
 
