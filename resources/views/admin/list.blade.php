@@ -1,156 +1,299 @@
 @extends('admin.layouts.app')
 @section('content')
-  <div class="header-advance-area mg-t-30">
- <div class="breadcome-area">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="breadcome-list single-page-breadcome">
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                        <div class="breadcome-heading">
-                                            <form role="search" class="sr-input-func">
-                                                <input type="text" placeholder="Search..." class="search-int form-control">
-                                                <a href="#"><i class="fa fa-search"></i></a>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                        <ul class="breadcome-menu">
-                                            <li><a href="{{route('index')}}">Home</a> <span class="bread-slash">/</span>
-                                            </li>
-                                            <li><span class="bread-blod">Website List</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <h3 class="page-title"><i class="fa fa-globe"></i> Website List <small class="text-muted">manage websites</small></h3>
+        </div>
+        <div class="col-sm-6 text-right">
+          <a href="{{ route('website.add.url') }}" class="btn btn-success btn-sm"><i class="fa fa-plus"></i> Add Website</a>
+        </div>
+      </div>
+      <div class="row mg-t-10">
+        <div class="col-md-6">
+          <ol class="breadcrumb">
+            <li><a href="{{ route('index') }}">Home</a></li>
+            <li class="active">Website List</li>
+          </ol>
+        </div>
+        <div class="col-md-6 text-right">
+          <div class="input-group search-inline" style="max-width:380px; margin-left:auto;">
+            <input id="tableSearch" type="text" class="form-control input-sm" placeholder="Search title, url or status...">
+            <span class="input-group-btn" >
+              <button class="btn btn-default btn-sm" type="button" style="padding:5px 10px;"><i class="fa fa-search"></i></button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-        <div class="product-status mg-b-15">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="product-status-wrap">
-                            <h4>Website List</h4>
-                            <div class="add-product">
-                                <a href="{{ route('website.add.url') }}">Add Website</a>
-                            </div>
-                            <div class="asset-inner">
-                                <table>
-                                    <tr>
-                                        
-                                        <th>Image</th>
-                                        <th>Website Url</th>
-                                        <th>Website Status</th>
-                                        
-                                        <th>PHP Version</th>
-                                        <th>Login</th>
-                                        <th>Action</th>
-                                    </tr>
-                                    @if ($result->isNotEmpty())
-                                       @foreach ($result as $index => $item)
-                                            <tr>
-                                                <td>
-                                                    @if($item->pagespeed_screenshot !="")
-                                                    <a href="{{ $item->pagespeed_screenshot }}" class="fancybox" data-fancybox="gallery{{ $index }}">
-                                                        <img src="{{ $item->pagespeed_screenshot }}" width="100px" style="cursor:pointer;" />
-                                                    </a>
-                                                    @else
-                                                    <a href="{{ asset('admin/img/product/book-2.jpg') }}" class="fancybox" data-fancybox="gallery{{ $index }}">
-                                                        <img src="{{ asset('admin/img/product/book-2.jpg') }}" width="100px" />
-                                                     </a>
-                                                    @endif
-                                                </td>
-                                                <td><span>{{$item->title}}</span><br><a href="{{$item->url}}" target="_blank">{{$item->url}}</a></td>
-                                               
-                                                <td>{{ ucfirst($item->status) }}</td>
-                                                <td>  PHP {{ $item->php_version ?? '8.2' }}</td>
-                                                <td><a href="{{ route('website.sso.login', ['id' => $item->id]) }}" target="_blank"><button class="btn btn-primary btn-sm">Login</button></a></td>
-                                                <td>
-                                                    <button data-toggle="tooltip" title="Edit" class="pd-setting-ed  " ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
-                                                    <button data-toggle="tooltip" title="Trash" class="pd-setting-ed deleteBtn"  data-id="{{ $item->id }}" data-name="{{ $item->url }}"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+  <section class="content container-fluid">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="panel panel-default admin-panel">
+          <div class="panel-heading clearfix">
+            <h4 class="panel-title pull-left" style="padding-top:6px;"><i class="fa fa-table"></i> Listings <small class="text-muted">({{ $result->count() }})</small></h4>
+            <div class="pull-right hidden-xs text-muted small" id="visibleCount">Showing {{ $result->count() }} of {{ $result->count() }}</div>
+          </div>
 
-                                                   <a href="{{ url('admin/list-websites-' . $item->id) }}"><button  data-toggle="tooltip" title="View" class="pd-setting-ed"><i class="fa fa-eye"></i></button></a> 
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                 
-                                </table>
-                            </div>
-                          
-                        </div>
-                    </div>
-                </div>
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table id="websitesTable" class="table table-bordered table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th style="width:110px;">Preview</th>
+                    <th>Website</th>
+                    <th style="width:120px;">Website Status</th>
+                     <th style="width:120px;">Plugin Status</th>
+                    <th style="width:120px;">PHP</th>
+                    <th style="width:90px;">Login</th>
+                    <th style="width:170px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @if ($result->isNotEmpty())
+                    @foreach ($result as $index => $item)
+                      <tr data-title="{{ strtolower($item->title) }}" data-url="{{ strtolower($item->url) }}" data-status="{{ strtolower($item->status) }}">
+                        <td class="vcenter">
+                          @if($item->pagespeed_screenshot != "")
+                            <a href="{{ $item->pagespeed_screenshot }}" class="fancybox" data-fancybox="gallery{{ $index }}">
+                              <img src="{{ $item->pagespeed_screenshot }}" class="img-responsive img-thumb" />
+                            </a>
+                          @else
+                            <img src="{{ asset('admin/img/product/book-2.jpg') }}" class="img-responsive img-thumb" />
+                          @endif
+                        </td>
+
+                        <td>
+                          <div class="site-title"><strong>{{ $item->title }}</strong></div>
+                          <div class="site-url"><a href="{{ $item->url }}" target="_blank">{{ \Illuminate\Support\Str::limit($item->url, 60) }}</a></div>
+                          @if(!empty($item->notes))
+                            <div class="text-muted small hidden-xs">{{ \Illuminate\Support\Str::limit($item->notes, 80) }}</div>
+                          @endif
+                        </td>
+
+                        <td class="vcenter">
+                          @php $s = strtolower($item->status); @endphp
+                          <span class="badge status-{{ $s }}">{{ ucfirst($item->status) }}</span>
+                        </td>
+                         <td class="vcenter">
+                          @php $website_status = strtolower($item->website_status); @endphp
+                          <span class="badge status-{{ $website_status }}">{{ ucfirst($item->website_status) }}</span>
+                        </td>
+
+                        <td class="vcenter">PHP {{ $item->php_version ?? '8.2' }}</td>
+
+                        <td class="vcenter">
+                          <button type="button" class="btn btn-primary btn-xs sso-login-btn" data-id="{{ $item->id }}" data-url="{{ route('website.sso.login', ['id' => $item->id]) }}" style="margin-top: 0px;"><i class="fa fa-sign-in"></i> Login</button>
+                        </td>
+
+                        <td class="vcenter">
+                          <div class="btn-group btn-group-sm table-actions" role="group" aria-label="actions">
+                            {{-- <button class="btn btn-info editBtn" 
+                                    data-id="{{ $item->id }}"
+                                    data-title="{{ $item->title }}"
+                                    data-url="{{ $item->url }}"
+                                    data-status="{{ $item->status }}"
+                                    data-php="{{ $item->php_version }}">
+                              <i class="fa fa-pencil"></i>
+                            </button> --}}
+
+                            <button class="btn btn-danger deleteBtn" data-id="{{ $item->id }}" data-name="{{ $item->url }}">
+                              <i class="fa fa-trash-o"></i>
+                            </button>
+
+                            <a href="{{ url('admin/list-websites-' . $item->id) }}" class="btn btn-default" title="View" style="margin-top: 0px;"><i class="fa fa-eye"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                    @endforeach
+                  @else
+                    <tr>
+                      <td colspan="6" class="text-center text-muted">No websites available</td>
+                    </tr>
+                  @endif
+                </tbody>
+              </table>
             </div>
+          </div>
+
         </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- Edit Modal (keeps edit in modal, no new edit route) -->
+  <div id="editWebsiteModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <form id="editWebsiteForm" method="POST" action="#" role="form">
+          {{ csrf_field() }}
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><i class="fa fa-pencil"></i> Edit Website</h4>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="id" id="edit_id">
+            <div class="form-group">
+              <label for="edit_title">Title</label>
+              <input type="text" name="title" id="edit_title" class="form-control input-sm">
+            </div>
+            <div class="form-group">
+              <label for="edit_url">URL</label>
+              <input type="text" name="url" id="edit_url" class="form-control input-sm">
+            </div>
+            <div class="form-group">
+              <label for="edit_status">Status</label>
+              <select name="status" id="edit_status" class="form-control input-sm">
+                <option value="active">Active</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="edit_php">PHP Version</label>
+              <input type="text" name="php_version" id="edit_php" class="form-control input-sm">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-       
 @stop
 
 @section('custom_js')
-    <!-- Fancybox JS -->
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(function () {
+  // ...existing code...
 
-  
-   <script>
-    $(document).ready(function () {
-        $('.deleteBtn').click(function () {
-            var id = $(this).data('id');
-            var websiteName = $(this).data('name'); // Ensure data-name is present on button
-            var deleteBtn = $(this);
-            var originalText = deleteBtn.html();
-            var card = deleteBtn.closest('.website-card');
-
-            var confirmed = confirm('Are you sure you want to delete "' + websiteName + '"?\n\nThis action cannot be undone.');
-
-            if (confirmed) {
-                // Show loading state
-                deleteBtn.html('<i class="fas fa-spinner fa-spin"></i> Deleting...');
-                deleteBtn.prop('disabled', true);
-
-                $.ajax({
-                    url: '/admin/website/delete/' + id,
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            // Animate card removal
-                            card.css('animation', 'fadeOut 0.3s ease-out');
-
-                            setTimeout(function () {
-                                card.remove();
-
-                                // Check if no cards remain
-                                if ($('.website-card').length === 0) {
-                                    location.reload();
-                                }
-                            }, 300);
-
-                            showNotification('success', 'Website deleted successfully!');
-                        } else {
-                            showNotification('error', 'Failed to delete website!');
-                            deleteBtn.html(originalText);
-                            deleteBtn.prop('disabled', false);
-                        }
-                    },
-                    error: function () {
-                        showNotification('error', 'An error occurred while deleting!');
-                        deleteBtn.html(originalText);
-                        deleteBtn.prop('disabled', false);
-                    }
-                });
-            }
+  // SSO Login via JS
+  $(document).on('click', '.sso-login-btn', function () {
+    var btn = $(this);
+    var loginUrl = btn.data('url');
+    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Login');
+    $.ajax({
+      url: loginUrl,
+      type: 'GET',
+      data: { _token: '{{ csrf_token() }}' },
+      success: function(res) {
+        if (res && res.success && res.redirect_url) {
+          window.open(res.redirect_url, '_blank');
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: res.message || 'Could not login via SSO.'
+          });
+        }
+      },
+      error: function(xhr) {
+        let msg = 'Could not login via SSO.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          msg = xhr.responseJSON.message;
+        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: msg
         });
+      },
+      complete: function() {
+        btn.prop('disabled', false).html('<i class="fa fa-sign-in"></i> Login');
+      }
     });
+  });
+});
 </script>
+<style>
+  /* Theme-aligned styles (match other admin pages) */
+  .content-header { padding: 18px 0; border-bottom: 1px solid #eee; margin-bottom: 15px; }
+  .page-title { margin: 0; font-weight: 600; }
+  .admin-panel .panel-heading { background: #fff; border-bottom: 1px solid #eee; }
+  .img-thumb { max-width:100px; max-height:60px; border:1px solid #e9e9e9; padding:2px; background:#fff; }
+  .vcenter { vertical-align: middle !important; }
+  .site-url a { color: #337ab7; word-break: break-all; }
+  .table-actions .btn { min-width:36px; }
+  .badge { padding:6px 8px; font-size:12px; }
+  .status-active { background:#5cb85c; color:#fff; }
+  .status-maintenance { background:#f0ad4e; color:#fff; }
+  .status-inactive { background:#777; color:#fff; }
+  .search-inline .form-control { height:32px; }
+</style>
 
+<script>
+  $(function () {
+    // client-side search with count update
+    function updateVisibleCount() {
+      var visible = $('#websitesTable tbody tr:visible').length;
+      var total = $('#websitesTable tbody tr').length;
+      $('#visibleCount').text('Showing ' + visible + ' of ' + total);
+    }
+
+    $('#tableSearch').on('keyup', function () {
+      var q = $.trim($(this).val()).toLowerCase();
+      $('#websitesTable tbody tr').each(function () {
+        var title = $(this).data('title') || '';
+        var url = $(this).data('url') || '';
+        var status = $(this).data('status') || '';
+        var match = q === '' || title.indexOf(q) !== -1 || url.indexOf(q) !== -1 || status.indexOf(q) !== -1;
+        $(this).toggle(match);
+      });
+      updateVisibleCount();
+    });
+
+    // open edit modal and populate fields (no separate edit route added)
+    $(document).on('click', '.editBtn', function () {
+      var b = $(this);
+      $('#edit_id').val(b.data('id'));
+      $('#edit_title').val(b.data('title'));
+      $('#edit_url').val(b.data('url'));
+      $('#edit_status').val(b.data('status'));
+      $('#edit_php').val(b.data('php'));
+      $('#editWebsiteModal').modal('show');
+    });
+
+    // delete via existing route (AJAX)
+    $(document).on('click', '.deleteBtn', function () {
+      var btn = $(this);
+      var id = btn.data('id');
+      var name = btn.data('name');
+      var row = btn.closest('tr');
+      if (!confirm('Delete "' + name + '"?')) return;
+      var orig = btn.html();
+      btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
+      $.ajax({
+        url: '/admin/website/delete/' + id,
+        type: 'DELETE',
+        data: { _token: '{{ csrf_token() }}' },
+        success: function (res) {
+          if (res && res.success) {
+            row.fadeOut(200, function () { $(this).remove(); updateVisibleCount(); });
+          } else {
+            alert(res.message || 'Failed to delete.');
+            btn.prop('disabled', false).html(orig);
+          }
+        },
+        error: function () {
+          alert('Error while deleting.');
+          btn.prop('disabled', false).html(orig);
+        }
+      });
+    });
+
+    // init count
+    updateVisibleCount();
+  });
+</script>
 @stop
 
+    

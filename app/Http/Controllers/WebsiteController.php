@@ -79,8 +79,8 @@ class WebsiteController extends Controller
         if (!$request->session()->has('website_url')) {
             return redirect()->route('website.add.url')->withErrors('Please enter a website URL first.');
         }
-
-        return view('admin.website.add-credentials');
+        $websiteUrl = $request->session()->get('website_url');
+        return view('admin.website.add-credentials', compact('websiteUrl'));
     }
 
     public function submitCredentials(Request $request)
@@ -149,33 +149,62 @@ class WebsiteController extends Controller
 
     public function loginToWordPress($id)
     {
-        $website = Website::find($id);
+        $website = Website::findOrFail($id);
+
         $payload = [
-            'iss' => rtrim(url('/'), '/'),
-            'aud' => rtrim($website->url, '/'),
-            'email' => $website->username,  // Use valid email
-            'role' => 'subscriber',
-            'exp' => time() + 300,
-            'nonce' => bin2hex(random_bytes(8)),
+            'iss'      => rtrim(url('/'), '/'),
+            'aud'      => rtrim($website->url, '/'),
+            'email'    => $website->username,
+            'exp'      => time() + 300,
+            'nonce'    => bin2hex(random_bytes(8)),
         ];
 
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
-
-
-        // Use the shared secret exactly as stored in DB/WordPress
-        $sharedSecret = decrypt($website->token_id); // if you're using Laravel's encryption;  // Ensure this exists and matches WP!
-
+        $sharedSecret = decrypt($website->token_id);
         $sig = base64_encode(hash_hmac('sha256', $payloadJson, $sharedSecret, true));
-
         $wpSsoUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/login';
 
-        $query = http_build_query([
-            'payload' => $payloadJson,
-            'sig' => $sig,
-            'redirect' => '',
-        ]);
+        try {
+            $response = Http::asForm()->post($wpSsoUrl, [
+                'payload'  => $payloadJson,
+                'sig'      => $sig,
+                'redirect' => '',
+            ]);
 
-        return redirect($wpSsoUrl . '?' . $query);
+            if ($response->failed()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to connect to WordPress',
+                ], $response->status());
+            }
+            $data = $response->json();
+
+            if (isset($data['error'])) {
+                // WordPress returned custom error
+                return response()->json([
+                    'success' => false,
+                    'message' => 'WordPress Error: ' . $data['error'],
+                ], 400);
+            }
+
+            // If WP returned success + redirect URL
+            if (isset($data['redirect'])) {
+                return response()->json([
+                    'success' => true,
+                    'redirect_url' => $data['redirect'],
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unexpected response from WordPress',
+            ], 400);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Exception: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     // Here code for list websites
@@ -232,6 +261,7 @@ class WebsiteController extends Controller
 
                         Website::where('id', $id)->update([
                             'title' => $site_name,
+                            'website_status' => 'active',
                             'data' => json_encode($data),
                         ]);
                         // dd($data);
@@ -240,6 +270,9 @@ class WebsiteController extends Controller
                 }
                 return response()->json(['success' => true, 'data' => $data]);
             } else {
+                Website::where('id', $id)->update([
+                    'website_status' => 'Inactive',
+                ]);
                 $data = null;
                 $error = "Failed to fetch status. HTTP status: " . $response->status();
                 return response()->json(['success' => false, 'error' => $error], $response->status());
@@ -359,8 +392,8 @@ class WebsiteController extends Controller
 
                 // When backup is completed, hit send-to-laravel endpoint to store backup
                 if ($percent == 100 && !empty($data['files'])) {
-                  $this->moveAndStoreBackups($data['files'], $request->type, $website->id);
-                  $this->deleteBackup($request, $website->id);
+                    $this->moveAndStoreBackups($data['files'], $request->type, $website->id);
+                    $this->deleteBackup($request, $website->id);
                 }
 
                 return response()->json(['success' => true, 'data' => $data]);
@@ -405,64 +438,64 @@ class WebsiteController extends Controller
     }
 
 
- public function moveAndStoreBackups($files, $type, $websiteId): array
-{
-    $results = [];
-    $backupDisk = Storage::disk('public');
-    $destinationDir = 'backups/' . $websiteId;
+    public function moveAndStoreBackups($files, $type, $websiteId): array
+    {
+        $results = [];
+        $backupDisk = Storage::disk('public');
+        $destinationDir = 'backups/' . $websiteId;
 
-    if (!$backupDisk->exists($destinationDir)) {
-        $backupDisk->makeDirectory($destinationDir);
-    }
-
-    foreach ($files as $key => $filePath) {
-        try {
-            if (!$filePath) {
-                $results[$key] = 'No file provided';
-                continue;
-            }
-
-            $timestamp  = now()->format('Ymd_His');
-            $extension  = pathinfo(parse_url($filePath, PHP_URL_PATH), PATHINFO_EXTENSION);
-            $fileName   = "{$key}_{$type}_backup_{$timestamp}." . ($extension ?: 'zip');
-            $destinationPath = $destinationDir . '/' . $fileName;
-            $fullLocalPath   = storage_path("app/public/{$destinationPath}");
-
-            // Remote file (streamed download)
-            if (filter_var($filePath, FILTER_VALIDATE_URL)) {
-                $stream = fopen($fullLocalPath, 'w');
-                Http::timeout(1200)->sink($stream)->get($filePath);
-                fclose($stream);
-            } else {
-                // Local file (copy, not read into memory)
-                if (!file_exists($filePath)) {
-                    throw new \Exception("File not found: $filePath");
-                }
-                copy($filePath, $fullLocalPath);
-            }
-
-            // Save DB record
-            $backup = BackupData::create([
-                'type'       => $type,
-                'file_path'  => $destinationPath,
-                'website_id' => $websiteId,
-            ]);
-
-            $results[$key] = [
-                'status' => 'success',
-                'file'   => $backup->file_path,
-                'url'    => $backupDisk->url($destinationPath),
-            ];
-        } catch (\Exception $e) {
-            $results[$key] = [
-                'status'  => 'error',
-                'message' => $e->getMessage(),
-            ];
+        if (!$backupDisk->exists($destinationDir)) {
+            $backupDisk->makeDirectory($destinationDir);
         }
-    }
 
-    return $results;
-}
+        foreach ($files as $key => $filePath) {
+            try {
+                if (!$filePath) {
+                    $results[$key] = 'No file provided';
+                    continue;
+                }
+
+                $timestamp  = now()->format('Ymd_His');
+                $extension  = pathinfo(parse_url($filePath, PHP_URL_PATH), PATHINFO_EXTENSION);
+                $fileName   = "{$key}_{$type}_backup_{$timestamp}." . ($extension ?: 'zip');
+                $destinationPath = $destinationDir . '/' . $fileName;
+                $fullLocalPath   = storage_path("app/public/{$destinationPath}");
+
+                // Remote file (streamed download)
+                if (filter_var($filePath, FILTER_VALIDATE_URL)) {
+                    $stream = fopen($fullLocalPath, 'w');
+                    Http::timeout(1200)->sink($stream)->get($filePath);
+                    fclose($stream);
+                } else {
+                    // Local file (copy, not read into memory)
+                    if (!file_exists($filePath)) {
+                        throw new \Exception("File not found: $filePath");
+                    }
+                    copy($filePath, $fullLocalPath);
+                }
+
+                // Save DB record
+                $backup = BackupData::create([
+                    'type'       => $type,
+                    'file_path'  => $destinationPath,
+                    'website_id' => $websiteId,
+                ]);
+
+                $results[$key] = [
+                    'status' => 'success',
+                    'file'   => $backup->file_path,
+                    'url'    => $backupDisk->url($destinationPath),
+                ];
+            } catch (\Exception $e) {
+                $results[$key] = [
+                    'status'  => 'error',
+                    'message' => $e->getMessage(),
+                ];
+            }
+        }
+
+        return $results;
+    }
 
 
 
@@ -480,7 +513,7 @@ class WebsiteController extends Controller
 
         $allPlugins = collect();
         $allThemes  = collect();
-        $pluginSiteMap = []; 
+        $pluginSiteMap = [];
         $themeSiteMap  = [];
         $websitelist   = [];
 
@@ -493,6 +526,7 @@ class WebsiteController extends Controller
             $websitelist[$key]['wordpress_update_available'] = $data['wordpress_update_available'] ?? '';
             $websitelist[$key]['pagespeed_screenshot'] = $site->pagespeed_screenshot ?? '';
             $websitelist[$key]['website_up_down'] = $site->website_up_down ?? '';
+            $websitelist[$key]['id'] = $site->id ?? '';
 
             // Collect plugin data
             if (isset($data['plugins']['items']) && is_array($data['plugins']['items'])) {

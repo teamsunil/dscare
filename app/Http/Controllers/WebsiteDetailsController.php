@@ -48,6 +48,7 @@ class WebsiteDetailsController extends Controller
 
                         Website::where('id', $id)->update([
                             'title' => $site_name,
+                            'website_status'=>'active',
                             'data' => json_encode($data),
                         ]);
                         // dd($data);
@@ -57,11 +58,17 @@ class WebsiteDetailsController extends Controller
                 }
                 return back()->with('success', 'Website data reloaded successfully.');
             } else {
+                 Website::where('id', $id)->update([
+                            'website_status'=>'active',
+                        ]);
                 $data = null;
                 $error = "Failed to fetch status. HTTP status: " . $response->status();
                 return back()->with('error', $error);
             }
         } catch (\Exception $e) {
+              Website::where('id', $id)->update([
+                            'website_status'=>'active',
+                        ]);
             $data = null;
             $error = "Connection error: " . $e->getMessage();
             return back()->with('error', $error);
