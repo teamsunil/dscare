@@ -491,6 +491,8 @@ class WebsiteController extends Controller
             $websitelist[$key]['site_name'] = $data['site_name'] ?? '';
             $websitelist[$key]['wordpress_version'] = $data['wordpress_version'] ?? '';
             $websitelist[$key]['wordpress_update_available'] = $data['wordpress_update_available'] ?? '';
+            $websitelist[$key]['pagespeed_screenshot'] = $site->pagespeed_screenshot ?? '';
+            $websitelist[$key]['website_up_down'] = $site->website_up_down ?? '';
 
             // Collect plugin data
             if (isset($data['plugins']['items']) && is_array($data['plugins']['items'])) {
