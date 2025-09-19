@@ -958,31 +958,8 @@ foreach ($websitelist as $site) {
 }
 @endphp
 <!-- Chart.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
-
 <script>
-// Image modal functionality
-function showModal(src) {
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImg');
-    modal.style.display = 'block';
-    modalImg.src = src;
-}
-
-function closeModal() {
-    document.getElementById('imageModal').style.display = 'none';
-}
-
-// Close modal when clicking outside the image
-window.onclick = function(event) {
-    const modal = document.getElementById('imageModal');
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Enhanced Dropdown functionality with smooth slide animation
-function toggleDropdown(button) {
+    function toggleDropdown(button) {
   const dropdown = button.nextElementSibling;
   const chevron = button.querySelector('.fa-chevron-down, .fa-chevron-up');
 
@@ -1010,9 +987,36 @@ function toggleDropdown(button) {
       : 'fa fa-chevron-down';
   }
 }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
+
+<script>
+// Image modal functionality
+function showModal(src) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    modal.style.display = 'block';
+    modalImg.src = src;
+}
+
+function closeModal() {
+    document.getElementById('imageModal').style.display = 'none';
+}
+
+// Close modal when clicking outside the image
+window.onclick = function(event) {
+    const modal = document.getElementById('imageModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Enhanced Dropdown functionality with smooth slide animation
+
 
 // Initialize Charts
 document.addEventListener('DOMContentLoaded', function() {
+    
     // Site Status Chart Data
     const totalSites = {{ $totalSites }};
     const upSites = {{ $upSites }};
