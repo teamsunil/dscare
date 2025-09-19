@@ -25,12 +25,41 @@ class WebsiteController extends Controller
             return response()->json(['success' => false, 'error' => 'Website not found.'], 404);
         }
 
-
         try {
             \App\Jobs\AnalyzeWebsiteSpeedJob::dispatch($website);
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function checkPlugin(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|url'
+        ]);
+
+        $siteUrl = rtrim($request->url, '/');
+        
+        try {
+            $response = Http::timeout(10)->get($siteUrl . '/wp-json/laravel-sso/v1/check-plugin');
+            
+            if ($response->successful()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Plugin is available and active'
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Plugin is not available or not active'
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not connect to the website: ' . $e->getMessage()
+            ], 500);
         }
     }
     public function listWebsite()

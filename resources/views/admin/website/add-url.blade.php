@@ -96,9 +96,9 @@
             }
             fetch(siteUrl + '/wp-json/laravel-sso/v1/check-plugin', {
                 method: 'GET',
-                mode: 'cors',
             })
             .then(response => {
+                
                 if (response.ok) {
                     Swal.fire({
                         icon: 'success',
