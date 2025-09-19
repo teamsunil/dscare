@@ -480,7 +480,7 @@ class WebsiteController extends Controller
 
         $allPlugins = collect();
         $allThemes  = collect();
-        $pluginSiteMap = [];
+        $pluginSiteMap = []; 
         $themeSiteMap  = [];
         $websitelist   = [];
 

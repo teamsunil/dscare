@@ -117,6 +117,8 @@
     .stat-icon.secondary { background: linear-gradient(135deg, var(--secondary), #4dd4e8); }
     .stat-icon.success { background: linear-gradient(135deg, var(--success), #2dd4aa); }
     .stat-icon.danger { background: linear-gradient(135deg, var(--danger), #f56565); }
+    .stat-icon.warning { background: linear-gradient(135deg, var(--warning), #ffd93d); }
+    .stat-icon.info { background: linear-gradient(135deg, var(--info), #38a3c7); }
 
     .stat-value {
         font-size: 2.5rem;
@@ -131,6 +133,58 @@
         color: var(--text-light);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+    }
+
+    /* Charts Section */
+    .charts-section {
+        margin-bottom: 40px;
+    }
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 32px;
+        margin-bottom: 32px;
+    }
+
+    .chart-card {
+        background: var(--bg-white);
+        border-radius: var(--card-radius);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .chart-header {
+        padding: 24px 28px 16px;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(90deg, var(--bg-light), var(--bg-white));
+    }
+
+    .chart-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .chart-title i {
+        color: var(--primary);
+    }
+
+    .chart-body {
+        padding: 28px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     /* Main Content Grid */
@@ -307,6 +361,156 @@
         opacity: 0.5;
     }
 
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, var(--secondary), #4dd4e8);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(54, 185, 204, 0.3);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success), #2dd4aa);
+        color: white;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(28, 200, 138, 0.3);
+    }
+
+    /* Enhanced Dropdown Styles - Slide Down Animation */
+    .used-in-dropdown {
+        position: relative;
+        display: inline-block;
+        margin-top: 6px;
+    }
+
+    .dropdown-toggle {
+        background: linear-gradient(135deg, var(--info), #38a3c7);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .dropdown-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        background: linear-gradient(135deg, #38a3c7, var(--info));
+    }
+
+    .dropdown-toggle .fa-chevron-down,
+    .dropdown-toggle .fa-chevron-up {
+        transition: transform 0.3s ease;
+        font-size: 0.7rem;
+    }
+
+    .dropdown-toggle.active .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    .dropdown-content {
+        position: relative;
+        background: var(--bg-light);
+        border-radius: 8px;
+        margin-top: 8px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dropdown-content.show {
+        max-height: 300px;
+        opacity: 1;
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .dropdown-item {
+        display: block;
+        padding: 12px 16px;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+        position: relative;
+    }
+
+    .dropdown-item:hover {
+        background: var(--bg-white);
+        color: var(--primary);
+        padding-left: 20px;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item i {
+        margin-right: 8px;
+        color: var(--text-muted);
+        transition: color 0.2s ease;
+        width: 16px;
+        text-align: center;
+    }
+
+    .dropdown-item:hover i {
+        color: var(--primary);
+    }
+
     /* Modal for image preview */
     .modal {
         display: none;
@@ -355,6 +559,10 @@
 
     /* Responsive Design */
     @media (max-width: 1024px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        
         .content-grid {
             grid-template-columns: 1fr 1fr;
             gap: 24px;
@@ -375,6 +583,7 @@
             gap: 16px;
         }
 
+        .charts-grid,
         .content-grid {
             grid-template-columns: 1fr;
             gap: 20px;
@@ -388,7 +597,7 @@
             font-size: 2rem;
         }
 
-        .card-header {
+        .card-header, .chart-header {
             padding: 20px 24px 12px;
         }
 
@@ -400,6 +609,14 @@
         .item-image, .wp-fallback {
             width: 40px;
             height: 40px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            justify-content: center;
         }
     }
 
@@ -418,6 +635,10 @@
             align-items: center;
             text-align: center;
         }
+
+        .action-buttons {
+            width: 100%;
+        }
     }
 
     @keyframes slideInUp {
@@ -434,11 +655,11 @@
 
 <div class="wp-dashboard-container">
     <div class="wp-dashboard-header">
-        <h1><i class="fa fa-wordpress"></i> WordPress Dashboard</h1>
+        <h1><i class="fa fa-wordpress"></i>DS Care - WordPress Dashboard</h1>
         <p>Manage all your WordPress sites from one place</p>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- Enhanced Stats Cards with Additional Metrics -->
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-icon primary">
@@ -448,25 +669,56 @@
             <div class="stat-label">Total Sites</div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon secondary">
-                <i class="fa fa-rocket"></i>
-            </div>
-            <div class="stat-value">{{ $activeSites }}</div>
-            <div class="stat-label">Active Sites</div>
-        </div>
-        <div class="stat-card">
             <div class="stat-icon success">
                 <i class="fa fa-arrow-up"></i>
             </div>
             <div class="stat-value">{{ $upSites }}</div>
-            <div class="stat-label">Sites Online</div>
+            <div class="stat-label">Sites Up</div>
         </div>
         <div class="stat-card">
             <div class="stat-icon danger">
                 <i class="fa fa-arrow-down"></i>
             </div>
             <div class="stat-value">{{ $totalSites - $upSites }}</div>
-            <div class="stat-label">Sites Offline</div>
+            <div class="stat-label">Sites Down</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fa fa-plug"></i>
+            </div>
+            <div class="stat-value">{{ count($pluginsList) }}</div>
+            <div class="stat-label">Total Plugins</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="charts-grid">
+            <!-- Site Status Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fa fa-chart-pie"></i>
+                        Site Status Distribution
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="siteStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- WordPress Version Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fa fa-chart-bar"></i>
+                        WP Versions
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="wpVersionChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -518,6 +770,16 @@
                             @endif
                         </div>
                         @endif
+                        
+                        <!-- Action Buttons for Website -->
+                        <div class="action-buttons">
+                            <a href="{{ $site['url'] }}" target="_blank" class="btn btn-primary">
+                                <i class="fa fa-eye"></i> View Site
+                            </a>
+                            <a href="{{ $site['url'] }}/wp-admin" target="_blank" class="btn btn-success">
+                                <i class="fa fa-sign-in-alt"></i> Login
+                            </a>
+                        </div>
                     </div>
                 </div>
                 @empty
@@ -563,8 +825,32 @@
                         @if(!empty($plugin['plugin_uri']))
                         <a href="{{ $plugin['plugin_uri'] }}" target="_blank" class="item-link">More Info</a>
                         @endif
+                        
                         @if(!empty($plugin['sites']))
-                        <div class="item-meta">Used in: {{ is_array($plugin['sites']) ? implode(', ', $plugin['sites']) : $plugin['sites'] }}</div>
+                        <div class="used-in-dropdown">
+                            <button class="dropdown-toggle" onclick="toggleDropdown(this)">
+                                <span>
+                                    <i class="fa fa-list"></i>
+                                    Used in ({{ is_array($plugin['sites']) ? count($plugin['sites']) : 1 }})
+                                </span>
+                                <i class="fa fa-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                @if(is_array($plugin['sites']))
+                                    @foreach($plugin['sites'] as $siteName)
+                                        <a href="#" class="dropdown-item">
+                                            <i class="fa fa-globe"></i>
+                                            {{ $siteName }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fa fa-globe"></i>
+                                        {{ $plugin['sites'] }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -611,8 +897,32 @@
                         @if(!empty($theme['theme_uri']))
                         <a href="{{ $theme['theme_uri'] }}" target="_blank" class="item-link">More Info</a>
                         @endif
+                        
                         @if(!empty($theme['sites']))
-                        <div class="item-meta">Used in: {{ is_array($theme['sites']) ? implode(', ', $theme['sites']) : $theme['sites'] }}</div>
+                        <div class="used-in-dropdown">
+                            <button class="dropdown-toggle" onclick="toggleDropdown(this)">
+                                <span>
+                                    <i class="fa fa-list"></i>
+                                    Used in ({{ is_array($theme['sites']) ? count($theme['sites']) : 1 }})
+                                </span>
+                                <i class="fa fa-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                @if(is_array($theme['sites']))
+                                    @foreach($theme['sites'] as $siteName)
+                                        <a href="#" class="dropdown-item">
+                                            <i class="fa fa-globe"></i>
+                                            {{ $siteName }}
+                                        </a>
+                                    @endforeach
+                                @else
+                                    <a href="#" class="dropdown-item">
+                                        <i class="fa fa-globe"></i>
+                                        {{ $theme['sites'] }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -634,6 +944,21 @@
         <img id="modalImg" src="" alt="Screenshot Preview">
     </div>
 </div>
+@php
+$wpVersions = [];
+foreach ($websitelist as $site) {
+    if (!empty($site['wordpress_version'])) {
+        $version = $site['wordpress_version'];
+        if (isset($wpVersions[$version])) {
+            $wpVersions[$version]++;
+        } else {
+            $wpVersions[$version] = 1;
+        }
+    }
+}
+@endphp
+<!-- Chart.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js"></script>
 
 <script>
 // Image modal functionality
@@ -656,8 +981,134 @@ window.onclick = function(event) {
     }
 }
 
-// Handle image loading errors and smooth scrolling
+// Enhanced Dropdown functionality with smooth slide animation
+function toggleDropdown(button) {
+  const dropdown = button.nextElementSibling;
+  const chevron = button.querySelector('.fa-chevron-down, .fa-chevron-up');
+
+  // Close all other dropdowns
+  document.querySelectorAll('.dropdown-content.show').forEach(content => {
+    if (content !== dropdown) {
+      content.classList.remove('show');
+      const otherButton = content.previousElementSibling;
+      if (otherButton) {
+        otherButton.classList.remove('active');
+        const otherChevron = otherButton.querySelector('.fa-chevron-down, .fa-chevron-up');
+        if (otherChevron) {
+          otherChevron.className = 'fa fa-chevron-down';
+        }
+      }
+    }
+  });
+
+  // Toggle current dropdown
+  dropdown.classList.toggle('show');
+  button.classList.toggle('active');
+  if (chevron) {
+    chevron.className = dropdown.classList.contains('show')
+      ? 'fa fa-chevron-up'
+      : 'fa fa-chevron-down';
+  }
+}
+
+// Initialize Charts
 document.addEventListener('DOMContentLoaded', function() {
+    // Site Status Chart Data
+    const totalSites = {{ $totalSites }};
+    const upSites = {{ $upSites }};
+    const downSites = totalSites - upSites;
+
+    // Site Status Pie Chart
+    const siteStatusCtx = document.getElementById('siteStatusChart').getContext('2d');
+    new Chart(siteStatusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Online', 'Offline'],
+            datasets: [{
+                data: [upSites, downSites],
+                backgroundColor: [
+                    '#1cc88a',
+                    '#e74a3b'
+                ],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: {
+                            size: 12,
+                            weight: '600'
+                        }
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+
+    // WordPress Version Distribution
+    const wpVersions = {};
+    @foreach($websitelist as $site)
+        @if(!empty($site['wordpress_version']))
+            const version = '{{ $site['wordpress_version'] }}';
+            if (wpVersions[version]) {
+                wpVersions[version]++;
+            } else {
+                wpVersions[version] = 1;
+            }
+        @endif
+    @endforeach
+
+    const versionLabels = Object.keys(wpVersions);
+    const versionData = Object.values(wpVersions);
+
+    // WordPress Versions Bar Chart
+    const wpVersionCtx = document.getElementById('wpVersionChart').getContext('2d');
+    new Chart(wpVersionCtx, {
+        type: 'bar',
+        data: {
+            labels: versionLabels,
+            datasets: [{
+                label: 'Sites',
+                data: versionData,
+                backgroundColor: '#4e73df',
+                borderColor: '#4e73df',
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 45
+                    }
+                }
+            }
+        }
+    });
+
     // Smooth scrolling for card bodies
     const cardBodies = document.querySelectorAll('.card-body');
     cardBodies.forEach(body => {
@@ -682,35 +1133,84 @@ document.addEventListener('DOMContentLoaded', function() {
             closeModal();
         }
     });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.used-in-dropdown')) {
+            document.querySelectorAll('.dropdown-content.show').forEach(content => {
+                content.classList.remove('show');
+                const button = content.previousElementSibling;
+                const chevron = button.querySelector('.fa-chevron-down, .fa-chevron-up');
+                button.classList.remove('active');
+                chevron.className = 'fa fa-chevron-down';
+            });
+        }
+    });
 });
 </script>
-
-
-
 
 <script>
-// Simple JS for smooth scroll on plugin/theme lists and WP logo fallback
-// Also handles fallback for plugin/theme images to WordPress logo
+document.addEventListener("DOMContentLoaded", function() {
+    // --- Site Status Chart ---
+    const totalSites = {{ $totalSites }};
+    const upSites = {{ $upSites }};
+    const downSites = totalSites - upSites;
+    const siteStatusCtx = document.getElementById('siteStatusChart');
+    if (siteStatusCtx) {
+        new Chart(siteStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sites Up', 'Sites Down'],
+                datasets: [{
+                    data: [upSites, downSites], // example numbers
+                    backgroundColor: ['#1cc88a', '#e74a3b'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.ds-list-scroll').forEach(function(list) {
-        list.addEventListener('wheel', function(e) {
-            if (e.deltaY !== 0) {
-                e.preventDefault();
-                list.scrollTop += e.deltaY;
+    // --- WP Version Chart ---
+  const wpVersions = <?php echo json_encode($wpVersions); ?>;
+
+  // Split into arrays for charting
+  const versionKeys = Object.keys(wpVersions);        // e.g. ['6.1','6.0','5.8']
+  const versionCounts = Object.values(wpVersions);
+    const wpVersionCtx = document.getElementById('wpVersionChart');
+    if (wpVersionCtx) {
+        new Chart(wpVersionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['6.5', '6.4', '6.3'],
+                datasets: [{
+                    label: 'Number of Sites',
+                    data: [10, 5, 3],
+                    backgroundColor: '#4e73df'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
             }
-        }, { passive: false });
-    });
-    // Fallback for plugin/theme images to WordPress logo
-    document.querySelectorAll('.ds-list-img').forEach(function(img) {
-        img.onerror = function() {
-            if (!this.classList.contains('wp-fallback-logo')) {
-                var logo = document.createElement('div');
-                logo.className = 'wp-fallback-logo';
-                this.replaceWith(logo);
-            }
-        };
-    });
+        });
+    }
 });
 </script>
+
 @endsection

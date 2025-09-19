@@ -22,6 +22,8 @@
     <!-- scrollUp JS
 		============================================ -->
     <script src="{{ asset('admin/js/jquery.scrollUp.min.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
     <!-- counterup JS
 		============================================ -->
     <script src="{{ asset('admin/js/counterup/jquery.counterup.min.js') }}"></script>
