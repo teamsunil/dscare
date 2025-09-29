@@ -48,7 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/website/{id}/backup', [WebsiteController::class, 'backupWebsite'])->name('website.backup');
     Route::post('/admin/website/{id}/check-speed', [WebsiteController::class, 'checkSpeed'])->name('website.check.speed');
     Route::get('/admin/download', function () {
-        $filePath = public_path('ds_care_sso.zip');
+        $filePath = public_path('ds_care_sso.zip'); 
+        
         if (!file_exists($filePath)) {
             abort(404, 'File not found');
         }
