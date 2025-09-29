@@ -207,7 +207,7 @@ class WebsiteController extends Controller
                 ], $response->status());
             }
             $data = $response->json();
-
+           
             if (isset($data['error'])) {
                 // WordPress returned custom error
                 return response()->json([
