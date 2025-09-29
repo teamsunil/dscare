@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use App\Models\BackupData;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class WebsiteController extends Controller
 {
@@ -40,17 +41,17 @@ class WebsiteController extends Controller
         ]);
 
         $siteUrl = rtrim($request->url, '/');
-        
+
         try {
             $response = Http::timeout(10)->get($siteUrl . '/wp-json/laravel-sso/v1/check-plugin');
-            
+
             if ($response->successful()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Plugin is available and active'
                 ]);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Plugin is not available or not active'
@@ -176,65 +177,74 @@ class WebsiteController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function loginToWordPress($id)
-    {
+ public function loginToWordPress($id)
+{
+    try {
         $website = Website::findOrFail($id);
 
+        // Verify website exists and has required credentials
+        if (!$website->username || !$website->token_id) {
+            return response()->json([
+                'error'   => 'missing_params',
+                'message' => 'Website credentials are incomplete.'
+            ], 400);
+        }
+
+        // Generate secure nonce
+        $nonce = bin2hex(random_bytes(16));
+
+        // Prepare payload
         $payload = [
-            'iss'      => rtrim(url('/'), '/'),
-            'aud'      => rtrim($website->url, '/'),
-            'email'    => $website->username,
-            'exp'      => time() + 300,
-            'nonce'    => bin2hex(random_bytes(8)),
+            'iss'   => rtrim(url('/'), '/'),      // Laravel app URL
+            'aud'   => rtrim($website->url, '/'), // WordPress site URL
+            'email' => $website->username,        // WP admin email
+            'exp'   => time() + 300,              // 5 min expiry
+            'nonce' => $nonce                     // Prevent replay
         ];
 
         $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
-        $sharedSecret = decrypt($website->token_id);
-        $sig = base64_encode(hash_hmac('sha256', $payloadJson, $sharedSecret, true));
-        $wpSsoUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/login';
 
+        // Decrypt shared secret
         try {
-            $response = Http::asForm()->post($wpSsoUrl, [
-                'payload'  => $payloadJson,
-                'sig'      => $sig,
-                'redirect' => '',
-            ]);
-
-            if ($response->failed()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to connect to WordPress',
-                ], $response->status());
-            }
-            $data = $response->json();
-           
-            if (isset($data['error'])) {
-                // WordPress returned custom error
-                return response()->json([
-                    'success' => false,
-                    'message' => 'WordPress Error: ' . $data['error'],
-                ], 400);
-            }
-
-            // If WP returned success + redirect URL
-            if (isset($data['redirect'])) {
-                return response()->json([
-                    'success' => true,
-                    'redirect_url' => $data['redirect'],
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Unexpected response from WordPress',
-            ], 400);
+            $sharedSecret = decrypt($website->token_id);
         } catch (\Throwable $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Exception: ' . $e->getMessage(),
+                'error'   => 'internal_error',
+                'message' => 'Invalid token configuration'
             ], 500);
         }
+
+        // Calculate signature
+        $sig = base64_encode(hash_hmac('sha256', $payloadJson, $sharedSecret, true));
+
+        // Redirect URL after login
+        $redirectUrl = rtrim($website->url, '/') . '/wp-admin/';
+
+        // WordPress SSO endpoint
+        $wpSsoUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/login';
+
+        // ✅ Redirect browser directly so cookies are set client-side
+        $finalUrl = $wpSsoUrl
+            . '?payload='  . urlencode($payloadJson)
+            . '&sig='      . urlencode($sig)
+            . '&redirect=' . urlencode($redirectUrl);
+
+        return redirect()->away($finalUrl);
+
+    } catch (\Throwable $e) {
+        Log::error('WordPress login error', [
+            'website_id' => $id,
+            'error'      => $e->getMessage(),
+            'trace'      => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'error'   => 'internal_error',
+            'message' => 'An unexpected error occurred'
+        ], 500);
     }
+}
+
 
     // Here code for list websites
     public function listWebsites($id)

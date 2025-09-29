@@ -806,7 +806,7 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <a href="{{ url('website/sso-login', $result->id) }}"
+                                        <a href="{{ url('website/sso-login', $result->id) }}" target="_blank"
                                             class="manage-btn wp-admin-btn">
                                             <i class="fas fa-cog"></i>
                                             WP-Admin

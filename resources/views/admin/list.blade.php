@@ -180,37 +180,7 @@ $(function () {
   $(document).on('click', '.sso-login-btn', function () {
     var btn = $(this);
     var loginUrl = btn.data('url');
-    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Login');
-    $.ajax({
-      url: loginUrl,
-      type: 'GET',
-      data: { _token: '{{ csrf_token() }}' },
-      success: function(res) {
-        if (res && res.success && res.redirect_url) {
-          window.open(res.redirect_url, '_blank');
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Login Failed',
-            text: res.message || 'Could not login via SSO.'
-          });
-        }
-      },
-      error: function(xhr) {
-        let msg = 'Could not login via SSO.';
-        if (xhr.responseJSON && xhr.responseJSON.message) {
-          msg = xhr.responseJSON.message;
-        }
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Failed',
-          text: msg
-        });
-      },
-      complete: function() {
-        btn.prop('disabled', false).html('<i class="fa fa-sign-in"></i> Login');
-      }
-    });
+    window.open(loginUrl, '_blank');
   });
 });
 </script>
