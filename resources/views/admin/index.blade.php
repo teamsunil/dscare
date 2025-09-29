@@ -796,9 +796,9 @@
                                         class="btn btn-primary">
                                         <i class="fa fa-eye"></i> View Site
                                     </a>
-                                    <a href="javascript:void(0);" data-id="{{ $site['id'] }}"
+                                    <a href="{{ url('website/sso-login', $site['id']) }}" target="_blank" data-id="{{ $site['id'] }}"
                                         data-url="{{ route('website.sso.login', ['id' => $site['id']]) }}" target="_blank"
-                                        class="btn btn-success sso-login-btn">
+                                        class="btn btn-success">
                                         <i class="fa fa-sign-in-alt"></i> Login
                                     </a>
                                 </div>

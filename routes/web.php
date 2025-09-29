@@ -48,11 +48,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/website/{id}/backup', [WebsiteController::class, 'backupWebsite'])->name('website.backup');
     Route::post('/admin/website/{id}/check-speed', [WebsiteController::class, 'checkSpeed'])->name('website.check.speed');
     Route::get('/admin/download', function () {
-        $filePath = public_path('plugins.zip');
+        $filePath = public_path('ds_care_sso.zip');
         if (!file_exists($filePath)) {
             abort(404, 'File not found');
         }
-        return response()->download($filePath, 'plugins.zip');
+        return response()->download($filePath, 'ds_care_sso.zip');
     })->name('download');
     Route::get('admin/website/{id}/delete-backup', [WebsiteController::class, 'deleteBackup'])->name('website.delete.backup');
     Route::get('/admin/website/{id}/tab-data', [WebsiteController::class, 'tabData'])->name('website.tabdata');
