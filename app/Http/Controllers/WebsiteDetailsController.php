@@ -76,6 +76,42 @@ class WebsiteDetailsController extends Controller
 
     }
 
+    /**
+     * Accepts JSON posted by the browser (WordPress status) and saves it to the DB.
+     * Expected payload: { site: { name: string }, ... }
+     */
+    public function saveStatusFromClient(Request $request, $id)
+    {
+        $result = Website::find($id);
+        if (!$result) {
+            return response()->json(['success' => false, 'message' => 'Website not found.'], 404);
+        }
+
+        $data = $request->json()->all();
+
+        if (empty($data)) {
+            return response()->json(['success' => false, 'message' => 'Empty payload.'], 400);
+        }
+
+        // Derive title and status from payload if present
+        $siteName = data_get($data, 'site.name', data_get($data, 'site.title', $result->title));
+        // If status info present, map to website_status; otherwise mark active
+        $websiteStatus = data_get($data, 'site.status', 'active');
+
+        try {
+            Website::where('id', $id)->update([
+                'title' => $siteName,
+                'website_status' => $websiteStatus ?? 'active',
+                'data' => json_encode($data),
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Status saved.', 'data' => $data], 200);
+        } catch (Exception $e) {
+            Log::error('Failed to save status from client for website '.$id.': '.$e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to save data.'], 500);
+        }
+    }
+
     // here function for check website status downgrade or upgrade
     public function checkWebsiteStatus($id)
     {
