@@ -27,6 +27,12 @@ Route::middleware('auth')->group(function () {
     Route::get('admin/index', [WebsiteController::class, 'dashboardIndex'])->name('index');
 
     Route::get('admin/website/reload/{id}/data', [WebsiteDetailsController::class, 'reloadData']);
+    // AJAX endpoint for reloading website data (returns JSON)
+    Route::post('admin/website/reload/{id}/data', [WebsiteDetailsController::class, 'reloadDataAjax'])->name('website.reload.ajax');
+    // Server-side fetch: retrieves WP API JSON (useful when JS cannot call WP directly)
+    Route::get('admin/website/fetch-wp/{id}', [WebsiteDetailsController::class, 'fetchWp'])->name('website.fetch.wp');
+    // Save payload posted from client (expects the WP API response JSON)
+    Route::post('admin/website/save-response/{id}', [WebsiteDetailsController::class, 'saveResponse'])->name('website.save.response');
     Route::get('/admin/website/{id}/upgrade-plugin',[WebsiteController::class,'hitUpgradePlugin']);
     Route::get('/admin/website-list', [WebsiteController::class, 'listWebsite'])->name('dashboard');
     Route::get('/admin/website/add', [WebsiteController::class, 'showUrlForm'])->name('website.add.url');

@@ -768,6 +768,12 @@
                             </button>
                             </a>
 
+                            <!-- AJAX Reload button -->
+                            <button class="tab" id="ajaxReloadBtn" type="button" title="Reload data via AJAX">
+                                <i class="fas fa-sync-alt"></i>
+                                <span id="ajaxReloadBtnText">Reload Data</span>
+                            </button>
+
 
                         </div>
                     </div>
@@ -2309,6 +2315,72 @@ document.querySelectorAll('.go-tab-btn').forEach(btn => {
             tabButton.click();
             tabButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
+    });
+});
+</script>
+
+<script>
+// New flow: fetch WP JSON from server, then POST it back to save on server
+document.addEventListener('DOMContentLoaded', function() {
+    const ajaxBtn = document.getElementById('ajaxReloadBtn');
+    if (!ajaxBtn) return;
+
+    ajaxBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        ajaxBtn.disabled = true;
+        const span = document.getElementById('ajaxReloadBtnText');
+        const original = span ? span.innerText : '';
+        if (span) span.innerText = 'Fetching...';
+
+        // Step 1: server-side fetch
+        fetch('{{ route("website.fetch.wp", ["id" => $result->id]) }}', {
+            credentials: 'same-origin',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(function(resp) {
+            return resp.json();
+        }).then(function(json) {
+            if (!json || !json.success) {
+                alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
+                ajaxBtn.disabled = false;
+                if (span) span.innerText = original;
+                return;
+            }
+
+            // Step 2: send fetched data to save endpoint
+            if (span) span.innerText = 'Saving...';
+
+            fetch('{{ route("website.save.response", ["id" => $result->id]) }}', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(json.data)
+            }).then(function(resp2) { return resp2.json(); })
+            .then(function(saveResp) {
+                if (saveResp && saveResp.success) {
+                    if (span) span.innerText = 'Saved';
+                    setTimeout(function() { location.reload(); }, 800);
+                } else {
+                    alert((saveResp && saveResp.message) ? saveResp.message : 'Save failed');
+                    ajaxBtn.disabled = false;
+                    if (span) span.innerText = original;
+                }
+            }).catch(function(err) {
+                alert('Save request failed: ' + err.message);
+                ajaxBtn.disabled = false;
+                if (span) span.innerText = original;
+            });
+
+        }).catch(function(err) {
+            alert('Fetch request failed: ' + err.message);
+            ajaxBtn.disabled = false;
+            if (span) span.innerText = original;
+        });
     });
 });
 </script>
