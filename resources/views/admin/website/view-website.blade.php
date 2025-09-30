@@ -2398,6 +2398,7 @@
                             console.log('Direct fetch error:', err);
                         });
                 })().then(function(json) {
+                    console.log('Direct fetch response:', json);
                     if (!json || !json.success) {
                         alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
                         ajaxBtn.disabled = false;
