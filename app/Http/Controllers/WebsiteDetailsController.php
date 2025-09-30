@@ -43,6 +43,7 @@ class WebsiteDetailsController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json();
+                return $data;
                 if (isset($data['code']) && $data['code'] === 'rest_no_route') {
                     $data = null;
                     $error = "API route not found on WordPress site.";
