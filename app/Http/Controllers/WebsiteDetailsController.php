@@ -17,7 +17,7 @@ class WebsiteDetailsController extends Controller
     }   
 
     // here code for update websdite data
-    public function reloadData(Request $request, $id)
+    public function reloadData($id)
     {
         
         $result = Website::find($id);
@@ -56,15 +56,6 @@ class WebsiteDetailsController extends Controller
                     }
 
                 }
-                // If AJAX/JSON requested, return JSON with saved data
-                if ($request->wantsJson() || $request->ajax() || str_contains($request->header('Accept', ''), '/json')) {
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Website data reloaded successfully.',
-                        'data' => $data,
-                    ]);
-                }
-
                 return back()->with('success', 'Website data reloaded successfully.');
             } else {
                  Website::where('id', $id)->update([
@@ -72,9 +63,6 @@ class WebsiteDetailsController extends Controller
                         ]);
                 $data = null;
                 $error = "Failed to fetch status. HTTP status: " . $response->status();
-                if ($request->wantsJson() || $request->ajax() || str_contains($request->header('Accept', ''), '/json')) {
-                    return response()->json(['success' => false, 'error' => $error], 500);
-                }
                 return back()->with('error', $error);
             }
         } catch (\Exception $e) {
@@ -83,9 +71,6 @@ class WebsiteDetailsController extends Controller
                         ]);
             $data = null;
             $error = "Connection error: " . $e->getMessage();
-            if ($request->wantsJson() || $request->ajax() || str_contains($request->header('Accept', ''), '/json')) {
-                return response()->json(['success' => false, 'error' => $error], 500);
-            }
             return back()->with('error', $error);
         }
 

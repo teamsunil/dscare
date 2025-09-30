@@ -116,9 +116,6 @@
 </style>
 
 <div class="dashboard_table mt-4 mb-4">
-	<div style="display:flex; justify-content:flex-end; margin: 0 24px 12px 0;">
-		<button id="btn-reload-data" class="btn btn-sm btn-primary">Reload Data</button>
-	</div>
 	<div class="tablist_btns">
 		<div class="tablist" role="tablist">
 			<button class="tab active" data-id="tab-sitehealth" type="button"><i class="fas fa-heartbeat"></i> Site Health</button>

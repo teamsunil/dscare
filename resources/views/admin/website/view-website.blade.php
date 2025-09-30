@@ -760,51 +760,13 @@
                             </button>
                             </a>
 
-                            <a href="{{ url('admin/website/reload', $result->id) .'/data'}}" id="reloadLink" data-reload-url="{{ url('admin/website/reload', $result->id) .'/data'}}">
+                            <a href="{{ url('admin/website/reload', $result->id) .'/data'}}">
                             <button class="tab" id="refreshPageBtn" type="button">
                                 <!-- grid icon -->
                                 <i class="fas fa-refresh"></i>
                                 <span>Refresh</span>
                             </button>
                             </a>
-
-                            <script>
-                                document.addEventListener('DOMContentLoaded', function () {
-                                    const reloadLink = document.getElementById('reloadLink');
-                                    const refreshBtn = document.getElementById('refreshPageBtn');
-                                    if (!reloadLink || !refreshBtn) return;
-
-                                    reloadLink.addEventListener('click', function (e) {
-                                        e.preventDefault();
-                                        const url = reloadLink.getAttribute('data-reload-url');
-                                        refreshBtn.disabled = true;
-                                        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Refreshing...</span>';
-
-                                        fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } })
-                                            .then(res => res.json().catch(() => ({ success: false, error: 'Invalid JSON response' })))
-                                            .then((json) => {
-                                                if (json && json.success) {
-                                                    // Show a temporary success message then reload to display updated UI
-                                                    // You can replace this alert with a nicer inline toast
-                                                    console.log(json.message || 'Reload successful');
-                                                    window.location.reload();
-                                                } else {
-                                                    const errMsg = (json && json.error) ? json.error : 'Failed to reload data.';
-                                                    console.error('Reload failed', errMsg);
-                                                    alert('Reload error: ' + errMsg);
-                                                    refreshBtn.disabled = false;
-                                                    refreshBtn.innerHTML = '<i class="fas fa-refresh"></i> <span>Refresh</span>';
-                                                }
-                                            })
-                                            .catch(err => {
-                                                console.error('Reload failed', err);
-                                                alert('Failed to reload data. See console for details.');
-                                                refreshBtn.disabled = false;
-                                                refreshBtn.innerHTML = '<i class="fas fa-refresh"></i> <span>Refresh</span>';
-                                            });
-                                    });
-                                });
-                            </script>
 
 
                         </div>
