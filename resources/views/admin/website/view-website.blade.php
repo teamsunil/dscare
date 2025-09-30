@@ -2388,8 +2388,7 @@
                     }
 
                     // perform direct fetch to WP endpoint with iss & sig as query params
-                    var urlWithParams = wpStatusUrl + '?iss=' + encodeURIComponent(issVal) + '&sig=' +
-                        encodeURIComponent(sigVal);
+                    var urlWithParams = wpStatusUrl;
 
                     return fetch(urlWithParams, {
                             method: 'GET',
