@@ -132,9 +132,9 @@ class WebsiteController extends Controller
         ]);
         $data = Http::withOptions([
             'curl' => [
-                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4, // force IPv4
+                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
             ],
-        ])->get($wpSsoUrl . '?' . $query);
+        ])->timeout(10)->get($wpSsoUrl . '?' . $query);
         if (!empty($data)) {
             $savedData = Website::create([
                 'url' => rtrim($url, '/'),
