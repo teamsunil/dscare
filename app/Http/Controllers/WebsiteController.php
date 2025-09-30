@@ -118,11 +118,15 @@ class WebsiteController extends Controller
         $request->validate([
             'username' => 'required|string|max:255',
             'password' => 'required|string|max:255',
+            'site_url' => 'required|url',
         ]);
-        $url = $request->session()->get('website_url');
+
+        // Prefer the site_url sent from the form (JS sets this), fallback to session
+        $url = trim($request->input('site_url')) ?: $request->session()->get('website_url');
         if (!$url) {
-            return redirect()->route('website.add.url')->withErrors('Session expired, please enter website URL again.');
+            return redirect()->route('website.add.url')->withErrors('Session expired or site URL missing, please enter website URL again.');
         }
+
         $sharedSecret = Str::random(32); // Laravel helper to generate a secure string
         $wpSsoUrl = rtrim($url, '/') . '/wp-json/laravel-sso/v1/add-secret-token';
         $query = http_build_query([
@@ -130,27 +134,45 @@ class WebsiteController extends Controller
             'url' => rtrim(url('/'), '/'),
             'redirect' => '',
         ]);
-        $data = Http::get($wpSsoUrl . '?' . $query);
-        if (!empty($data)) {
-            $savedData = Website::create([
-                'url' => rtrim($url, '/'),
-                'username' => $request->username,
-                'password' => encrypt($request->password), // Encrypt the password
-                'token_id' => encrypt($sharedSecret), // Encrypt the shared secret
-                'title' => $request->title,
-                'logo' => $request->logo,
-            ]);
-            // Clear session
-            $request->session()->forget('website_url');
 
-            $this->updateSiteStatus($savedData->id);
-
-            return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : ' . $sharedSecret);
-        } else {
-            return back()->with('error', 'Wordpress Plugins Isseus');
+        try {
+            // Use a timeout and check for successful response
+            $response = Http::timeout(10)->get($wpSsoUrl . '?' . $query);
+        } catch (\Exception $e) {
+            return back()->withErrors('Could not connect to the WordPress site: ' . $e->getMessage());
         }
 
-        // Save to DB
+        if (!$response || !$response->successful()) {
+            $msg = 'WordPress plugin or endpoint not available.';
+            // If the response has a body, try to include it for debugging
+            try {
+                $body = $response ? $response->body() : null;
+                if ($body) {
+                    $msg .= ' Response: ' . (strlen($body) > 300 ? substr($body, 0, 300) . '...' : $body);
+                }
+            } catch (\Throwable $e) {
+                // ignore
+            }
+            return back()->withErrors($msg);
+        }
+
+        // At this point the WP endpoint responded OK. Save the website record.
+        $savedData = Website::create([
+            'url' => rtrim($url, '/'),
+            'username' => $request->username,
+            'password' => encrypt($request->password), // Encrypt the password
+            'token_id' => encrypt($sharedSecret), // Encrypt the shared secret
+            'title' => $request->title,
+            'logo' => $request->logo,
+        ]);
+
+        // Clear session
+        $request->session()->forget('website_url');
+
+        // Trigger status update job
+        $this->updateSiteStatus($savedData->id);
+
+        return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : ' . $sharedSecret);
     }
     public function update(Request $request, $id)
     {
