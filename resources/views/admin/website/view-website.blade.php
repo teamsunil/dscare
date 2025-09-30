@@ -2372,20 +2372,8 @@
                     var wpStatusUrl = '{{ rtrim($result->url, '/') }}' +
                         '/wp-json/laravel-sso/v1/status';
 
-                    function fallbackToServerFetch() {
-                        return fetch('{{ route('website.fetch.wp', ['id' => $result->id]) }}', {
-                            credentials: 'same-origin',
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        }).then(function(resp) {
-                            return resp.json();
-                        });
-                    }
+                
 
-                    if (!tryDirect) {
-                        return fallbackToServerFetch();
-                    }
 
                     // perform direct fetch to WP endpoint with iss & sig as query params
                     var urlWithParams = wpStatusUrl;
@@ -2400,16 +2388,16 @@
                         .then(function(resp) {
                             if (!resp.ok) {
                                 // If WP blocks or returns non-200, fallback to server
-                                return fallbackToServerFetch();
+                                alert(resp.message || ('WP fetch failed: ' + resp.status + ' ' + resp
+                                    .statusText));
                             }
                             return resp.json();
                         })
                         .catch(function(err) {
                             // likely CORS or network error; fallback to server fetch
-                            return fallbackToServerFetch();
+                            console.log('Direct fetch error:', err);
                         });
                 })().then(function(json) {
-                    console.log(json);
                     if (!json || !json.success) {
                         alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
                         ajaxBtn.disabled = false;
@@ -2419,7 +2407,8 @@
 
                     // Step 2: send fetched data to save endpoint
                     if (span) span.innerText = 'Saving...';
-
+                    alert('Fetched data successfully. Now saving to server...');
+                    console.log('Fetched data:', json.data);
                     fetch('{{ route('website.save.response', ['id' => $result->id]) }}', {
                             method: 'POST',
                             credentials: 'same-origin',
