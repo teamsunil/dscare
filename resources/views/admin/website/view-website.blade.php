@@ -699,7 +699,7 @@
                     <div class="tablist_btns">
                         <div class="tablist" role="tablist" aria-label="Main tabs" id="tablist">
 
-                             <button class="tab tabchnage active" role="tab" data-id="tab-overview" id="tab-overview"
+                            <button class="tab tabchnage active" role="tab" data-id="tab-overview" id="tab-overview"
                                 aria-controls="panel-overview" aria-selected="true" tabindex="0" data-index="0">
                                 <!-- home icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -708,7 +708,7 @@
                                 </svg>
                                 <span>WordPress</span>
                             </button>
-                           
+
 
                             <button class="tab tabchnage" role="tab" data-id="tab-plugins" id="tab-plugins"
                                 aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
@@ -746,26 +746,26 @@
 
                             <button class="tab tabchnage" role="tab" data-id="tab-backup" id="tab-backup"
                                 aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
-                                 data-backup-id="{{ $result->id }}">
+                                data-backup-id="{{ $result->id }}">
                                 <!-- grid icon -->
                                 <i class="fas fa-cogs"></i>
                                 <span>View Backup</span>
                             </button>
 
                             <a href="{{ route('website.details', $result->id) }}">
-                            <button class="tab tabchnage">
-                                <!-- grid icon -->
-                                <i class="fas fa-book"></i>
-                                <span>View Details</span>
-                            </button>
+                                <button class="tab tabchnage">
+                                    <!-- grid icon -->
+                                    <i class="fas fa-book"></i>
+                                    <span>View Details</span>
+                                </button>
                             </a>
 
-                            <a href="{{ url('admin/website/reload', $result->id) .'/data'}}">
-                            <button class="tab" id="refreshPageBtn" type="button">
-                                <!-- grid icon -->
-                                <i class="fas fa-refresh"></i>
-                                <span>Refresh</span>
-                            </button>
+                            <a href="{{ url('admin/website/reload', $result->id) . '/data' }}">
+                                <button class="tab" id="refreshPageBtn" type="button">
+                                    <!-- grid icon -->
+                                    <i class="fas fa-refresh"></i>
+                                    <span>Refresh</span>
+                                </button>
                             </a>
 
                             <!-- AJAX Reload button -->
@@ -850,9 +850,11 @@
                                                 <span class="stat-label">Updates</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary tab tabchnage" role="tab" data-id="tab-plugins" id="tab-plugins"
-                                aria-controls="panel-features" aria-selected="false" tabindex="-1" data-index="1"
-                                data-plugin-response = '@json(data_get($response, 'plugins', null))' data-plugin-id="{{ $result->id }}">
+                                        <button type="button" class="manage-btn btn btn-primary tab tabchnage"
+                                            role="tab" data-id="tab-plugins" id="tab-plugins"
+                                            aria-controls="panel-features" aria-selected="false" tabindex="-1"
+                                            data-index="1" data-plugin-response = '@json(data_get($response, 'plugins', null))'
+                                            data-plugin-id="{{ $result->id }}">
                                             <i class="fas fa-cogs"></i> Manage
                                         </button>
                                     </div>
@@ -875,9 +877,11 @@
                                                 <span class="stat-label">Active</span>
                                             </div>
                                         </div>
-                                        <button type="button" class=" manage-btn btn btn-primary tab tabchnage"role="tab" data-id="tab-themes" id="tab-themes"
-                                aria-controls="panel-gallery" aria-selected="false" tabindex="-1" data-index="2"
-                                data-theme-response = '@json(data_get($response, 'themes', null))' data-theme-id="{{ $result->id }}">
+                                        <button type="button" class=" manage-btn btn btn-primary tab tabchnage"role="tab"
+                                            data-id="tab-themes" id="tab-themes" aria-controls="panel-gallery"
+                                            aria-selected="false" tabindex="-1" data-index="2"
+                                            data-theme-response = '@json(data_get($response, 'themes', null))'
+                                            data-theme-id="{{ $result->id }}">
                                             <i class="fas fa-brush"></i> Manage
                                         </button>
                                     </div>
@@ -900,9 +904,11 @@
                                                 <span class="stat-label">Admins</span>
                                             </div>
                                         </div>
-                                        <button type="button" class="manage-btn btn btn-primary tab tabchnage" role="tab" data-id="tab-users" id="tab-users"
-                                aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-index="3"
-                                data-user-response = '@json(data_get($response, 'users', null))' data-user-id="{{ $result->id }}">
+                                        <button type="button" class="manage-btn btn btn-primary tab tabchnage"
+                                            role="tab" data-id="tab-users" id="tab-users"
+                                            aria-controls="panel-settings" aria-selected="false" tabindex="-1"
+                                            data-index="3" data-user-response = '@json(data_get($response, 'users', null))'
+                                            data-user-id="{{ $result->id }}">
                                             <i class="fas fa-user-cog"></i> Manage
                                         </button>
                                     </div>
@@ -1238,40 +1244,39 @@
                                         </tr>
                                     </thead>
                                     <tbody id="backupTableBody">
-                                       @if($backupAllData->isNotEmpty())
+                                        @if ($backupAllData->isNotEmpty())
 
-                                        @foreach ($backupAllData as $backup)
-                                        @php
-                                            $type1 = explode('.', $backup->file_path);
-                                            $files1=explode('/',$backup->file_path);
-                                            
-                                        @endphp
-                                        <tr>
-                                            <td>
-                                                @if ( isset($type1[1]) && $type1[1] === 'sql')
-                                                     Database
-                                                @elseif (isset($type1[1]) && $type1[1] === 'zip')
-                                                   Zip
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if (isset($files1[2]))
-                                                    {{ $files1[2] }}    
-                                                @else
-                                                    N/A
-                                                    
-                                                @endif
-                                            </td>
-                                           
-                                            <td>{{ date('d M Y', strtotime($backup->created_at)) }}</td>
-                                             <td><a href="{{ asset('storage/' . $backup->file_path) }}" target="_blank"><b class="fas fa-download"></b></a></td>
-                                        </tr>
-                                        @endforeach
+                                            @foreach ($backupAllData as $backup)
+                                                @php
+                                                    $type1 = explode('.', $backup->file_path);
+                                                    $files1 = explode('/', $backup->file_path);
+
+                                                @endphp
+                                                <tr>
+                                                    <td>
+                                                        @if (isset($type1[1]) && $type1[1] === 'sql')
+                                                            Database
+                                                        @elseif (isset($type1[1]) && $type1[1] === 'zip')
+                                                            Zip
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if (isset($files1[2]))
+                                                            {{ $files1[2] }}
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </td>
+
+                                                    <td>{{ date('d M Y', strtotime($backup->created_at)) }}</td>
+                                                    <td><a href="{{ asset('storage/' . $backup->file_path) }}"
+                                                            target="_blank"><b class="fas fa-download"></b></a></td>
+                                                </tr>
+                                            @endforeach
                                         @else
-
-                                       @endif
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -1431,11 +1436,15 @@
                 </div>
                 <div id="backupProgressContainer" style="margin: 10px 20px; display:none;">
                     <div style="font-weight:600;">Backup Progress:</div>
-                    <div id="backupProgressBar" style="background:#e9ecef; border-radius:8px; height:24px; width:100%; margin-top:6px;">
-                        <div id="backupProgressFill" style="background:#2c437c; height:100%; width:0%; border-radius:8px; transition:width 0.5s;"></div>
+                    <div id="backupProgressBar"
+                        style="background:#e9ecef; border-radius:8px; height:24px; width:100%; margin-top:6px;">
+                        <div id="backupProgressFill"
+                            style="background:#2c437c; height:100%; width:0%; border-radius:8px; transition:width 0.5s;">
+                        </div>
                     </div>
                     <div id="backupProgressText" style="margin-top:6px; font-size:14px; color:#2c437c;">0% completed</div>
-                    <button id="continueBackupBtn" class="btn btn-warning btn-sm mt-2" style="display:none;">Continue Backup</button>
+                    <button id="continueBackupBtn" class="btn btn-warning btn-sm mt-2" style="display:none;">Continue
+                        Backup</button>
                 </div>
                 <div class="modal-footer">
                     <button id="confirmBackupBtn" class="btn btn-primary">Confirm Backup</button>
@@ -1449,79 +1458,85 @@
     <script>
         var autoBackupInterval = null;
 
-function callBackupApi(auto = false) {
-    var $btn = $('#confirmBackupBtn');
-    var backupType = $('#backupTypeSelect').val();
-    $.ajax({
-        url: '/admin/website/' + {{ $result->id }} + '/backup',
-        method: 'GET',
-        data: { type: backupType },
-        success: function(response) {
-            if (response.success) {
-                var percent = response.data.progress_percent || 0;
-                $('#backupProgressFill').css('width', percent + '%');
-                // Show storing status if available, else show percent completed
-                if (response.data.storing_status) {
-                    $('#backupProgressText').text(response.data.storing_status);
-                } else {
-                    $('#backupProgressText').text(percent + '% completed');
-                }
-                if (response.data.status === 'completed' || percent >= 100) {
-                    $('#confirmBackupBtn').text('Backup Created!').addClass('btn-success');
-                    $('#continueBackupBtn').hide();
+        function callBackupApi(auto = false) {
+            var $btn = $('#confirmBackupBtn');
+            var backupType = $('#backupTypeSelect').val();
+            $.ajax({
+                url: '/admin/website/' + {{ $result->id }} + '/backup',
+                method: 'GET',
+                data: {
+                    type: backupType
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var percent = response.data.progress_percent || 0;
+                        $('#backupProgressFill').css('width', percent + '%');
+                        // Show storing status if available, else show percent completed
+                        if (response.data.storing_status) {
+                            $('#backupProgressText').text(response.data.storing_status);
+                        } else {
+                            $('#backupProgressText').text(percent + '% completed');
+                        }
+                        if (response.data.status === 'completed' || percent >= 100) {
+                            $('#confirmBackupBtn').text('Backup Created!').addClass('btn-success');
+                            $('#continueBackupBtn').hide();
+                            clearInterval(autoBackupInterval);
+                            setTimeout(function() {
+                                $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup')
+                                    .removeClass('btn-success');
+                                $('#backupTypeModal').modal('hide');
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            $('#continueBackupBtn').show();
+                            $('#confirmBackupBtn').text('Continue Backup').removeClass(
+                            'btn-success btn-danger');
+                            $('#confirmBackupBtn').prop('disabled', false);
+                            if (auto) {
+                                autoBackupInterval = setTimeout(function() {
+                                    callBackupApi(true);
+                                }, 1000);
+                            }
+                        }
+                    } else {
+                        $('#confirmBackupBtn').text('Failed!').addClass('btn-danger');
+                        clearInterval(autoBackupInterval);
+                        setTimeout(function() {
+                            $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup')
+                                .removeClass('btn-danger');
+                        }, 2000);
+                        alert(response.error || 'Backup failed.');
+                    }
+                },
+                error: function() {
+                    $('#confirmBackupBtn').text('Error!').addClass('btn-danger');
                     clearInterval(autoBackupInterval);
                     setTimeout(function() {
-                        $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup').removeClass('btn-success');
-                        $('#backupTypeModal').modal('hide');
-                        location.reload();
-                    }, 1500);
-                } else {
-                    $('#continueBackupBtn').show();
-                    $('#confirmBackupBtn').text('Continue Backup').removeClass('btn-success btn-danger');
-                    $('#confirmBackupBtn').prop('disabled', false);
-                    if (auto) {
-                        autoBackupInterval = setTimeout(function() {
-                            callBackupApi(true);
-                        }, 1000);
-                    }
+                        $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup')
+                            .removeClass('btn-danger');
+                    }, 2000);
+                    alert('Failed to create backup.');
                 }
-            } else {
-                $('#confirmBackupBtn').text('Failed!').addClass('btn-danger');
-                clearInterval(autoBackupInterval);
-                setTimeout(function() {
-                    $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup').removeClass('btn-danger');
-                }, 2000);
-                alert(response.error || 'Backup failed.');
-            }
-        },
-        error: function() {
-            $('#confirmBackupBtn').text('Error!').addClass('btn-danger');
-            clearInterval(autoBackupInterval);
-            setTimeout(function() {
-                $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup').removeClass('btn-danger');
-            }, 2000);
-            alert('Failed to create backup.');
+            });
         }
-    });
-}
 
-$(document).on('click', '#confirmBackupBtn', function() {
-    var $btn = $(this);
-    $btn.prop('disabled', true).text('Backing up...');
-    $('#backupProgressContainer').show();
-    $('#backupProgressFill').css('width', '0%');
-    $('#backupProgressText').text('0% completed');
-    $('#continueBackupBtn').hide();
-    clearInterval(autoBackupInterval);
-    callBackupApi(true); // Start auto-continue
-});
+        $(document).on('click', '#confirmBackupBtn', function() {
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Backing up...');
+            $('#backupProgressContainer').show();
+            $('#backupProgressFill').css('width', '0%');
+            $('#backupProgressText').text('0% completed');
+            $('#continueBackupBtn').hide();
+            clearInterval(autoBackupInterval);
+            callBackupApi(true); // Start auto-continue
+        });
 
-$('#continueBackupBtn').off('click').on('click', function() {
-    $('#confirmBackupBtn').prop('disabled', true).text('Continuing...');
-    $('#continueBackupBtn').hide();
-    clearInterval(autoBackupInterval);
-    callBackupApi(true); // Continue auto-continue
-});
+        $('#continueBackupBtn').off('click').on('click', function() {
+            $('#confirmBackupBtn').prop('disabled', true).text('Continuing...');
+            $('#continueBackupBtn').hide();
+            clearInterval(autoBackupInterval);
+            callBackupApi(true); // Continue auto-continue
+        });
     </script>
 
 
@@ -1540,7 +1555,7 @@ $('#continueBackupBtn').off('click').on('click', function() {
         // reload pages then show current tab with dynamic data
         $(document).ready(function() {
             const tabFromUrl = new URLSearchParams(window.location.search).get('tab');
-            const savedTabId = tabFromUrl ;
+            const savedTabId = tabFromUrl;
             if (savedTabId) {
                 const $savedTab = $('.tabchnage[data-id="' + savedTabId + '"]');
                 if ($savedTab.length) {
@@ -1955,11 +1970,11 @@ $('#continueBackupBtn').off('click').on('click', function() {
                             ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
                             <br/>
                             ${plugin.name !== 'DS Care' ? `
-                                                    ${plugin.is_active
-                                                    ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
-                                                    : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
-                                                    <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
-                                                ` : ''}
+                                                        ${plugin.is_active
+                                                        ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                        : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                                    ` : ''}
                         </td>
                         <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
                         <td>${plugin.author || '-'}</td>
@@ -2005,9 +2020,9 @@ $('#continueBackupBtn').off('click').on('click', function() {
                                     ${theme.is_active
                                     ? ``
                                     : `
-                                                    <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
-                                                    <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
-                                                    `}
+                                                        <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                        `}
                                    
                         </td>
                         <td>${theme.slug || '-'}</td>
@@ -2094,11 +2109,10 @@ $('#continueBackupBtn').off('click').on('click', function() {
                         renderUsers(filtered);
                     });
                 }
-            }
-            else if (tabId === "tab-backups") {
+            } else if (tabId === "tab-backups") {
                 // No dynamic data to load for backups currently
                 return;
-            
+
             }
         }
 
@@ -2270,27 +2284,28 @@ $('#continueBackupBtn').off('click').on('click', function() {
         // Loader overlay logic
         function showLoader() {
             if (!document.getElementById('pageLoader')) {
-            const loader = document.createElement('div');
-            loader.id = 'pageLoader';
-            loader.style.position = 'fixed';
-            loader.style.top = '0';
-            loader.style.left = '0';
-            loader.style.width = '100vw';
-            loader.style.height = '100vh';
-            loader.style.background = 'rgba(255,255,255,0.85)';
-            loader.style.zIndex = '9999';
-            loader.style.display = 'flex';
-            loader.style.alignItems = 'center';
-            loader.style.justifyContent = 'center';
-            loader.innerHTML = `
+                const loader = document.createElement('div');
+                loader.id = 'pageLoader';
+                loader.style.position = 'fixed';
+                loader.style.top = '0';
+                loader.style.left = '0';
+                loader.style.width = '100vw';
+                loader.style.height = '100vh';
+                loader.style.background = 'rgba(255,255,255,0.85)';
+                loader.style.zIndex = '9999';
+                loader.style.display = 'flex';
+                loader.style.alignItems = 'center';
+                loader.style.justifyContent = 'center';
+                loader.innerHTML = `
                 <div style="text-align:center;">
                 <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status"></div>
                 <div style="margin-top:1rem; font-size:1.2rem; color:#2c437c;">Loading...</div>
                 </div>
             `;
-            document.body.appendChild(loader);
+                document.body.appendChild(loader);
             }
         }
+
         function hideLoader() {
             const loader = document.getElementById('pageLoader');
             if (loader) loader.remove();
@@ -2304,122 +2319,145 @@ $('#continueBackupBtn').off('click').on('click', function() {
         document.getElementById('refreshPageBtn').addEventListener('click', function(e) {
             showLoader();
         });
-        
     </script>
-<script>
-document.querySelectorAll('.go-tab-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const tabId = btn.getAttribute('data-tab');
-        const tabButton = document.querySelector(`.tablist .tab[data-id='${tabId}']`);
-        if (tabButton) {
-            tabButton.click();
-            tabButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    });
-});
-</script>
+    <script>
+        document.querySelectorAll('.go-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = btn.getAttribute('data-tab');
+                const tabButton = document.querySelector(`.tablist .tab[data-id='${tabId}']`);
+                if (tabButton) {
+                    tabButton.click();
+                    tabButton.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            });
+        });
+    </script>
 
-<script>
-// New flow: fetch WP JSON from server, then POST it back to save on server
-document.addEventListener('DOMContentLoaded', function() {
-    const ajaxBtn = document.getElementById('ajaxReloadBtn');
-    if (!ajaxBtn) return;
+    <script>
+        // New flow: fetch WP JSON from server, then POST it back to save on server
+        document.addEventListener('DOMContentLoaded', function() {
+            const ajaxBtn = document.getElementById('ajaxReloadBtn');
+            if (!ajaxBtn) return;
 
-    ajaxBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        ajaxBtn.disabled = true;
-        const span = document.getElementById('ajaxReloadBtnText');
-        const original = span ? span.innerText : '';
-        if (span) span.innerText = 'Fetching...';
+            ajaxBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                ajaxBtn.disabled = true;
+                const span = document.getElementById('ajaxReloadBtnText');
+                const original = span ? span.innerText : '';
+                if (span) span.innerText = 'Fetching...';
 
-        // Step 1: try direct browser fetch to WordPress status endpoint using iss & sig if available
-        (function() {
-            var tryDirect = false;
-            var issVal = "<?php echo $iss ?? ''; ?>";
-            var sigVal = "<?php echo $sig ?? ''; ?>";
+                // Step 1: try direct browser fetch to WordPress status endpoint using iss & sig if available
+                (function() {
+                    var tryDirect = false;
+                    var issVal = "<?php echo $iss ?? ''; ?>";
+                    var sigVal = "<?php echo $sig ?? ''; ?>";
 
-            // Try several places for iss/sig (global vars, hidden inputs, data attributes)
-            if (window.iss) issVal = window.iss;
-            if (window.sig) sigVal = window.sig;
-            if (!issVal && document.getElementById('iss')) issVal = document.getElementById('iss').value;
-            if (!sigVal && document.getElementById('sig')) sigVal = document.getElementById('sig').value;
-            if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn.dataset.iss;
-            if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn.dataset.sig;
+                    // Try several places for iss/sig (global vars, hidden inputs, data attributes)
+                    if (window.iss) issVal = window.iss;
+                    if (window.sig) sigVal = window.sig;
+                    if (!issVal && document.getElementById('iss')) issVal = document.getElementById(
+                        'iss').value;
+                    if (!sigVal && document.getElementById('sig')) sigVal = document.getElementById(
+                        'sig').value;
+                    if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn
+                        .dataset.iss;
+                    if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn
+                        .dataset.sig;
 
-            if (issVal && sigVal) tryDirect = true;
+                    if (issVal && sigVal) tryDirect = true;
 
-            var wpStatusUrl = '{{ rtrim($result->url, '/') }}' + '/wp-json/laravel-sso/v1/status';
+                    var wpStatusUrl = '{{ rtrim($result->url, '/') }}' +
+                        '/wp-json/laravel-sso/v1/status';
 
-            function fallbackToServerFetch() {
-                return fetch('{{ route("website.fetch.wp", ["id" => $result->id]) }}', {
-                    credentials: 'same-origin',
-                    headers: {'X-Requested-With': 'XMLHttpRequest'}
-                }).then(function(resp) { return resp.json(); });
-            }
+                    function fallbackToServerFetch() {
+                        return fetch('{{ route('website.fetch.wp', ['id' => $result->id]) }}', {
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        }).then(function(resp) {
+                            return resp.json();
+                        });
+                    }
 
-            if (!tryDirect) {
-                return fallbackToServerFetch();
-            }
-
-            // perform direct fetch to WP endpoint with iss & sig as query params
-            var urlWithParams = wpStatusUrl + '?iss=' + encodeURIComponent(issVal) + '&sig=' + encodeURIComponent(sigVal);
-
-            return fetch(urlWithParams, { method: 'GET', mode: 'cors' })
-                .then(function(resp) {
-                    if (!resp.ok) {
-                        // If WP blocks or returns non-200, fallback to server
+                    if (!tryDirect) {
                         return fallbackToServerFetch();
                     }
-                    return resp.json();
-                })
-                .catch(function(err) {
-                    // likely CORS or network error; fallback to server fetch
-                    return fallbackToServerFetch();
-                });
-        })().then(function(json) {
-            console.log(json);
-            if (!json || !json.success) {
-                alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
-                ajaxBtn.disabled = false;
-                if (span) span.innerText = original;
-                return;
-            }
 
-            // Step 2: send fetched data to save endpoint
-            if (span) span.innerText = 'Saving...';
+                    // perform direct fetch to WP endpoint with iss & sig as query params
+                    var urlWithParams = wpStatusUrl + '?iss=' + encodeURIComponent(issVal) + '&sig=' +
+                        encodeURIComponent(sigVal);
 
-            fetch('{{ route("website.save.response", ["id" => $result->id]) }}', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify(json.data)
-            }).then(function(resp2) { return resp2.json(); })
-            .then(function(saveResp) {
-                if (saveResp && saveResp.success) {
-                    if (span) span.innerText = 'Saved';
-                    setTimeout(function() { location.reload(); }, 800);
-                } else {
-                    alert((saveResp && saveResp.message) ? saveResp.message : 'Save failed');
+                    return fetch(urlWithParams, {
+                            method: 'GET',
+                            mode: 'cors',
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(function(resp) {
+                            if (!resp.ok) {
+                                // If WP blocks or returns non-200, fallback to server
+                                return fallbackToServerFetch();
+                            }
+                            return resp.json();
+                        })
+                        .catch(function(err) {
+                            // likely CORS or network error; fallback to server fetch
+                            return fallbackToServerFetch();
+                        });
+                })().then(function(json) {
+                    console.log(json);
+                    if (!json || !json.success) {
+                        alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
+                        ajaxBtn.disabled = false;
+                        if (span) span.innerText = original;
+                        return;
+                    }
+
+                    // Step 2: send fetched data to save endpoint
+                    if (span) span.innerText = 'Saving...';
+
+                    fetch('{{ route('website.save.response', ['id' => $result->id]) }}', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify(json.data)
+                        }).then(function(resp2) {
+                            return resp2.json();
+                        })
+                        .then(function(saveResp) {
+                            if (saveResp && saveResp.success) {
+                                if (span) span.innerText = 'Saved';
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 800);
+                            } else {
+                                alert((saveResp && saveResp.message) ? saveResp.message :
+                                    'Save failed');
+                                ajaxBtn.disabled = false;
+                                if (span) span.innerText = original;
+                            }
+                        }).catch(function(err) {
+                            alert('Save request failed: ' + err.message);
+                            ajaxBtn.disabled = false;
+                            if (span) span.innerText = original;
+                        });
+
+                }).catch(function(err) {
+                    alert('Fetch request failed: ' + err.message);
                     ajaxBtn.disabled = false;
                     if (span) span.innerText = original;
-                }
-            }).catch(function(err) {
-                alert('Save request failed: ' + err.message);
-                ajaxBtn.disabled = false;
-                if (span) span.innerText = original;
+                });
             });
-
-        }).catch(function(err) {
-            alert('Fetch request failed: ' + err.message);
-            ajaxBtn.disabled = false;
-            if (span) span.innerText = original;
         });
-    });
-});
-</script>
+    </script>
 
 @stop
