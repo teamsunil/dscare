@@ -760,71 +760,17 @@
                             </button>
                             </a>
 
-                            <button class="tab" id="refreshPageBtn" type="button" data-reload-url="{{ url('admin/website/reload', $result->id) .'/data'}}">
+                            <a href="{{ url('admin/website/reload', $result->id) .'/data'}}">
+                            <button class="tab" id="refreshPageBtn" type="button">
                                 <!-- grid icon -->
                                 <i class="fas fa-refresh"></i>
                                 <span>Refresh</span>
                             </button>
+                            </a>
 
 
                         </div>
                     </div>
-                    <script>
-                        (function(){
-                            const btn = document.getElementById('refreshPageBtn');
-                            if (!btn) return;
-
-                            btn.addEventListener('click', function (e) {
-                                e.preventDefault();
-
-                                const url = btn.getAttribute('data-reload-url');
-                                if (!url) {
-                                    alert('Reload URL not configured');
-                                    return;
-                                }
-
-                                // show loading state
-                                btn.setAttribute('disabled', 'disabled');
-                                const originalHtml = btn.innerHTML;
-                                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Refreshing...</span>';
-
-                                fetch(url, {
-                                    method: 'GET',
-                                    headers: { 'Accept': 'application/json' },
-                                    credentials: 'same-origin'
-                                }).then(async (res) => {
-                                    if (res.ok) {
-                                        const data = await res.json().catch(() => ({}));
-                                        // if server returned success, reload page to show updated data
-                                        if (data && data.success) {
-                                            window.location.reload();
-                                            return;
-                                        }
-                                        // fallback: reload anyway
-                                        window.location.reload();
-                                        return;
-                                    }
-
-                                    // try to read error message
-                                    let errText = 'Failed to refresh data';
-                                    try {
-                                        const err = await res.json();
-                                        if (err && err.message) errText = err.message;
-                                    } catch (e) {
-                                        errText = await res.text().catch(() => errText);
-                                    }
-                                    alert(errText);
-                                }).catch((err) => {
-                                    console.error(err);
-                                    alert('Network error while refreshing data');
-                                }).finally(() => {
-                                    // restore button state
-                                    btn.removeAttribute('disabled');
-                                    btn.innerHTML = originalHtml;
-                                });
-                            });
-                        })();
-                    </script>
 
                     <!-- Panels -->
                     <div class="panels" id="panels">

@@ -27,7 +27,6 @@ Route::middleware('auth')->group(function () {
     Route::get('admin/index', [WebsiteController::class, 'dashboardIndex'])->name('index');
 
     Route::get('admin/website/reload/{id}/data', [WebsiteDetailsController::class, 'reloadData']);
-    Route::post('admin/website/{id}/save-status', [WebsiteDetailsController::class, 'saveStatusFromClient']);
     Route::get('/admin/website/{id}/upgrade-plugin',[WebsiteController::class,'hitUpgradePlugin']);
     Route::get('/admin/website-list', [WebsiteController::class, 'listWebsite'])->name('dashboard');
     Route::get('/admin/website/add', [WebsiteController::class, 'showUrlForm'])->name('website.add.url');
