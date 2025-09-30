@@ -2377,6 +2377,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return fallbackToServerFetch();
                 });
         })().then(function(json) {
+            console.log(json);
             if (!json || !json.success) {
                 alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
                 ajaxBtn.disabled = false;
