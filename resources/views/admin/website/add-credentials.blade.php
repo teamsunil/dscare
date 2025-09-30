@@ -75,11 +75,16 @@
                             </div>
                         </div>
 
-                        <input type="hidden" 
-                               name="site_url" 
-                               id="site_url" 
-                               value="{{ $websiteUrl }}" 
-                               required>
+               <input type="hidden" 
+                   name="site_url" 
+                   id="site_url" 
+                   value="{{ $websiteUrl }}" 
+                   required>
+               <input type="hidden"
+                   name="shared_secret"
+                   id="shared_secret"
+                   value="{{ $sharedSecret ?? '' }}"
+                   required>
 
                         <div class="form-group">
                             <div class="col-xs-12 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
@@ -150,9 +155,27 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
             if (response.ok && data.success) {
                 showSuccess(data.message || 'Credentials verified successfully!');
-                setTimeout(() => {
-                    form.submit();
-                }, 1500);
+
+                // After verifying credentials, the browser should register the shared secret with the WP site
+                const sharedSecret = document.getElementById('shared_secret').value;
+                const addTokenUrl = siteUrl + '/wp-json/laravel-sso/v1/add-secret-token?token=' + encodeURIComponent(sharedSecret) + '&url=' + encodeURIComponent(window.location.origin) + '&redirect=';
+
+                fetch(addTokenUrl, { method: 'GET', mode: 'cors' })
+                    .then(async addResp => {
+                        // If endpoint responds JSON, try to parse it, otherwise treat non-2xx as error
+                        if (!addResp.ok) {
+                            const txt = await addResp.text().catch(() => '');
+                            throw new Error('Failed to register token on remote site. ' + (txt || addResp.statusText));
+                        }
+                        // Token registered successfully — submit the form to save credentials on our side
+                        setTimeout(() => form.submit(), 500);
+                    })
+                    .catch(err => {
+                        showError('Could not register token on the remote site: ' + (err.message || err));
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.disabled = false;
+                    });
+
             } else {
                 showError(data.message || 'Invalid credentials. Please try again.');
                 submitBtn.innerHTML = originalBtnText;

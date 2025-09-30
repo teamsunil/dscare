@@ -110,7 +110,9 @@ class WebsiteController extends Controller
             return redirect()->route('website.add.url')->withErrors('Please enter a website URL first.');
         }
         $websiteUrl = $request->session()->get('website_url');
-        return view('admin.website.add-credentials', compact('websiteUrl'));
+        // Generate a shared secret and provide it to the view so the browser can register it with the WP site
+        $sharedSecret = Str::random(32);
+        return view('admin.website.add-credentials', compact('websiteUrl', 'sharedSecret'));
     }
 
     public function submitCredentials(Request $request)
@@ -119,6 +121,7 @@ class WebsiteController extends Controller
             'username' => 'required|string|max:255',
             'password' => 'required|string|max:255',
             'site_url' => 'required|url',
+            'shared_secret' => 'required|string',
         ]);
 
         // Prefer the site_url sent from the form (JS sets this), fallback to session
@@ -127,36 +130,10 @@ class WebsiteController extends Controller
             return redirect()->route('website.add.url')->withErrors('Session expired or site URL missing, please enter website URL again.');
         }
 
-        $sharedSecret = Str::random(32); // Laravel helper to generate a secure string
-        $wpSsoUrl = rtrim($url, '/') . '/wp-json/laravel-sso/v1/add-secret-token';
-        $query = http_build_query([
-            'token' => $sharedSecret,
-            'url' => rtrim(url('/'), '/'),
-            'redirect' => '',
-        ]);
+        // The browser should have registered the shared secret with the WP site.
+        // We accept the posted shared_secret and save it encrypted. This avoids the server having to connect to the remote site.
+        $sharedSecret = $request->input('shared_secret');
 
-        try {
-            // Use a timeout and check for successful response
-            $response = Http::timeout(10)->get($wpSsoUrl . '?' . $query);
-        } catch (\Exception $e) {
-            return back()->withErrors('Could not connect to the WordPress site: ' . $e->getMessage());
-        }
-
-        if (!$response || !$response->successful()) {
-            $msg = 'WordPress plugin or endpoint not available.';
-            // If the response has a body, try to include it for debugging
-            try {
-                $body = $response ? $response->body() : null;
-                if ($body) {
-                    $msg .= ' Response: ' . (strlen($body) > 300 ? substr($body, 0, 300) . '...' : $body);
-                }
-            } catch (\Throwable $e) {
-                // ignore
-            }
-            return back()->withErrors($msg);
-        }
-
-        // At this point the WP endpoint responded OK. Save the website record.
         $savedData = Website::create([
             'url' => rtrim($url, '/'),
             'username' => $request->username,
