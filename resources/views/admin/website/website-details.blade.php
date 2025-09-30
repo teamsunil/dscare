@@ -116,6 +116,9 @@
 </style>
 
 <div class="dashboard_table mt-4 mb-4">
+	<div style="display:flex; justify-content:flex-end; margin: 0 24px 12px 0;">
+		<button id="btn-reload-data" class="btn btn-sm btn-primary">Reload Data</button>
+	</div>
 	<div class="tablist_btns">
 		<div class="tablist" role="tablist">
 			<button class="tab active" data-id="tab-sitehealth" type="button"><i class="fas fa-heartbeat"></i> Site Health</button>
@@ -272,6 +275,37 @@ function loadDBOptData() {
 		error.style.display = '';
 		error.textContent = 'No WordPress URL found.';
 		return;
+	}
+
+	// Reload website data button
+	const reloadBtn = document.getElementById('btn-reload-data');
+	if (reloadBtn) {
+		reloadBtn.addEventListener('click', function () {
+			reloadBtn.disabled = true;
+			reloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reloading...';
+			const websiteId = @json($website->id ?? $id ?? null);
+			if (!websiteId) {
+				alert('Website ID not found.');
+				reloadBtn.disabled = false;
+				reloadBtn.innerHTML = 'Reload Data';
+				return;
+			}
+
+			fetch('/admin/website/reload/' + encodeURIComponent(websiteId) + '/data', { method: 'GET' })
+				.then(res => res.json().catch(() => ({})))
+				.then(data => {
+					// The controller returns redirects/back with flash messages; when called via fetch we expect JSON if successful.
+					// If fetch returns an empty object (because server responded with redirect/html), treat as success and reload.
+					// Reload the page to show updated data.
+					location.reload();
+				})
+				.catch(err => {
+					console.error('Reload data error', err);
+					alert('Failed to reload data. Check console for details.');
+					reloadBtn.disabled = false;
+					reloadBtn.innerHTML = 'Reload Data';
+				});
+		});
 	}
 	fetch(wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/db-optimize-data')
 		.then(res => res.json())
