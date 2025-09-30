@@ -248,6 +248,9 @@ class WebsiteController extends Controller
     public function listWebsites($id)
     {
         $result = Website::find($id);
+         $iss = rtrim(url('/'), '/');
+        $secret = decrypt($result->token_id);
+        $sig = base64_encode(hash_hmac('sha256', $iss, $secret, true));
         $backupdata = BackupData::where('website_id', $id)->orderBy('id', 'desc')->first();
         $backupAllData = BackupData::where('website_id', $id)->get();
         // dd($backupdata);
@@ -264,6 +267,8 @@ class WebsiteController extends Controller
             'result' => $result,
             'backupdata' => $backupdata,
             'backupAllData' => $backupAllData,
+            'iss' => $iss,
+            'sig' => $sig
         ]);
     }
 

@@ -2332,15 +2332,51 @@ document.addEventListener('DOMContentLoaded', function() {
         const original = span ? span.innerText : '';
         if (span) span.innerText = 'Fetching...';
 
-        // Step 1: server-side fetch
-        fetch('{{ route("website.fetch.wp", ["id" => $result->id]) }}', {
-            credentials: 'same-origin',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+        // Step 1: try direct browser fetch to WordPress status endpoint using iss & sig if available
+        (function() {
+            var tryDirect = false;
+            var issVal = "<?php echo $iss ?? ''; ?>";
+            var sigVal = "<?php echo $sig ?? ''; ?>";
+
+            // Try several places for iss/sig (global vars, hidden inputs, data attributes)
+            if (window.iss) issVal = window.iss;
+            if (window.sig) sigVal = window.sig;
+            if (!issVal && document.getElementById('iss')) issVal = document.getElementById('iss').value;
+            if (!sigVal && document.getElementById('sig')) sigVal = document.getElementById('sig').value;
+            if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn.dataset.iss;
+            if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn.dataset.sig;
+
+            if (issVal && sigVal) tryDirect = true;
+
+            var wpStatusUrl = '{{ rtrim($result->url, '/') }}' + '/wp-json/laravel-sso/v1/status';
+
+            function fallbackToServerFetch() {
+                return fetch('{{ route("website.fetch.wp", ["id" => $result->id]) }}', {
+                    credentials: 'same-origin',
+                    headers: {'X-Requested-With': 'XMLHttpRequest'}
+                }).then(function(resp) { return resp.json(); });
             }
-        }).then(function(resp) {
-            return resp.json();
-        }).then(function(json) {
+
+            if (!tryDirect) {
+                return fallbackToServerFetch();
+            }
+
+            // perform direct fetch to WP endpoint with iss & sig as query params
+            var urlWithParams = wpStatusUrl + '?iss=' + encodeURIComponent(issVal) + '&sig=' + encodeURIComponent(sigVal);
+
+            return fetch(urlWithParams, { method: 'GET', mode: 'cors' })
+                .then(function(resp) {
+                    if (!resp.ok) {
+                        // If WP blocks or returns non-200, fallback to server
+                        return fallbackToServerFetch();
+                    }
+                    return resp.json();
+                })
+                .catch(function(err) {
+                    // likely CORS or network error; fallback to server fetch
+                    return fallbackToServerFetch();
+                });
+        })().then(function(json) {
             if (!json || !json.success) {
                 alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
                 ajaxBtn.disabled = false;
