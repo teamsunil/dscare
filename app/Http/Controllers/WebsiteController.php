@@ -15,8 +15,7 @@ class WebsiteController extends Controller
 {
     public function updateSiteStatus($websiteId)
     {
-        // Dispatch the job to update site status
-        // dd($id);
+       
         \App\Jobs\UpdateSiteStatusJob::dispatch($websiteId);
     }
     public function checkSpeed(Request $request, $id)
@@ -147,7 +146,7 @@ class WebsiteController extends Controller
         $request->session()->forget('website_url');
 
         // Trigger status update job
-        $this->updateSiteStatus($savedData->id);
+        \App\Jobs\UpdateSiteStatusJob::dispatch($savedData->id);
 
         return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : ' . $sharedSecret);
     }
