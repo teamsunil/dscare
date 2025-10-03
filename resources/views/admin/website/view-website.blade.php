@@ -1490,7 +1490,7 @@
                         } else {
                             $('#continueBackupBtn').show();
                             $('#confirmBackupBtn').text('Continue Backup').removeClass(
-                            'btn-success btn-danger');
+                                'btn-success btn-danger');
                             $('#confirmBackupBtn').prop('disabled', false);
                             if (auto) {
                                 autoBackupInterval = setTimeout(function() {
@@ -1970,11 +1970,11 @@
                             ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
                             <br/>
                             ${plugin.name !== 'DS Care' ? `
-                                                        ${plugin.is_active
-                                                        ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
-                                                        : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
-                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
-                                                    ` : ''}
+                                                                ${plugin.is_active
+                                                                ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                                : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                                            ` : ''}
                         </td>
                         <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
                         <td>${plugin.author || '-'}</td>
@@ -2020,9 +2020,9 @@
                                     ${theme.is_active
                                     ? ``
                                     : `
-                                                        <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
-                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
-                                                        `}
+                                                                <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                                `}
                                    
                         </td>
                         <td>${theme.slug || '-'}</td>
@@ -2354,7 +2354,6 @@
                     var tryDirect = false;
                     var issVal = "<?php echo $iss ?? ''; ?>";
                     var sigVal = "<?php echo $sig ?? ''; ?>";
-
                     // Try several places for iss/sig (global vars, hidden inputs, data attributes)
                     if (window.iss) issVal = window.iss;
                     if (window.sig) sigVal = window.sig;
@@ -2372,23 +2371,25 @@
                     var wpStatusUrl = '{{ rtrim($result->url, '/') }}' +
                         '/wp-json/laravel-sso/v1/status';
 
-                
+                    const myHeaders = new Headers();
+                    myHeaders.append("iss", issVal);
+                    myHeaders.append("secret", sigVal);
 
-
+                    const requestOptions = {
+                        method: "GET",
+                        headers: myHeaders,
+                        redirect: "follow"
+                    };
                     // perform direct fetch to WP endpoint with iss & sig as query params
                     var urlWithParams = wpStatusUrl;
 
-                    return fetch(urlWithParams, {
-                            method: 'GET',
-                            mode: 'cors',
-                            headers: {
-                                'Accept': 'application/json'
-                            }
-                        })
+                    return fetch(urlWithParams, requestOptions)
                         .then(function(resp) {
+                            console.log('Direct fetch raw response:', resp);
                             if (!resp.ok) {
                                 // If WP blocks or returns non-200, fallback to server
-                                alert(resp.message || ('WP fetch failed: ' + resp.status + ' ' + resp
+                                alert(resp.message || ('WP fetch failed: ' + resp.status + ' ' +
+                                    resp
                                     .statusText));
                             }
                             return resp.json();
