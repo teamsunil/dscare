@@ -216,32 +216,60 @@
 </div>
 
 <script>
-	// Tab switching logic
-	document.addEventListener("DOMContentLoaded", function() {
-		const tabs = document.querySelectorAll(".tablist .tab");
-		const panels = document.querySelectorAll(".panel");
-		tabs.forEach(tab => {
-			tab.addEventListener("click", function() {
-				tabs.forEach(t => t.classList.remove("active"));
-				tab.classList.add("active");
-				panels.forEach(p => p.classList.remove("active"));
-				const id = tab.getAttribute("data-id");
-				document.getElementById(id+"-panel").classList.add("active");
 
-				// If Security tab, fetch security report if not already loaded
-				if (id === 'tab-security') {
-					loadSecurityReport();
-				}
-				// If SSL tab, fetch SSL details
-				if (id === 'tab-ssl') {
-					loadSSLDetails();
-				}
-				// If DB Optimization tab, fetch DB optimization data
-				if (id === 'tab-dbopt') {
-					loadDBOptData();
-				}
-			});
-		});
+	       var tryDirect = false;
+        var issVal = @json($iss ?? '');
+        var sigVal = @json($sig ?? '');
+        // Try several places for iss/sig (global vars, hidden inputs, data attributes)
+        if (window.iss) issVal = window.iss;
+        if (window.sig) sigVal = window.sig;
+        var ajaxBtn = document.getElementById('ajaxReloadBtn');
+        if (!issVal && document.getElementById('iss')) issVal = document.getElementById('iss').value;
+        if (!sigVal && document.getElementById('sig')) sigVal = document.getElementById('sig').value;
+        if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn.dataset.iss;
+        if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn.dataset.sig;
+        if (issVal && sigVal) tryDirect = true;
+		 var myHeaders = new Headers();
+                myHeaders.append("iss", issVal);
+                myHeaders.append("secret", sigVal);
+
+        function getAuthHeaders() {
+            const h = new Headers();
+            if (issVal) h.append('iss', issVal);
+            if (sigVal) h.append('secret', sigVal);
+            return h;
+        }
+    // Tab switching logic
+    document.addEventListener("DOMContentLoaded", function() {
+
+        // --- NEW: read iss/sig and helper for auth headers ---
+ 
+        // --- end new code ---
+
+        const tabs = document.querySelectorAll(".tablist .tab");
+        const panels = document.querySelectorAll(".panel");
+        tabs.forEach(tab => {
+            tab.addEventListener("click", function() {
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                panels.forEach(p => p.classList.remove("active"));
+                const id = tab.getAttribute("data-id");
+                document.getElementById(id+"-panel").classList.add("active");
+
+                // If Security tab, fetch security report if not already loaded
+                if (id === 'tab-security') {
+                    loadSecurityReport();
+                }
+                // If SSL tab, fetch SSL details
+                if (id === 'tab-ssl') {
+                    loadSSLDetails();
+                }
+                // If DB Optimization tab, fetch DB optimization data
+                if (id === 'tab-dbopt') {
+                    loadDBOptData();
+                }
+            });
+        });
 		// Optionally, auto-load security report if security tab is default
 		if (document.querySelector('.tab.active').getAttribute('data-id') === 'tab-security') {
 			loadSecurityReport();
@@ -256,88 +284,93 @@
 		}
 // Fetch and render DB Optimization data from WordPress
 function loadDBOptData() {
-	const loading = document.getElementById('dbopt-loading');
-	const content = document.getElementById('dbopt-content');
-	const error = document.getElementById('dbopt-error');
-	const resultDiv = document.getElementById('dbopt-action-result');
-	loading.style.display = '';
-	content.style.display = 'none';
-	error.style.display = 'none';
-	resultDiv.innerHTML = '';
+    const loading = document.getElementById('dbopt-loading');
+    const content = document.getElementById('dbopt-content');
+    const error = document.getElementById('dbopt-error');
+    const resultDiv = document.getElementById('dbopt-action-result');
+    loading.style.display = '';
+    content.style.display = 'none';
+    error.style.display = 'none';
+    resultDiv.innerHTML = '';
 
-	// Get WP URL from PHP
-	const wpUrl = @json($wpUrl);
-	if (!wpUrl) {
-		loading.style.display = 'none';
-		error.style.display = '';
-		error.textContent = 'No WordPress URL found.';
-		return;
-	}
-	fetch(wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/db-optimize-data')
-		.then(res => res.json())
-		.then(data => {
-			loading.style.display = 'none';
-			if (!data || !data.optimization_report) {
-				error.style.display = '';
-				error.textContent = 'No optimization data found.';
-				return;
-			}
-			content.style.display = '';
-			content.innerHTML = renderDBOptData(data.optimization_report);
-			attachDBOptActionButtons(wpUrl, resultDiv);
-		})
-		.catch(e => {
-			loading.style.display = 'none';
-			error.style.display = '';
-			error.textContent = 'Failed to fetch optimization data.';
-		});
+    // Get WP URL from PHP
+    const wpUrl = @json($wpUrl);
+    if (!wpUrl) {
+        loading.style.display = 'none';
+        error.style.display = '';
+        error.textContent = 'No WordPress URL found.';
+        return;
+    }
+    const url = wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/db-optimize-data';
+    const requestOptions = {
+        method: 'GET',
+        headers: getAuthHeaders(),
+        redirect: 'follow'
+    };
+    fetch(url, requestOptions)
+        .then(res => res.json())
+        .then(data => {
+            loading.style.display = 'none';
+            if (!data || !data.optimization_report) {
+                error.style.display = '';
+                error.textContent = 'No optimization data found.';
+                return;
+            }
+            content.style.display = '';
+            content.innerHTML = renderDBOptData(data.optimization_report);
+            attachDBOptActionButtons(wpUrl, resultDiv);
+        })
+        .catch(e => {
+            loading.style.display = 'none';
+            error.style.display = '';
+            error.textContent = 'Failed to fetch optimization data.';
+        });
 }
 
 // Attach click events to DB optimization action buttons
 function attachDBOptActionButtons(wpUrl, resultDiv) {
-	const actions = [
-		{ selector: '#btn-delete-revisions', action: 'delete_revisions', label: 'Delete Revisions', desc: 'Removes all post revisions from the database.' },
-		{ selector: '#btn-delete-auto-drafts', action: 'delete_auto_drafts', label: 'Delete Auto Drafts', desc: 'Deletes all auto-draft posts.' },
-		{ selector: '#btn-empty-trash-posts', action: 'empty_trash_posts', label: 'Empty Trash Posts', desc: 'Empties the trash for posts.' },
-		{ selector: '#btn-delete-spam-comments', action: 'delete_spam_comments', label: 'Delete Spam Comments', desc: 'Deletes all comments marked as spam.' },
-		{ selector: '#btn-delete-trash-comments', action: 'delete_trash_comments', label: 'Delete Trash Comments', desc: 'Deletes all trashed comments.' },
-		{ selector: '#btn-delete-orphan-postmeta', action: 'delete_orphan_postmeta', label: 'Delete Orphan Postmeta', desc: 'Removes postmeta entries with no parent post.' },
-		{ selector: '#btn-delete-orphan-usermeta', action: 'delete_orphan_usermeta', label: 'Delete Orphan Usermeta', desc: 'Removes usermeta entries with no parent user.' },
-		{ selector: '#btn-delete-orphan-commentmeta', action: 'delete_orphan_commentmeta', label: 'Delete Orphan Commentmeta', desc: 'Removes commentmeta entries with no parent comment.' },
-		{ selector: '#btn-delete-expired-transients', action: 'delete_expired_transients', label: 'Delete Expired Transients', desc: 'Deletes expired transients from wp_options.' },
-		{ selector: '#btn-optimize-tables', action: 'optimize_tables', label: 'Optimize Tables', desc: 'Runs OPTIMIZE TABLE on all database tables.' },
-	];
-	actions.forEach(({ selector, action, label }) => {
-		const btn = document.querySelector(selector);
-		if (btn) {
-			btn.onclick = function() {
-				btn.disabled = true;
-				btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + label;
-				fetch(wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/db-optimize-action?action=' + encodeURIComponent(action), {
-					method: 'GET'
-				})
-				.then(res => res.json())
-				.then(data => {
-					btn.disabled = false;
-					btn.innerHTML = btn.getAttribute('data-original-label');
-					if (data && data.status === 'success') {
-						resultDiv.innerHTML = `<div class='alert alert-success mt-2'>${label} completed! <pre style='margin:0;'>${JSON.stringify(data.results, null, 2)}</pre></div>`;
-						loadDBOptData();
-					} else {
-						resultDiv.innerHTML = `<div class='alert alert-danger mt-2'>${label} failed.</div>`;
-					}
-				})
-				.catch(() => {
-					btn.disabled = false;
-					btn.innerHTML = btn.getAttribute('data-original-label');
-					resultDiv.innerHTML = `<div class='alert alert-danger mt-2'>${label} failed.</div>`;
-				});
-			};
-			if (!btn.getAttribute('data-original-label')) {
-				btn.setAttribute('data-original-label', btn.innerHTML);
-			}
-		}
-	});
+    const actions = [
+        { selector: '#btn-delete-revisions', action: 'delete_revisions', label: 'Delete Revisions', desc: 'Removes all post revisions from the database.' },
+        { selector: '#btn-delete-auto-drafts', action: 'delete_auto_drafts', label: 'Delete Auto Drafts', desc: 'Deletes all auto-draft posts.' },
+        { selector: '#btn-empty-trash-posts', action: 'empty_trash_posts', label: 'Empty Trash Posts', desc: 'Empties the trash for posts.' },
+        { selector: '#btn-delete-spam-comments', action: 'delete_spam_comments', label: 'Delete Spam Comments', desc: 'Deletes all comments marked as spam.' },
+        { selector: '#btn-delete-trash-comments', action: 'delete_trash_comments', label: 'Delete Trash Comments', desc: 'Deletes all trashed comments.' },
+        { selector: '#btn-delete-orphan-postmeta', action: 'delete_orphan_postmeta', label: 'Delete Orphan Postmeta', desc: 'Removes postmeta entries with no parent post.' },
+        { selector: '#btn-delete-orphan-usermeta', action: 'delete_orphan_usermeta', label: 'Delete Orphan Usermeta', desc: 'Removes usermeta entries with no parent user.' },
+        { selector: '#btn-delete-orphan-commentmeta', action: 'delete_orphan_commentmeta', label: 'Delete Orphan Commentmeta', desc: 'Removes commentmeta entries with no parent comment.' },
+        { selector: '#btn-delete-expired-transients', action: 'delete_expired_transients', label: 'Delete Expired Transients', desc: 'Deletes expired transients from wp_options.' },
+        { selector: '#btn-optimize-tables', action: 'optimize_tables', label: 'Optimize Tables', desc: 'Runs OPTIMIZE TABLE on all database tables.' },
+    ];
+    actions.forEach(({ selector, action, label }) => {
+        const btn = document.querySelector(selector);
+        if (btn) {
+            btn.onclick = function() {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + label;
+                const url = wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/db-optimize-action?action=' + encodeURIComponent(action);
+                fetch(url, { method: 'GET', headers: getAuthHeaders(), redirect: 'follow' })
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = btn.getAttribute('data-original-label');
+                    if (data && data.status === 'success') {
+                        resultDiv.innerHTML = `<div class='alert alert-success mt-2'>${label} completed! <pre style='margin:0;'>${JSON.stringify(data.results, null, 2)}</pre></div>`;
+                        loadDBOptData();
+                    } else {
+                        resultDiv.innerHTML = `<div class='alert alert-danger mt-2'>${label} failed.</div>`;
+                    }
+                })
+                .catch(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = btn.getAttribute('data-original-label');
+                    resultDiv.innerHTML = `<div class='alert alert-danger mt-2'>${label} failed.</div>`;
+                });
+            };
+            if (!btn.getAttribute('data-original-label')) {
+                btn.setAttribute('data-original-label', btn.innerHTML);
+            }
+        }
+    });
 }
 
 // Render the DB Optimization data HTML
@@ -430,38 +463,39 @@ function renderDBOptData(opt) {
 	});
 // Fetch and render SSL details from WordPress
 function loadSSLDetails() {
-	const loading = document.getElementById('ssl-loading');
-	const content = document.getElementById('ssl-content');
-	const error = document.getElementById('ssl-error');
-	loading.style.display = '';
-	content.style.display = 'none';
-	error.style.display = 'none';
+    const loading = document.getElementById('ssl-loading');
+    const content = document.getElementById('ssl-content');
+    const error = document.getElementById('ssl-error');
+    loading.style.display = '';
+    content.style.display = 'none';
+    error.style.display = 'none';
 
-	// Get WP URL from PHP
-	const wpUrl = @json($wpUrl);
-	if (!wpUrl) {
-		loading.style.display = 'none';
-		error.style.display = '';
-		error.textContent = 'No WordPress URL found.';
-		return;
-	}
-	fetch(wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/site-ssl-details')
-		.then(res => res.json())
-		.then(data => {
-			loading.style.display = 'none';
-			if (!data || !data.status) {
-				error.style.display = '';
-				error.textContent = 'No SSL details found.';
-				return;
-			}
-			content.style.display = '';
-			content.innerHTML = renderSSLDetails(data);
-		})
-		.catch(e => {
-			loading.style.display = 'none';
-			error.style.display = '';
-			error.textContent = 'Failed to fetch SSL details.';
-		});
+    // Get WP URL from PHP
+    const wpUrl = @json($wpUrl);
+    if (!wpUrl) {
+        loading.style.display = 'none';
+        error.style.display = '';
+        error.textContent = 'No WordPress URL found.';
+        return;
+    }
+    const url = wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/site-ssl-details';
+    fetch(url, { method: 'GET', headers: getAuthHeaders(), redirect: 'follow' })
+        .then(res => res.json())
+        .then(data => {
+            loading.style.display = 'none';
+            if (!data || !data.status) {
+                error.style.display = '';
+                error.textContent = 'No SSL details found.';
+                return;
+            }
+            content.style.display = '';
+            content.innerHTML = renderSSLDetails(data);
+        })
+        .catch(e => {
+            loading.style.display = 'none';
+            error.style.display = '';
+            error.textContent = 'Failed to fetch SSL details.';
+        });
 }
 
 // Render the SSL details HTML
@@ -506,7 +540,8 @@ function renderSSLDetails(ssl) {
 				return;
 			}
 			// Fetch security report, then fetch headers from the site root (client-side)
-			fetch(wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/wp-security-report')
+			const url = wpUrl.replace(/\/$/, '') + '/wp-json/laravel-sso/v1/wp-security-report';
+			fetch(url, { method: 'GET', headers: getAuthHeaders(), redirect: 'follow' })
 				.then(res => res.json())
 				.then(reportData => {
 					loading.style.display = 'none';
@@ -528,7 +563,7 @@ function renderSSLDetails(ssl) {
 	// Fetch security headers directly from the website root
 	function fetchSecurityHeadersFromSite(wpUrl, contentDiv) {
 		// Use a HEAD request to get headers (may be blocked by CORS)
-		fetch(wpUrl, { method: 'HEAD' })
+		fetch(wpUrl, { method: 'HEAD', headers: getAuthHeaders() })
 			.then(res => {
 				// List of headers to check
 				const headerKeys = [

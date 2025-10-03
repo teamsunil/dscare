@@ -1456,6 +1456,29 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
+
+               var tryDirect = false;
+        var issVal = @json($iss ?? '');
+        var sigVal = @json($sig ?? '');
+        // Try several places for iss/sig (global vars, hidden inputs, data attributes)
+        if (window.iss) issVal = window.iss;
+        if (window.sig) sigVal = window.sig;
+        var ajaxBtn = document.getElementById('ajaxReloadBtn');
+        if (!issVal && document.getElementById('iss')) issVal = document.getElementById('iss').value;
+        if (!sigVal && document.getElementById('sig')) sigVal = document.getElementById('sig').value;
+        if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn.dataset.iss;
+        if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn.dataset.sig;
+        if (issVal && sigVal) tryDirect = true;
+		 var myHeaders = new Headers();
+                myHeaders.append("iss", issVal);
+                myHeaders.append("secret", sigVal);
+
+        function getAuthHeaders() {
+            const h = new Headers();
+            if (issVal) h.append('iss', issVal);
+            if (sigVal) h.append('secret', sigVal);
+            return h;
+        }
         var autoBackupInterval = null;
 
         function callBackupApi(auto = false) {
@@ -1552,6 +1575,7 @@
 
 
     <script>
+       
         // reload pages then show current tab with dynamic data
         $(document).ready(function() {
             const tabFromUrl = new URLSearchParams(window.location.search).get('tab');
@@ -1970,11 +1994,11 @@
                             ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
                             <br/>
                             ${plugin.name !== 'DS Care' ? `
-                                                                ${plugin.is_active
-                                                                ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
-                                                                : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
-                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
-                                                            ` : ''}
+                                                                                ${plugin.is_active
+                                                                                ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                                                : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                                                            ` : ''}
                         </td>
                         <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
                         <td>${plugin.author || '-'}</td>
@@ -2020,9 +2044,9 @@
                                     ${theme.is_active
                                     ? ``
                                     : `
-                                                                <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
-                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
-                                                                `}
+                                                                                <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                                                `}
                                    
                         </td>
                         <td>${theme.slug || '-'}</td>
@@ -2118,82 +2142,64 @@
 
 
 
-        $(document).on('click', '.updateBtn', function() {
-            var type = $(this).data('type'); // "plugin"
-            var slug = $(this).data('slug'); // plugin slug
-            var action = $(this).data('action'); // plugin slug
-            const savedTabId = localStorage.getItem('activeTabId');
-            const $button = $(this);
-            var $btn = $(this);
-            $btn.prop('disabled', true).text('Loading...');
-            $.ajax({
-                url: '/admin/website/' + {{ $result['id'] }} + '/upgrade-plugin', // Laravel endpoint
-                method: 'GET',
-                data: {
+        jQuery(document).ready(function($) {
+            $(document).on('click', '.updateBtn', function() {
+                var type = $(this).data('type'); // "plugin"
+                var slug = $(this).data('slug'); // plugin slug
+                var action = $(this).data('action'); // plugin action
+                var $btn = $(this);
+
+                $btn.prop('disabled', true).text('Loading...');
+
+                var wpStatusUrl = '{{ rtrim($result->url, '/') }}/wp-json/laravel-sso/v1/upgrade';
+
+                var params = new URLSearchParams({
                     type: type,
                     slug: slug,
-                    action: action,
-                },
-                success: function(response) {
-                    if (response.success) {
-                        if (action == 'update' && type != 'core') {
-                            $button.replaceWith('<span class="badge bg-info">Latest</span>');
-                        } else {
-                            location.reload();
+                    action: action
+                });
+
+                var urlWithParams = wpStatusUrl + '?' + params.toString();
+
+
+                const requestOptions = {
+                    method: "GET",
+                    headers: getAuthHeaders(),
+                    redirect: "follow"
+                };
+
+                // Perform fetch
+                fetch(urlWithParams, requestOptions)
+                    .then(function(resp) {
+                        console.log('Direct fetch response:', resp);
+                        if (!resp.ok) {
+                            alert('WP fetch failed: ' + resp.status + ' ' + resp.statusText);
+                            throw new Error('Network response not ok');
                         }
-                        // Optionally refresh plugin list or update UI here
-                    } else {
+                        return resp.json();
+                    })
+                    .then(function(json) {
+                        if (!json || !json.success) {
+                            alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
+                            $btn.prop('disabled', false).text('Retry');
+                            return;
+                        }
 
-                        alert('Update failed: ' + (response.error || 'Unknown error'));
-                    }
-                },
-                error: function() {
-                    alert('Failed to trigger update.');
-                }
-            });
-
-
-
-
-        });
-
-        // Check Speed button AJAX
-        $(document).on('click', '#checkSpeedBtn', function() {
-            var $btn = $(this);
-            $btn.prop('disabled', true).text('Checking...');
-            $.ajax({
-                url: '/admin/website/' + {{ $result->id }} + '/check-speed',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $btn.text('Checked!').addClass('btn-success');
-                        setTimeout(function() {
-                            $btn.prop('disabled', false).text('Check Speed').removeClass(
-                                'btn-success');
-                            location.reload();
-                        }, 1500);
-                    } else {
-                        $btn.text('Failed!').addClass('btn-danger');
-                        setTimeout(function() {
-                            $btn.prop('disabled', false).text('Check Speed').removeClass(
-                                'btn-danger');
-                        }, 2000);
-                        alert(response.error || 'Speed check failed.');
-                    }
-                },
-                error: function() {
-                    $btn.text('Error!').addClass('btn-danger');
-                    setTimeout(function() {
-                        $btn.prop('disabled', false).text('Check Speed').removeClass(
-                            'btn-danger');
-                    }, 2000);
-                    alert('Failed to check speed.');
-                }
+                        // Success
+                        alert('Operation successful. Updating data...');
+                        $('#ajaxReloadBtn').trigger('click');
+                        $btn.prop('disabled', false).text('Update');
+                    })
+                    .catch(function(err) {
+                        console.log('Direct fetch error:', err);
+                        $btn.prop('disabled', false).text('Retry');
+                    });
             });
         });
+
+
+
+
 
         // Run Speed Test button AJAX (for new card)
         $(document).on('click', '#runSpeedBtn', function() {
@@ -2351,33 +2357,15 @@
 
                 // Step 1: try direct browser fetch to WordPress status endpoint using iss & sig if available
                 (function() {
-                    var tryDirect = false;
-                    var issVal = "<?php echo $iss ?? ''; ?>";
-                    var sigVal = "<?php echo $sig ?? ''; ?>";
-                    // Try several places for iss/sig (global vars, hidden inputs, data attributes)
-                    if (window.iss) issVal = window.iss;
-                    if (window.sig) sigVal = window.sig;
-                    if (!issVal && document.getElementById('iss')) issVal = document.getElementById(
-                        'iss').value;
-                    if (!sigVal && document.getElementById('sig')) sigVal = document.getElementById(
-                        'sig').value;
-                    if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn
-                        .dataset.iss;
-                    if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn
-                        .dataset.sig;
 
-                    if (issVal && sigVal) tryDirect = true;
 
                     var wpStatusUrl = '{{ rtrim($result->url, '/') }}' +
                         '/wp-json/laravel-sso/v1/status';
 
-                    const myHeaders = new Headers();
-                    myHeaders.append("iss", issVal);
-                    myHeaders.append("secret", sigVal);
 
                     const requestOptions = {
                         method: "GET",
-                        headers: myHeaders,
+                        headers: getAuthHeaders(),
                         redirect: "follow"
                     };
                     // perform direct fetch to WP endpoint with iss & sig as query params
