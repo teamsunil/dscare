@@ -66,13 +66,13 @@ class WebsiteController extends Controller
     {
         $websites = Website::query();
 
-        $websitesQuery = Website::query(); // Start a query builder
+        $websitesQuery = Website::query();
 
         if (isset($_GET['status']) && !empty($_GET['status'])) {
             if ($_GET['status'] == 'up') {
                 $websitesQuery->where('website_up_down', 'up');
             } else {
-                $websitesQuery->where('website_up_down', null)->orwhere('website_up_down', 'down'); // use != for “not up”
+                $websitesQuery->where('website_up_down', null)->orwhere('website_up_down', 'down');
             }
         }
         // Get the results
