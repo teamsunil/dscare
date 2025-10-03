@@ -123,7 +123,6 @@
                                                     @endif
                                                 </td>
 
-<<<<<<< Updated upstream
                         <td class="vcenter">
                           @php $s = strtolower($item->status); @endphp
                           <span class="badge status-{{ $s }}">{{ ucfirst($item->status) }}</span>
@@ -134,20 +133,6 @@
                         </td>
                       @php $data=json_decode($item->data); @endphp
                         <td class="vcenter">PHP {{ $data->php_version?? '8.2' }}</td>
-=======
-                                                <td class="vcenter">
-                                                    @php $s = strtolower($item->status); @endphp
-                                                    <span
-                                                        class="badge status-{{ $s }}">{{ ucfirst($item->status) }}</span>
-                                                </td>
-                                                <td class="vcenter">
-                                                    @php $website_status = strtolower($item->website_status); @endphp
-                                                    <span
-                                                        class="badge status-{{ $website_status }}">{{ ucfirst($item->website_status) }}</span>
-                                                </td>
-
-                                                <td class="vcenter">PHP {{ $item->php_version ?? '8.2' }}</td>
->>>>>>> Stashed changes
 
                                                 <td class="vcenter">
                                                     <button type="button" class="btn btn-primary btn-xs sso-login-btn"
