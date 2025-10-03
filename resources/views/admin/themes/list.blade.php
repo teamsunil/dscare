@@ -4,7 +4,7 @@
 <div class="content-header">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-6"style="padding-top:20px;">
                 <h3 class="page-title"><i class="fa fa-palette"></i> Themes <small class="text-muted">manage all themes</small></h3>
             </div>
             <div class="col-sm-6 text-right">

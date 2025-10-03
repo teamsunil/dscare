@@ -228,6 +228,9 @@
             padding: 24px 28px 16px;
             border-bottom: 1px solid var(--border-color);
             background: linear-gradient(90deg, var(--bg-light), var(--bg-white));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .card-title {
@@ -778,6 +781,9 @@
                         <i class="fa fa-list"></i>
                         Website List
                     </div>
+                    <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm">
+                        <i class="fa fa-eye"></i> View All
+                    </a>
                 </div>
                 <div class="card-body">
                     @forelse ($websitelist as $site)
@@ -847,6 +853,9 @@
                         <i class="fa fa-plug"></i>
                         All Plugins
                     </div>
+                    <a href="{{ route('plugins.list') }}" class="btn btn-primary btn-sm">
+                        <i class="fa fa-eye"></i> View All
+                    </a>
                 </div>
                 <div class="card-body">
                     @forelse ($pluginsList as $plugin)
@@ -916,9 +925,12 @@
             <div class="content-card">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="fa fa-palette"></i>
+                        <i class="fa fa-paint-brush"></i>
                         All Themes
                     </div>
+                    <a href="{{ route('themes.list') }}" class="btn btn-primary btn-sm">
+                        <i class="fa fa-eye"></i> View All
+                    </a>
                 </div>
                 <div class="card-body">
                     @forelse ($themesList as $theme)
