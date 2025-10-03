@@ -112,9 +112,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error('Plugin not available on this site.');
             }
         })
-        .catch(() => {
+       .catch(() => {
             errorDiv.className = 'alert alert-danger';
-            errorDiv.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> The required plugin is not available or the site is unreachable. Please add the plugin first.';
+            errorDiv.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> The required plugin is not available or the site is unreachable. <a href="{{ route('download') }}" class="alert-link">Click here to download plugin</a>.';
             errorDiv.style.display = 'block';
             nextBtn.innerHTML = originalBtnContent;
             nextBtn.disabled = false;
