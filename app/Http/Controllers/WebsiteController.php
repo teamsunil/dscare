@@ -64,21 +64,26 @@ class WebsiteController extends Controller
     }
     public function listWebsite()
     {
-        $websites = Website::get();
+        $websites = Website::query();
+
+        $websitesQuery = Website::query(); // Start a query builder
+
+        if (isset($_GET['status']) && !empty($_GET['status'])) {
+            if ($_GET['status'] == 'up') {
+                $websitesQuery->where('website_up_down', 'up');
+            } else {
+                $websitesQuery->where('website_up_down', null)->orwhere('website_up_down', 'down'); // use != for “not up”
+            }
+        }
+        // Get the results
+        $websites = $websitesQuery->get();
         foreach ($websites as $website) {
             try {
                 $website->decrypted_password = decrypt($website->password);
             } catch (DecryptException $e) {
                 $website->decrypted_password = null;
             }
-            // $website->decrypted_password = decrypt($website->password);
-            // $response = Http::timeout(2000)->get($website->url);
-
-            // if ($response->successful()) {
-            //    $website->status= 'up';
-            // } else {
-            //      $website->status= 'down';
-            // }
+          
             $website->status = 'up';
         }
         // dd($websites);
@@ -687,5 +692,87 @@ class WebsiteController extends Controller
                 $html = '<div class="text-danger">Invalid tab.</div>';
         }
         return response()->json(['html' => $html]);
+    }
+
+    public function listPlugins()
+    {
+        $websites = Website::all();
+        $allPlugins = collect();
+        $pluginSiteMap = [];
+
+        foreach ($websites as $site) {
+            $data = json_decode($site->data, true);
+            if (isset($data['plugins']['items']) && is_array($data['plugins']['items'])) {
+                foreach ($data['plugins']['items'] as $plugin) {
+                    $pluginName = $plugin['name'] ?? null;
+                    if ($pluginName) {
+                        $allPlugins->push($plugin);
+                        $pluginSiteMap[$pluginName][] = [
+                            'name' => $data['site_name'] ?? $site->url,
+                            'url' => $site->url,
+                            'id' => $site->id
+                        ];
+                    }
+                }
+            }
+        }
+
+        $uniquePlugins = $allPlugins->unique('name')->values();
+        $pluginsList = [];
+        foreach ($uniquePlugins as $plugin) {
+            $pluginsList[] = [
+                'name' => $plugin['name'] ?? '',
+                'version' => $plugin['version'] ?? '',
+                'author' => $plugin['author'] ?? '',
+                'plugin_uri' => $plugin['plugin_uri'] ?? '',
+                'icon_url' => $plugin['icon_url'] ?? null,
+                'is_active' => $plugin['is_active'] ?? false,
+                'update' => $plugin['update'] ?? null,
+                'sites' => $pluginSiteMap[$plugin['name']] ?? [],
+            ];
+        }
+
+        return view('admin.plugins.list', ['pluginsList' => $pluginsList]);
+    }
+
+    public function listThemes()
+    {
+        $websites = Website::all();
+        $allThemes = collect();
+        $themeSiteMap = [];
+
+        foreach ($websites as $site) {
+            $data = json_decode($site->data, true);
+            if (isset($data['themes']['items']) && is_array($data['themes']['items'])) {
+                foreach ($data['themes']['items'] as $theme) {
+                    $themeName = $theme['name'] ?? null;
+                    if ($themeName) {
+                        $allThemes->push($theme);
+                        $themeSiteMap[$themeName][] = [
+                            'name' => $data['site_name'] ?? $site->url,
+                            'url' => $site->url,
+                            'id' => $site->id
+                        ];
+                    }
+                }
+            }
+        }
+
+        $uniqueThemes = $allThemes->unique('name')->values();
+        $themesList = [];
+        foreach ($uniqueThemes as $theme) {
+            $themesList[] = [
+                'name' => $theme['name'] ?? '',
+                'version' => $theme['version'] ?? '',
+                'author' => $theme['author'] ?? '',
+                'theme_uri' => $theme['theme_uri'] ?? '',
+                'screenshot' => $theme['screenshot'] ?? null,
+                'is_active' => $theme['is_active'] ?? false,
+                'update' => $theme['update'] ?? null,
+                'sites' => $themeSiteMap[$theme['name']] ?? [],
+            ];
+        }
+
+        return view('admin.themes.list', ['themesList' => $themesList]);
     }
 }

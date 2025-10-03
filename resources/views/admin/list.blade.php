@@ -83,8 +83,8 @@
                           @php $website_status = strtolower($item->website_status); @endphp
                           <span class="badge status-{{ $website_status }}">{{ ucfirst($item->website_status) }}</span>
                         </td>
-
-                        <td class="vcenter">PHP {{ $item->php_version ?? '8.2' }}</td>
+                      @php $data=json_decode($item->data); @endphp
+                        <td class="vcenter">PHP {{ $data->php_version?? '8.2' }}</td>
 
                         <td class="vcenter">
                           <button type="button" class="btn btn-primary btn-xs sso-login-btn" data-id="{{ $item->id }}" data-url="{{ route('website.sso.login', ['id' => $item->id]) }}" style="margin-top: 0px;"><i class="fa fa-sign-in"></i> Login</button>

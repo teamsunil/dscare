@@ -682,32 +682,59 @@
         <!-- Enhanced Stats Cards with Additional Metrics -->
         <div class="stats-grid">
             <div class="stat-card">
+                <a href="{{ route('dashboard') }}" class="text-decoration-none">
                 <div class="stat-icon primary">
                     <i class="fa fa-globe"></i>
                 </div>
                 <div class="stat-value">{{ $totalSites }}</div>
                 <div class="stat-label">Total Sites</div>
+                </a>
             </div>
-            <div class="stat-card">
+
+
+            
+            <div class="stat-card">   
+                <a href="{{ url('admin/website-list').'?status=up' }}" class="text-decoration-none">
                 <div class="stat-icon success">
                     <i class="fa fa-arrow-up"></i>
                 </div>
                 <div class="stat-value">{{ $upSites }}</div>
                 <div class="stat-label">Sites Up</div>
+            </a>
             </div>
+
+
+
             <div class="stat-card">
+                  <a href="{{ url('admin/website-list').'?status=down' }}" class="text-decoration-none">
                 <div class="stat-icon danger">
                     <i class="fa fa-arrow-down"></i>
                 </div>
                 <div class="stat-value">{{ $totalSites - $upSites }}</div>
                 <div class="stat-label">Sites Down</div>
+                  </a>
             </div>
+
+
+            
             <div class="stat-card">
+                <a href="{{ route('plugins.list') }}" class="text-decoration-none">
                 <div class="stat-icon warning">
                     <i class="fa fa-plug"></i>
                 </div>
                 <div class="stat-value">{{ count($pluginsList) }}</div>
                 <div class="stat-label">Total Plugins</div>
+                </a>
+            </div>
+
+            <div class="stat-card">
+                <a href="{{ route('themes.list') }}" class="text-decoration-none">
+                <div class="stat-icon info">
+                    <i class="fa fa-paint-brush icon-wrap sub-icon-mg" aria-hidden="true"></i>
+                </div>
+                <div class="stat-value">{{ count($themesList) }}</div>
+                <div class="stat-label">Total Themes</div>
+                </a>
             </div>
         </div>
 
@@ -845,6 +872,8 @@
                                 @if (!empty($plugin['plugin_uri']))
                                     <a href="{{ $plugin['plugin_uri'] }}" target="_blank" class="item-link">More Info</a>
                                 @endif
+
+                                
 
                                 @if (!empty($plugin['sites']))
                                     <div class="used-in-dropdown">

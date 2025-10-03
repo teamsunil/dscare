@@ -20,13 +20,19 @@
                     <ul class="metismenu" id="menu1">
                         
                         <li>
-                            <a title="Landing Page" href="{{ route('index') }}" aria-expanded="false"><span class="educate-icon educate-home icon-wrap" aria-hidden="true"></span> <span class="mini-click-non">Dashboard</span></a>
+                            <a title="Dashboard" href="{{ route('index') }}" aria-expanded="false"><span class="educate-icon educate-home icon-wrap" aria-hidden="true"></span> <span class="mini-click-non">Dashboard</span></a>
                         </li>
                         <li>
-                            <a title="Landing Page" href="{{ route('dashboard') }}" aria-expanded="false"><span class="educate-icon educate-event icon-wrap sub-icon-mg" aria-hidden="true"></span> <span class="mini-click-non">Website List</span></a>
+                            <a title="Website List" href="{{ route('dashboard') }}" aria-expanded="false"><span class="educate-icon educate-event icon-wrap sub-icon-mg" aria-hidden="true"></span> <span class="mini-click-non">Website List</span></a>
                         </li>
                         <li>
-                            <a title="Landing Page" href="{{ route('download') }}" aria-expanded="false"><span class="educate-icon educate-course  icon-wrap sub-icon-mg" aria-hidden="true"></span> <span class="mini-click-non">Download Plugins</span></a>
+                            <a title="All Plugins" href="{{ route('plugins.list') }}" aria-expanded="false"><i class="fa fa-plug icon-wrap sub-icon-mg" aria-hidden="true"></i> <span class="mini-click-non">All Plugins</span></a>
+                        </li>
+                        <li>
+                            <a title="All Themes" href="{{ route('themes.list') }}" aria-expanded="false"><i class="fa fa-paint-brush icon-wrap sub-icon-mg" aria-hidden="true"></i> <span class="mini-click-non">All Themes</span></a>
+                        </li>
+                        <li>
+                            <a title="Download Plugin" href="{{ route('download') }}" aria-expanded="false"><i class="fa fa-download icon-wrap sub-icon-mg" aria-hidden="true"></i> <span class="mini-click-non">Download Plugin</span></a>
                         </li>
                        
                     
@@ -111,10 +117,11 @@
                             <div class="mobile-menu">
                                 <nav id="dropdown">
                                     <ul class="mobile-menu-nav">
-                                       
                                         <li><a href="{{ route('index') }}">Dashboard</a></li>
                                         <li><a href="{{ route('dashboard') }}">Website List</a></li>
-                                        <li><a href="{{ route('download') }}">Download Plugins</a></li>
+                                        <li><a href="{{ route('plugins.list') }}">All Plugins</a></li>
+                                        <li><a href="{{ route('themes.list') }}">All Themes</a></li>
+                                        <li><a href="{{ route('download') }}">Download Plugin</a></li>
                                        
                                         
                                     </ul>

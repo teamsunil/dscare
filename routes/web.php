@@ -63,6 +63,8 @@ Route::middleware('auth')->group(function () {
     })->name('download');
     Route::get('admin/website/{id}/delete-backup', [WebsiteController::class, 'deleteBackup'])->name('website.delete.backup');
     Route::get('/admin/website/{id}/tab-data', [WebsiteController::class, 'tabData'])->name('website.tabdata');
+    Route::get('/admin/plugins', [WebsiteController::class, 'listPlugins'])->name('plugins.list');
+    Route::get('/admin/themes', [WebsiteController::class, 'listThemes'])->name('themes.list');
 });
 
 

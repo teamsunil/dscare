@@ -59,7 +59,7 @@
                         <div class="form-group">
                             <div class="col-xs-12 col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
                                 <div id="plugin-error" class="alert alert-danger" style="display:none;"></div>
-                                <button type="submit" class="btn btn-primary btn-block-xs">
+                                <button type="submit" id="next-btn" class="btn btn-primary btn-block-xs">
                                     <span class="glyphicon glyphicon-arrow-right"></span> Next
                                 </button>
                             </div>
@@ -83,10 +83,17 @@ document.addEventListener('DOMContentLoaded', function () {
         errorDiv.style.display = 'none';
         errorDiv.textContent = '';
         
+        const nextBtn = document.getElementById('next-btn');
+        const originalBtnContent = nextBtn.innerHTML;
+        nextBtn.innerHTML = '<span class="glyphicon glyphicon-refresh glyphicon-spin"></span> Checking...';
+        nextBtn.disabled = true;
+        
         const siteUrl = urlInput.value.replace(/\/$/, '');
         if (!siteUrl) {
             errorDiv.textContent = 'Please enter a valid URL.';
             errorDiv.style.display = 'block';
+            nextBtn.innerHTML = originalBtnContent;
+            nextBtn.disabled = false;
             return;
         }
 
@@ -109,6 +116,8 @@ document.addEventListener('DOMContentLoaded', function () {
             errorDiv.className = 'alert alert-danger';
             errorDiv.innerHTML = '<span class="glyphicon glyphicon-exclamation-sign"></span> The required plugin is not available or the site is unreachable. Please add the plugin first.';
             errorDiv.style.display = 'block';
+            nextBtn.innerHTML = originalBtnContent;
+            nextBtn.disabled = false;
         });
     });
 });
