@@ -904,6 +904,10 @@
                                                     <span class="version-badge">Update Available</span>
                                                 </div>
                                             @endif
+                                             @if (data_get($response, 'wordpress_update_available'))
+                                            <a class="manage-btn btn-primary  updateBtn" data-type="core"
+                                                data-action="update" data-slug="">Update</a>
+                                        @endif
                                         </div>
 
                                         {{-- {{dd($response)}} --}}
