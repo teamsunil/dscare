@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/website/{id}/tab-data', [WebsiteController::class, 'tabData'])->name('website.tabdata');
     Route::get('/admin/plugins', [WebsiteController::class, 'listPlugins'])->name('plugins.list');
     Route::get('/admin/themes', [WebsiteController::class, 'listThemes'])->name('themes.list');
+    Route::post('/admin/website/{id}/store-backup', [WebsiteController::class, 'storeBackup']);
 });
 
 

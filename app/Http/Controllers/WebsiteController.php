@@ -83,7 +83,7 @@ class WebsiteController extends Controller
             } catch (DecryptException $e) {
                 $website->decrypted_password = null;
             }
-          
+
             $website->status = 'up';
         }
         // dd($websites);
@@ -454,7 +454,21 @@ class WebsiteController extends Controller
             return response()->json(['error' => 'Connection error: ' . $e->getMessage()], 500);
         }
     }
+    public function storeBackup(Request $request, $id)
+    {
+        $website = Website::find($id);
 
+        if (!$website) {
+            return response()->json(['success' => false, 'error' => 'Website not found.'], 404);
+        }
+       
+         $this->moveAndStoreBackups($request->files_zip, $request->type, $website->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Backup stored successfully.',
+        ]);
+    }
 
     public function deleteBackup(Request $request, $id)
     {

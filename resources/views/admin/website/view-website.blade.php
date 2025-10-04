@@ -4,6 +4,7 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
     <style>
@@ -1453,13 +1454,13 @@
         </div>
     </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-
-               var tryDirect = false;
+        var tryDirect = false;
         var issVal = @json($iss ?? '');
         var sigVal = @json($sig ?? '');
+        var website_id = @json($result->id ?? '');
         // Try several places for iss/sig (global vars, hidden inputs, data attributes)
         if (window.iss) issVal = window.iss;
         if (window.sig) sigVal = window.sig;
@@ -1469,9 +1470,9 @@
         if (!issVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.iss) issVal = ajaxBtn.dataset.iss;
         if (!sigVal && ajaxBtn && ajaxBtn.dataset && ajaxBtn.dataset.sig) sigVal = ajaxBtn.dataset.sig;
         if (issVal && sigVal) tryDirect = true;
-		 var myHeaders = new Headers();
-                myHeaders.append("iss", issVal);
-                myHeaders.append("secret", sigVal);
+        var myHeaders = new Headers();
+        myHeaders.append("iss", issVal);
+        myHeaders.append("secret", sigVal);
 
         function getAuthHeaders() {
             const h = new Headers();
@@ -1481,67 +1482,154 @@
         }
         var autoBackupInterval = null;
 
+
         function callBackupApi(auto = false) {
             var $btn = $('#confirmBackupBtn');
             var backupType = $('#backupTypeSelect').val();
-            $.ajax({
-                url: '/admin/website/' + {{ $result->id }} + '/backup',
-                method: 'GET',
-                data: {
-                    type: backupType
-                },
-                success: function(response) {
-                    if (response.success) {
-                        var percent = response.data.progress_percent || 0;
-                        $('#backupProgressFill').css('width', percent + '%');
-                        // Show storing status if available, else show percent completed
-                        if (response.data.storing_status) {
-                            $('#backupProgressText').text(response.data.storing_status);
-                        } else {
-                            $('#backupProgressText').text(percent + '% completed');
-                        }
-                        if (response.data.status === 'completed' || percent >= 100) {
-                            $('#confirmBackupBtn').text('Backup Created!').addClass('btn-success');
-                            $('#continueBackupBtn').hide();
-                            clearInterval(autoBackupInterval);
-                            setTimeout(function() {
-                                $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup')
-                                    .removeClass('btn-success');
-                                $('#backupTypeModal').modal('hide');
-                                location.reload();
-                            }, 1500);
-                        } else {
-                            $('#continueBackupBtn').show();
-                            $('#confirmBackupBtn').text('Continue Backup').removeClass(
-                                'btn-success btn-danger');
-                            $('#confirmBackupBtn').prop('disabled', false);
-                            if (auto) {
-                                autoBackupInterval = setTimeout(function() {
-                                    callBackupApi(true);
-                                }, 1000);
-                            }
-                        }
-                    } else {
-                        $('#confirmBackupBtn').text('Failed!').addClass('btn-danger');
-                        clearInterval(autoBackupInterval);
-                        setTimeout(function() {
-                            $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup')
-                                .removeClass('btn-danger');
-                        }, 2000);
-                        alert(response.error || 'Backup failed.');
+
+            (async function() {
+                var wpStatusUrl = '{{ rtrim($result->url, '/') }}/wp-json/laravel-sso/v1/handle_backup';
+
+                var params = new URLSearchParams({
+                    type: backupType,
+                    website_id: website_id,
+                    laravel_url: issVal
+                });
+
+                var urlWithParams = wpStatusUrl + '?' + params.toString();
+
+                const requestOptions = {
+                    method: "GET",
+                    headers: getAuthHeaders(), // must return { iss: "...", secret: "..." }
+                    redirect: "follow"
+                };
+
+                try {
+                    const resp = await fetch(urlWithParams, requestOptions);
+                    if (!resp.ok) {
+                        alert('WP fetch failed: ' + resp.status + ' ' + resp.statusText);
+                        return;
                     }
-                },
-                error: function() {
+                    const json = await resp.json();
+                    console.log('Direct fetch response:', json);
+
+                    var percent = 0;
+
+                    if (json.status === 'in_progress') {
+                        if (json.next_batch && json.total_files > 0) {
+                            percent = Math.round((json.next_batch / json.total_files) * 100);
+                        }
+                        $('#backupProgressFill').css('width', percent + '%');
+                        $('#backupProgressText').text(percent + '% completed');
+
+                        // Continue polling
+                        if (auto) {
+                            autoBackupInterval = setTimeout(function() {
+                                callBackupApi(true);
+                            }, 2000);
+                        }
+
+                    } else if (json.status === 'completed') {
+                        percent = 100;
+                        swal.fire({
+                            title: 'Backup Completed',
+                            text: 'The backup process has completed Now Storing the backup inour Server.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                        $('#backupProgressFill').css('width', percent + '%');
+                        $('#backupProgressText').text('Backup Completed');
+
+                        // 🔥 Send files_zip to Laravel controller for DB storage
+                        if (json.files) {
+                            var file = json.files; // e.g. "backups/backup_12345.zip"
+                            fetch('/admin/website/' + website_id + '/store-backup', {
+                                method: 'POST',
+                                credentials: 'same-origin', // include session cookie for CSRF validation
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({
+                                    type: backupType,
+                                    website_id: website_id,
+                                    files_zip: file
+                                })
+                            }).then(r => r.json()).then(function(saveResp) {
+                                console.log('Save backup response:', saveResp);
+                                if (saveResp.success) {
+                                    $('#confirmBackupBtn').text('Backup Created!').addClass('btn-success');
+
+                                    var wpdeletebackup =
+                                        '{{ rtrim($result->url, '/') }}/wp-json/laravel-sso/v1/delete-backup';
+                                    const requestOptions = {
+                                        method: "GET",
+                                        headers: getAuthHeaders(), // must return { iss: "...", secret: "..." }
+                                        redirect: "follow"
+                                    };
+
+                                    fetch(wpdeletebackup, requestOptions)
+                                        .then(function(resp) {
+                                            console.log('Direct fetch response:', resp);
+                                            if (!resp.ok) {
+                                                alert('WP fetch failed: ' + resp.status + ' ' + resp
+                                                    .statusText);
+                                                throw new Error('Network response not ok');
+                                            }
+                                            return resp.json();
+                                        })
+                                        .then(function(json) {
+                                            if (!json || !json.success) {
+                                                alert((json && json.message) ? json.message :
+                                                    'Failed to fetch WP data.');
+                                                $btn.prop('disabled', false).text('Retry');
+                                                return;
+                                            }
+
+                                            swal.fire({
+                                                title: 'Backup Successful',
+                                                text: 'The backup Process has completed.',
+                                                icon: 'success',
+                                                confirmButtonText: 'OK'
+                                            }).then(() => {
+                                                location.reload();
+                                            });
+                                            $btn.prop('disabled', false).text('Update');
+                                        })
+                                        .catch(function(err) {
+                                            console.log('Direct fetch error:', err);
+                                            $btn.prop('disabled', false).text('Retry');
+                                        });
+
+                                    // setTimeout(function() {
+                                    //     $('#confirmBackupBtn').prop('disabled', false).text(
+                                    //             'Confirm Backup')
+                                    //         .removeClass('btn-success');
+                                    //     $('#backupTypeModal').modal('hide');
+                                    //     location.reload();
+                                    // }, 1500);
+                                } else {
+                                    alert(saveResp.error || 'Failed to save backup in DB.');
+                                }
+                            });
+                        }
+
+                        clearTimeout(autoBackupInterval);
+                    }
+
+                } catch (err) {
+                    console.error('Direct fetch error:', err);
                     $('#confirmBackupBtn').text('Error!').addClass('btn-danger');
-                    clearInterval(autoBackupInterval);
+                    clearTimeout(autoBackupInterval);
                     setTimeout(function() {
                         $('#confirmBackupBtn').prop('disabled', false).text('Confirm Backup')
                             .removeClass('btn-danger');
                     }, 2000);
-                    alert('Failed to create backup.');
                 }
-            });
+            })();
         }
+
 
         $(document).on('click', '#confirmBackupBtn', function() {
             var $btn = $(this);
@@ -1575,7 +1663,6 @@
 
 
     <script>
-       
         // reload pages then show current tab with dynamic data
         $(document).ready(function() {
             const tabFromUrl = new URLSearchParams(window.location.search).get('tab');
@@ -1994,11 +2081,11 @@
                             ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
                             <br/>
                             ${plugin.name !== 'DS Care' ? `
-                                                                                ${plugin.is_active
-                                                                                ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
-                                                                                : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
-                                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
-                                                                            ` : ''}
+                                                                                                        ${plugin.is_active
+                                                                                                        ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                                                                        : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                                                                                    ` : ''}
                         </td>
                         <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
                         <td>${plugin.author || '-'}</td>
@@ -2044,9 +2131,9 @@
                                     ${theme.is_active
                                     ? ``
                                     : `
-                                                                                <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
-                                                                                <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
-                                                                                `}
+                                                                                                        <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                                                                        `}
                                    
                         </td>
                         <td>${theme.slug || '-'}</td>
@@ -2437,5 +2524,4 @@
             });
         });
     </script>
-
 @stop
