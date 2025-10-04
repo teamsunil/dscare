@@ -67,15 +67,7 @@
                                 <div class="theme-body">
                                     <div class="theme-info">
                                         <h4 class="theme-name">{{ $theme['name'] }}</h4>
-                                        <div class="theme-meta">
-                                            <span class="version">v{{ $theme['version'] ?: 'N/A' }}</span>
-                                            @if($theme['is_active'])
-                                                <span class="status-badge active">Active</span>
-                                            @endif
-                                            @if(!empty($theme['update']))
-                                                <span class="status-badge update">Update Available</span>
-                                            @endif
-                                        </div>
+                                       
                                     </div>
 
                                     <div class="theme-author">

@@ -64,15 +64,7 @@
                                     </div>
                                     <div class="plugin-info">
                                         <h4 class="plugin-name">{{ $plugin['name'] }}</h4>
-                                        <div class="plugin-meta">
-                                            <span class="version">v{{ $plugin['version'] ?: 'N/A' }}</span>
-                                            @if($plugin['is_active'])
-                                                <span class="status-badge active">Active</span>
-                                            @endif
-                                            @if(!empty($plugin['update']))
-                                                <span class="status-badge update">Update Available</span>
-                                            @endif
-                                        </div>
+                                     
                                     </div>
                                 </div>
 
