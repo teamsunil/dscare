@@ -692,6 +692,9 @@
         <!-- Beautiful Header -->
         <header class="main-header">
 
+            <!-- Website Details Header -->
+          
+
             <main class="dashboard_table" role="main">
 
                 <section class="tabs" aria-labelledby="tabs-heading">
@@ -761,13 +764,13 @@
                                 </button>
                             </a>
 
-                            <a href="{{ url('admin/website/reload', $result->id) . '/data' }}">
+                            {{-- <a href="{{ url('admin/website/reload', $result->id) . '/data' }}">
                                 <button class="tab" id="refreshPageBtn" type="button">
                                     <!-- grid icon -->
                                     <i class="fas fa-refresh"></i>
                                     <span>Refresh</span>
                                 </button>
-                            </a>
+                            </a> --}}
 
                             <!-- AJAX Reload button -->
                             <button class="tab" id="ajaxReloadBtn" type="button" title="Reload data via AJAX">
@@ -790,7 +793,67 @@
                                     <i class="fas fa-arrow-left"></i>
                                     Back to Dashboard
                                 </a> --}}
+                                  <div class="page-header">
+                <div class="website-logo">
+                    @if(!empty($result->pagespeed_screenshot))
+                        <img src="{{ asset('storage/' . $result->pagespeed_screenshot) }}" alt="{{ $result->title ?? $result->url }}">
+                    @else
+                        <div class="logo-placeholder">{{ strtoupper(substr($result->title ?? $result->url, 0, 1)) }}</div>
+                    @endif
+                </div>
 
+                <h2 class="website-title">{{ $result->title ?? (parse_url($result->url ?? '', PHP_URL_HOST) ?? $result->url) }}</h2>
+
+                <div style="margin-bottom:12px;">
+                    @php
+                        $siteHref = isset($result->url) && (strpos($result->url, 'http') === 0) ? $result->url : ('https://' . ($result->url ?? '#'));
+                    @endphp
+                    <a class="website-url" href="{{ $siteHref }}" target="_blank">{{ $result->url ?? '—' }}</a>
+                </div>
+
+                <div class="status-info-bar" style="margin-top:8px; gap:0.75rem;">
+                    @if(isset($result->website_up_down))
+                        @if($result->website_up_down == 1)
+                            <span class="badge bg-success">Up</span>
+                        @else
+                            <span class="badge bg-secondary">Down</span>
+                        @endif
+                    @endif
+
+                    @if(!empty($result->website_status))
+                        <span class="badge bg-info">{{ Str::title($result->website_status) }}</span>
+                    @endif
+
+                    @if(!empty($result->pagespeed_performance))
+                        <span class="badge bg-warning">Perf: {{ $result->pagespeed_performance }}</span>
+                    @endif
+
+                    @if(!empty($result->created_at))
+                        <span style="color:#6c757d; font-size:0.9rem;">Added: {{ date('d M Y', strtotime($result->created_at)) }}</span>
+                    @endif
+                </div>
+
+                <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
+                    <a href="{{ url('website/sso-login', $result->id) }}" target="_blank" class="manage-btn wp-admin-btn">
+                        <i class="fas fa-cog"></i> WP-Admin
+                    </a>
+
+                    <a href="{{ $siteHref }}" target="_blank" class="manage-btn" style="background:#4a5568;">
+                        <i class="fas fa-external-link-alt"></i> Visit Site
+                    </a>
+
+                    <button class="manage-btn" id="copyUrlBtn" type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $siteHref }}')">
+                        <i class="fas fa-link"></i> Copy URL
+                    </button>
+
+                </div>
+
+                @if(data_get($response, 'site_health.description'))
+                    <div style="margin-top:14px; color:#2c437c; font-size:0.98rem; max-width:900px; margin-left:auto; margin-right:auto;">
+                        {{ data_get($response, 'site_health.description') }}
+                    </div>
+                @endif
+            </div>
 
                                 <!-- Management Cards -->
                                 <div class="management-grid">
