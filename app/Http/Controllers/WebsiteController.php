@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Website;
+<<<<<<< HEAD
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
@@ -88,6 +89,30 @@ class WebsiteController extends Controller
         }
         // dd($websites);
         return view('admin.list', ['result' => $websites]);
+=======
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+
+class WebsiteController extends Controller
+{
+    public function listWebsite()
+    {
+        $websites=Website::get();
+         foreach ($websites as $website) {
+            // $website->decrypted_password = decrypt($website->password);
+            // $response = Http::timeout(2000)->get($website->url);
+            
+            // if ($response->successful()) {
+            //    $website->status= 'up';
+            // } else {
+            //      $website->status= 'down';
+            // }
+               $website->status= 'up';
+
+        }
+        // dd($websites);
+        return view('admin.website-list',['result'=>$websites]);
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
     }
     public function showUrlForm()
     {
@@ -113,10 +138,15 @@ class WebsiteController extends Controller
         if (!$request->session()->has('website_url')) {
             return redirect()->route('website.add.url')->withErrors('Please enter a website URL first.');
         }
+<<<<<<< HEAD
         $websiteUrl = $request->session()->get('website_url');
         // Generate a shared secret and provide it to the view so the browser can register it with the WP site
         $sharedSecret = Str::random(32);
         return view('admin.website.add-credentials', compact('websiteUrl', 'sharedSecret'));
+=======
+
+        return view('admin.website.add-credentials');
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
     }
 
     public function submitCredentials(Request $request)
@@ -124,6 +154,7 @@ class WebsiteController extends Controller
         $request->validate([
             'username' => 'required|string|max:255',
             'password' => 'required|string|max:255',
+<<<<<<< HEAD
             'site_url' => 'required|url',
             'shared_secret' => 'required|string',
         ]);
@@ -157,6 +188,41 @@ class WebsiteController extends Controller
         // \App\Jobs\UpdateSiteStatusJob::dispatch($savedData->id);
 
         return redirect('admin/website-list?website_id_for_update=' . $savedData->id . '&website_url_for_update=' . $savedData->url . '&iss=' . $iss . '&sig=' . $sig)->with('success', 'Website credentials saved successfully!  Token ID : ' . $sharedSecret);
+=======
+        ]);
+        $url = $request->session()->get('website_url');
+        if (!$url) {
+            return redirect()->route('website.add.url')->withErrors('Session expired, please enter website URL again.');
+        }
+        $sharedSecret = Str::random(32); // Laravel helper to generate a secure string
+        $wpSsoUrl = rtrim($url, '/') . '/wp-json/laravel-sso/v1/add-secret-token';
+        $query = http_build_query([
+            'token' => $sharedSecret,
+            'url' => rtrim(url('/'), '/'),
+            'redirect' => '',
+        ]);
+        $data= Http::get($wpSsoUrl . '?' . $query);
+        if(!empty($data))
+        {
+             Website::create([
+                'url' => rtrim($url, '/'),
+                'username' => $request->username,
+                'password' => encrypt($request->password), // Encrypt the password
+                'token_id' => encrypt($sharedSecret), // Encrypt the shared secret
+                'title'=>$request->title,
+                'logo'=>$request->logo,
+            ]);
+            // Clear session
+            $request->session()->forget('website_url');
+            return redirect('admin/website-list')->with('success', 'Website credentials saved successfully!  Token ID : '.$sharedSecret);
+        }
+        else
+        {
+            return back()->with('error','Wordpress Plugins Isseus');
+        }
+
+        // Save to DB
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
     }
     public function update(Request $request, $id)
     {
@@ -183,6 +249,7 @@ class WebsiteController extends Controller
         return response()->json(['success' => true]);
     }
 
+<<<<<<< HEAD
     public function loginToWordPress($id)
     {
         try {
@@ -289,11 +356,57 @@ class WebsiteController extends Controller
         }
         $iss = rtrim(url('/'), '/');
         $secret = decrypt($result->token_id);
+=======
+   public function loginToWordPress($id)
+    {
+        $website = Website::find($id);
+        $payload = [
+            'iss' => rtrim(url('/'), '/'),
+            'aud' => rtrim($website->url, '/'),
+            'email' => $website->username,  // Use valid email
+            'role' => 'subscriber',
+            'exp' => time() + 300,
+            'nonce' => bin2hex(random_bytes(8)),
+        ];
+
+       $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+
+        // Use the shared secret exactly as stored in DB/WordPress
+        $sharedSecret = decrypt($website->token_id); // if you're using Laravel's encryption;  // Ensure this exists and matches WP!
+
+        $sig = base64_encode(hash_hmac('sha256', $payloadJson, $sharedSecret, true));
+
+        $wpSsoUrl = rtrim($website->url, '/') . '/wp-json/laravel-sso/v1/login';
+
+        $query = http_build_query([
+            'payload' => $payloadJson,
+            'sig' => $sig,
+            'redirect' => '',
+        ]);
+    
+        return redirect($wpSsoUrl . '?' . $query);
+    }
+
+    // Here code for list websites
+   public function listWebsites($id)
+    {
+        $result = Website::find($id);
+        if (!$result) {
+            abort(404, 'Website not found.');
+        }
+        $iss = rtrim(url('/'), '/'); 
+        $secret = decrypt($result->token_id); 
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
         $sig = base64_encode(hash_hmac('sha256', $iss, $secret, true));
         $final_url = rtrim($result->url, '/') . '/wp-json/laravel-sso/v1/status';
 
         try {
+<<<<<<< HEAD
             $response = Http::timeout(300)->get($final_url, [
+=======
+            $response = Http::timeout(10)->get($final_url, [
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
                 'iss' => $iss,
                 'sig' => $sig,
             ]);
@@ -305,6 +418,7 @@ class WebsiteController extends Controller
                     $error = "API route not found on WordPress site.";
                 } else {
                     $error = null;
+<<<<<<< HEAD
                     if (!empty($data)) {
                         $site_name = data_get($data, 'site.name', '');
 
@@ -325,12 +439,29 @@ class WebsiteController extends Controller
                 $data = null;
                 $error = "Failed to fetch status. HTTP status: " . $response->status();
                 return response()->json(['success' => false, 'error' => $error], $response->status());
+=======
+                    $this->updateWebsiteData($response, $id);
+                }
+            } else {
+                $data = null;
+                $error = "Failed to fetch status. HTTP status: " . $response->status();
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
             }
         } catch (\Exception $e) {
             $data = null;
             $error = "Connection error: " . $e->getMessage();
+<<<<<<< HEAD
             return response()->json(['success' => false, 'error' => $error], 500);
         }
+=======
+        }
+
+        return view('admin.website.view-website', [
+            'response' => $data,
+            'result' => $result,
+            'error' => $error,
+        ]);
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
     }
 
     // here code for show plugins
@@ -347,6 +478,7 @@ class WebsiteController extends Controller
         return view('admin.website.manage-user');
     }
 
+<<<<<<< HEAD
     public function updateWebsiteData($data, $id)
     {
         if (!empty($data)) {
@@ -783,4 +915,22 @@ class WebsiteController extends Controller
 
         return view('admin.themes.list', ['themesList' => $themesList]);
     }
+=======
+    public function updateWebsiteData($data,$id)
+    {
+        if(!empty($data))
+        {
+            $site_name=data_get($data, 'site.name', '');
+           
+            Website::where('id',$id)->update([
+                'title'=>$site_name,
+                'data'=>$data
+            ]);
+            return true;
+        }
+        return false;
+    }   
+   
+
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @extends('admin.layouts.app')
 
 @section('content')
@@ -1237,3 +1238,16 @@
     </script>
 
 @endsection
+=======
+@extends('adminlte::page')
+
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Dashboard</h1>
+@stop
+
+@section('content')
+    <p>Welcome to the admin panel!</p>
+@stop
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3

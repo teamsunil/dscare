@@ -18,6 +18,10 @@ class AdminUserSeeder extends Seeder
             'name' => 'Admin User',
             'username' => 'Dots123',
             'password' => Hash::make('admin123'),  // hash the password!
+<<<<<<< HEAD
+=======
+            'email' => "admin@example.com",  // hash the password!
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
             // 'role' => 'admin',  // if you have a role column
             'created_at' => now(),
             'updated_at' => now(),

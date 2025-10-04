@@ -11,6 +11,7 @@ class UserController extends Controller
 {
     public function login(Request $request)
     {
+<<<<<<< HEAD
         try {
             $credentials = $request->validate([
                 'username' => ['required', 'string', 'max:255'],
@@ -43,6 +44,22 @@ class UserController extends Controller
         }
     }
 
+=======
+          // Validate request input
+        $credentials = $request->validate([
+            'username' => ['required'],
+            'password' => ['required'],
+        ]);
+
+        // Attempt to login
+        if (Auth::attempt($credentials)) {
+            // Authentication passed...
+            $request->session()->regenerate();
+
+            return redirect('admin/website-list');
+        }
+    }
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
     public function logout(Request $request)
     {
         Auth::logout();
@@ -52,4 +69,8 @@ class UserController extends Controller
 
         return redirect('login');
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
 }
