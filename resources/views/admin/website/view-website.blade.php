@@ -887,7 +887,7 @@
                                 <!-- Management Cards -->
                                 <div class="management-grid">
                                     <!-- WordPress Card -->
-                                    <div class="management-card wordpress-card">
+                                    {{-- <div class="management-card wordpress-card">
                                         <div class="card-icon">
                                             <i class="fab fa-wordpress"></i>
                                         </div>
@@ -908,14 +908,14 @@
                                             <a class="manage-btn btn-primary  updateBtn" data-type="core"
                                                 data-action="update" data-slug="">Update</a>
                                         @endif
-                                        </div>
+                                        </div> --}}
 
                                         {{-- {{dd($response)}} --}}
                                         {{-- <a href="#" class="manage-btn btn-primary updateBtn" data-type="core"
                                             data-action="update" data-slug="">Update</a> --}}
 
 
-                                    </div>
+                                    {{-- </div> --}}
 
                                     <!-- Plugins Card -->
                                     <div class="management-card plugins-card">
