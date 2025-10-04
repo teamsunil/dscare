@@ -135,11 +135,13 @@
                         <td class="vcenter">PHP {{ $data->php_version?? '8.2' }}</td>
 
                                                 <td class="vcenter">
-                                                    <button type="button" class="btn btn-primary btn-xs sso-login-btn"
+                                                    <a href="{{ url('website/sso-login', $item->id) }}"  class=" btn btn-primary btn-xs" target="_blank" style="color: #fff"><i class="fa fa-sign-in"></i>
+                                                        Login</a>
+                                                    {{-- <button type="button" class="btn btn-primary btn-xs sso-login-btn"
                                                         data-id="{{ $item->id }}"
                                                         data-url="{{ route('website.sso.login', ['id' => $item->id]) }}"
                                                         style="margin-top: 0px;"><i class="fa fa-sign-in"></i>
-                                                        Login</button>
+                                                        Login</button> --}}
                                                 </td>
 
                                                 <td class="vcenter">
