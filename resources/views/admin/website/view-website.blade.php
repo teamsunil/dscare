@@ -693,7 +693,7 @@
         <header class="main-header">
 
             <!-- Website Details Header -->
-          
+
 
             <main class="dashboard_table" role="main">
 
@@ -793,67 +793,96 @@
                                     <i class="fas fa-arrow-left"></i>
                                     Back to Dashboard
                                 </a> --}}
-                                  <div class="page-header">
-                <div class="website-logo">
-                    @if(!empty($result->pagespeed_screenshot))
-                        <img src="{{ asset('storage/' . $result->pagespeed_screenshot) }}" alt="{{ $result->title ?? $result->url }}">
-                    @else
-                        <div class="logo-placeholder">{{ strtoupper(substr($result->title ?? $result->url, 0, 1)) }}</div>
-                    @endif
-                </div>
+                                <div class="page-header">
+                                    <div class="website-logo">
+                                        @if (!empty($result->pagespeed_screenshot))
+                                            <img src="{{ $result->pagespeed_screenshot }}"
+                                                alt="{{ $result->title ?? $result->url }}">
+                                        @else
+                                            <div class="logo-placeholder">
+                                                {{ strtoupper(substr($result->title ?? $result->url, 0, 1)) }}</div>
+                                        @endif
+                                    </div>
 
-                <h2 class="website-title">{{ $result->title ?? (parse_url($result->url ?? '', PHP_URL_HOST) ?? $result->url) }}</h2>
+                                    <h2 class="website-title">
+                                        {{ $result->title ?? (parse_url($result->url ?? '', PHP_URL_HOST) ?? $result->url) }}
+                                    </h2>
 
-                <div style="margin-bottom:12px;">
-                    @php
-                        $siteHref = isset($result->url) && (strpos($result->url, 'http') === 0) ? $result->url : ('https://' . ($result->url ?? '#'));
-                    @endphp
-                    <a class="website-url" href="{{ $siteHref }}" target="_blank">{{ $result->url ?? '—' }}</a>
-                </div>
+                                    <div style="margin-bottom:12px;">
+                                        @php
+                                            $siteHref =
+                                                isset($result->url) && strpos($result->url, 'http') === 0
+                                                    ? $result->url
+                                                    : 'https://' . ($result->url ?? '#');
+                                        @endphp
+                                        <a class="website-url" href="{{ $siteHref }}"
+                                            target="_blank">{{ $result->url ?? '—' }}</a>
+                                    </div>
 
-                <div class="status-info-bar" style="margin-top:8px; gap:0.75rem;">
-                    @if(isset($result->website_up_down))
-                        @if($result->website_up_down == 1)
-                            <span class="badge bg-success">Up</span>
-                        @else
-                            <span class="badge bg-secondary">Down</span>
-                        @endif
-                    @endif
+                                    <div class="status-info-bar" style="margin-top:8px; gap:0.75rem;">
+                                        @if (isset($result->website_up_down))
+                                            @if ($result->website_up_down == 1)
+                                                <span class="badge bg-success">Up</span>
+                                            @else
+                                                <span class="badge bg-secondary">Down</span>
+                                            @endif
+                                        @endif
 
-                    @if(!empty($result->website_status))
-                        <span class="badge bg-info">{{ Str::title($result->website_status) }}</span>
-                    @endif
+                                        @if (!empty($result->website_status))
+                                            <span class="badge bg-info">{{ Str::title($result->website_status) }}</span>
+                                        @endif
 
-                    @if(!empty($result->pagespeed_performance))
-                        <span class="badge bg-warning">Perf: {{ $result->pagespeed_performance }}</span>
-                    @endif
+                                        @if (!empty($result->pagespeed_performance))
+                                            <span class="badge bg-warning">Performance:
+                                                {{ $result->pagespeed_performance }}</span>
+                                        @endif
 
-                    @if(!empty($result->created_at))
-                        <span style="color:#6c757d; font-size:0.9rem;">Added: {{ date('d M Y', strtotime($result->created_at)) }}</span>
-                    @endif
-                </div>
+                                        {{-- WordPress & PHP versions (show in header) --}}
+                                        @if (!empty(data_get($response, 'wordpress_version')))
+                                            <span class="version-badge">WP Current Version: {{ data_get($response, 'wordpress_version') }}</span>
+                                        @endif
 
-                <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
-                    <a href="{{ url('website/sso-login', $result->id) }}" target="_blank" class="manage-btn wp-admin-btn">
-                        <i class="fas fa-cog"></i> WP-Admin
-                    </a>
+                                        @if (!empty(data_get($response, 'env.php_version')))
+                                            <span class="badge bg-info">PHP: {{ data_get($response, 'env.php_version') }}</span>
+                                        @elseif(!empty($result->php_version))
+                                            <span class="badge bg-info">PHP: {{ $result->php_version }}</span>
+                                        @endif
 
-                    <a href="{{ $siteHref }}" target="_blank" class="manage-btn" style="background:#4a5568;">
-                        <i class="fas fa-external-link-alt"></i> Visit Site
-                    </a>
+                                        @if (!empty($result->created_at))
+                                            <span style="color:#6c757d; font-size:0.9rem;">Added:
+                                                {{ date('d M Y', strtotime($result->created_at)) }}</span>
+                                        @endif
+                                    </div>
 
-                    <button class="manage-btn" id="copyUrlBtn" type="button" onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $siteHref }}')">
-                        <i class="fas fa-link"></i> Copy URL
-                    </button>
+                                    <div style="margin-top:16px; display:flex; gap:12px; justify-content:center;">
+                                        <a href="{{ url('website/sso-login', $result->id) }}" target="_blank"
+                                            class="manage-btn wp-admin-btn">
+                                            <i class="fas fa-cog"></i> WP-Admin
+                                        </a>
 
-                </div>
+                                        <a href="{{ $siteHref }}" target="_blank" class="manage-btn"
+                                            style="background:#4a5568;">
+                                            <i class="fas fa-external-link-alt"></i> Visit Site
+                                        </a>
 
-                @if(data_get($response, 'site_health.description'))
-                    <div style="margin-top:14px; color:#2c437c; font-size:0.98rem; max-width:900px; margin-left:auto; margin-right:auto;">
-                        {{ data_get($response, 'site_health.description') }}
-                    </div>
-                @endif
-            </div>
+                                        <button class="manage-btn" id="copyUrlBtn" type="button"
+                                            onclick="navigator.clipboard && navigator.clipboard.writeText('{{ $siteHref }}')">
+                                            <i class="fas fa-link"></i> Copy URL
+                                        </button>
+                                        @if (data_get($response, 'wordpress_update_available'))
+                                            <a class="manage-btn btn-primary  updateBtn" data-type="core"
+                                                data-action="update" data-slug="">Update</a>
+                                        @endif
+
+                                    </div>
+
+                                    @if (data_get($response, 'site_health.description'))
+                                        <div
+                                            style="margin-top:14px; color:#2c437c; font-size:0.98rem; max-width:900px; margin-left:auto; margin-right:auto;">
+                                            {{ data_get($response, 'site_health.description') }}
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <!-- Management Cards -->
                                 <div class="management-grid">
@@ -876,18 +905,11 @@
                                                 </div>
                                             @endif
                                         </div>
-                                        <a href="{{ url('website/sso-login', $result->id) }}" target="_blank"
-                                            class="manage-btn wp-admin-btn">
-                                            <i class="fas fa-cog"></i>
-                                            WP-Admin
-                                        </a>
+
                                         {{-- {{dd($response)}} --}}
                                         {{-- <a href="#" class="manage-btn btn-primary updateBtn" data-type="core"
                                             data-action="update" data-slug="">Update</a> --}}
-                                        @if (data_get($response, 'wordpress_update_available'))
-                                            <a class="manage-btn btn-primary  updateBtn" data-type="core"
-                                                data-action="update" data-slug="">Update</a>
-                                        @endif
+
 
                                     </div>
 
@@ -1517,7 +1539,7 @@
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         var tryDirect = false;
@@ -2144,11 +2166,11 @@
                             ${plugin.plugin_uri ? `<a href="${plugin.plugin_uri}" target="_blank">${plugin.plugin_uri}</a>` : ''}
                             <br/>
                             ${plugin.name !== 'DS Care' ? `
-                                                                                                        ${plugin.is_active
-                                                                                                        ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
-                                                                                                        : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
-                                                                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
-                                                                                                    ` : ''}
+                                                                                                            ${plugin.is_active
+                                                                                                            ? `<button class="badge bg-secondary updateBtn" data-type="plugin" data-action="deactivate" data-slug="${plugin.file_path}">Inactive</button>`
+                                                                                                            : `<button class="badge bg-success updateBtn" data-type="plugin" data-action="activate" data-slug="${plugin.file_path}">Active</button>`}
+                                                                                                            <button class="btn btn-danger btn-sm updateBtn" data-type="plugin" data-action="delete" data-slug="${plugin.file_path}">Delete</button>
+                                                                                                        ` : ''}
                         </td>
                         <td>${plugin.version} ${plugin.update ? `<span class="text-muted">→</span> <strong>${plugin.update.new_version}</strong>` : ''}</td>
                         <td>${plugin.author || '-'}</td>
@@ -2194,9 +2216,9 @@
                                     ${theme.is_active
                                     ? ``
                                     : `
-                                                                                                        <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
-                                                                                                        <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
-                                                                                                        `}
+                                                                                                            <button class="badge bg-success updateBtn" data-type="theme" data-action="activate" data-slug="${theme.slug}">Active</button>
+                                                                                                            <button class="btn btn-danger btn-sm updateBtn" data-type="theme" data-action="delete" data-slug="${theme.slug}">Delete</button>
+                                                                                                            `}
                                    
                         </td>
                         <td>${theme.slug || '-'}</td>
