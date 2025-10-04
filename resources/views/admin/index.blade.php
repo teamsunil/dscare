@@ -896,7 +896,7 @@
                                         <div class="dropdown-content">
                                             @if (is_array($plugin['sites']))
                                                 @foreach ($plugin['sites'] as $siteName)
-                                                    <a href="#" class="dropdown-item">
+                                                    <a href={{$siteName}} class="dropdown-item">
                                                         <i class="fa fa-globe"></i>
                                                         {{ $siteName }}
                                                     </a>
@@ -969,7 +969,7 @@
                                         <div class="dropdown-content">
                                             @if (is_array($theme['sites']))
                                                 @foreach ($theme['sites'] as $siteName)
-                                                    <a href="#" class="dropdown-item">
+                                                    <a href=" {{ $siteName }}" class="dropdown-item">
                                                         <i class="fa fa-globe"></i>
                                                         {{ $siteName }}
                                                     </a>
