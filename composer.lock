@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "content-hash": "1b64cb81290a0a39e4290bcc2b301ee1",
-=======
-    "content-hash": "2d810ea15e1e3e0bd16abe0f98b9f273",
->>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -1436,7 +1432,6 @@
             "time": "2025-07-07T14:17:42+00:00"
         },
         {
-<<<<<<< HEAD
             "name": "laravel/sanctum",
             "version": "v4.2.0",
             "source": {
@@ -1501,8 +1496,6 @@
             "time": "2025-07-09T19:45:24+00:00"
         },
         {
-=======
->>>>>>> ec031a190c7dd3a7601fa865f2938e0b916bb5b3
             "name": "laravel/serializable-closure",
             "version": "v2.0.4",
             "source": {
