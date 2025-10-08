@@ -11,6 +11,11 @@
      @yield('custom_css')
 </head>
 <body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader"></div>
+    </div>
+    
     @include('admin.include.header')
 
     @yield('content')

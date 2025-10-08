@@ -64,3 +64,9 @@
 		============================================ -->
     {{-- <script src="{{ asset('admin/js/tawk-chat.js') }}"></script> --}}
         <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+    <!-- Loader JS -->
+    <script>
+        $(document).ready(function(){$('.page-loader').fadeOut(500)});
+        $(document).on('click','a:not([href^="#"]):not([target="_blank"]):not(.no-loader)',function(){$('.page-loader').fadeIn(200)});
+        $(document).on('submit','form:not(.no-loader)',function(){$('.page-loader').fadeIn(200)});
+    </script>
