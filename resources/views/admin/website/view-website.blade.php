@@ -1596,7 +1596,7 @@
                 try {
                     const resp = await fetch(urlWithParams, requestOptions);
                     if (!resp.ok) {
-                        alert('WP fetch failed: ' + resp.status + ' ' + resp.statusText);
+                        Swal.fire({icon:'error',title:'WP Fetch Failed',text:'WP fetch failed: ' + resp.status + ' ' + resp.statusText});
                         return;
                     }
                     const json = await resp.json();
@@ -1662,16 +1662,14 @@
                                         .then(function(resp) {
                                             console.log('Direct fetch response:', resp);
                                             if (!resp.ok) {
-                                                alert('WP fetch failed: ' + resp.status + ' ' + resp
-                                                    .statusText);
+                                                Swal.fire({icon:'error',title:'WP Fetch Failed',text:'WP fetch failed: ' + resp.status + ' ' + resp.statusText});
                                                 throw new Error('Network response not ok');
                                             }
                                             return resp.json();
                                         })
                                         .then(function(json) {
                                             if (!json || !json.success) {
-                                                alert((json && json.message) ? json.message :
-                                                    'Failed to fetch WP data.');
+                                                Swal.fire({icon:'error',title:'WP Data Fetch Failed',text:(json && json.message) ? json.message : 'Failed to fetch WP data.'});
                                                 $btn.prop('disabled', false).text('Retry');
                                                 return;
                                             }
@@ -1699,7 +1697,7 @@
                                     //     location.reload();
                                     // }, 1500);
                                 } else {
-                                    alert(saveResp.error || 'Failed to save backup in DB.');
+                                    Swal.fire({icon:'error',title:'Backup Save Failed',text:saveResp.error || 'Failed to save backup in DB.'});
                                 }
                             });
                         }
@@ -2349,20 +2347,20 @@
                     .then(function(resp) {
                         console.log('Direct fetch response:', resp);
                         if (!resp.ok) {
-                            alert('WP fetch failed: ' + resp.status + ' ' + resp.statusText);
+                            Swal.fire({icon:'error',title:'WP Fetch Failed',text:'WP fetch failed: ' + resp.status + ' ' + resp.statusText});
                             throw new Error('Network response not ok');
                         }
                         return resp.json();
                     })
                     .then(function(json) {
                         if (!json || !json.success) {
-                            alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
+                            Swal.fire({icon:'error',title:'Operation Failed',text:(json && json.message) ? json.message : 'Failed to fetch WP data.'});
                             $btn.prop('disabled', false).text('Retry');
                             return;
                         }
 
                         // Success
-                        alert('Operation successful. Updating data...');
+                        Swal.fire({icon:'success',title:'Success',text:'Operation successful. Updating data...'});
                         $('#ajaxReloadBtn').trigger('click');
                         $btn.prop('disabled', false).text('Update');
                     })
@@ -2401,7 +2399,7 @@
                             $btn.prop('disabled', false).text('Run Speed Test').removeClass(
                                 'btn-danger');
                         }, 2000);
-                        alert(response.error || 'Speed test failed.');
+                        Swal.fire({icon:'error',title:'Speed Test Failed',text:response.error || 'Speed test failed.'});
                     }
                 },
                 error: function() {
@@ -2410,7 +2408,7 @@
                         $btn.prop('disabled', false).text('Run Speed Test').removeClass(
                             'btn-danger');
                     }, 2000);
-                    alert('Failed to run speed test.');
+                    Swal.fire({icon:'error',title:'Error',text:'Failed to run speed test.'});
                 }
             });
         });
@@ -2552,9 +2550,7 @@
                             console.log('Direct fetch raw response:', resp);
                             if (!resp.ok) {
                                 // If WP blocks or returns non-200, fallback to server
-                                alert(resp.message || ('WP fetch failed: ' + resp.status + ' ' +
-                                    resp
-                                    .statusText));
+                                Swal.fire({icon:'error',title:'WP Fetch Failed',text:resp.message || ('WP fetch failed: ' + resp.status + ' ' + resp.statusText)});
                             }
                             return resp.json();
                         })
@@ -2565,7 +2561,7 @@
                 })().then(function(json) {
                     console.log('Direct fetch response:', json);
                     if (!json || !json.success) {
-                        alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
+                        Swal.fire({icon:'error',title:'WP Data Fetch Failed',text:(json && json.message) ? json.message : 'Failed to fetch WP data.'});
                         ajaxBtn.disabled = false;
                         if (span) span.innerText = original;
                         return;
@@ -2573,7 +2569,7 @@
 
                     // Step 2: send fetched data to save endpoint
                     if (span) span.innerText = 'Saving...';
-                    alert('Fetched data successfully. Now saving to server...');
+                    Swal.fire({icon:'success',title:'Data Fetched',text:'Fetched data successfully. Now saving to server...'});
                     console.log('Fetched data:', json.data);
                     fetch('{{ route('website.save.response', ['id' => $result->id]) }}', {
                             method: 'POST',
@@ -2594,19 +2590,18 @@
                                     location.reload();
                                 }, 800);
                             } else {
-                                alert((saveResp && saveResp.message) ? saveResp.message :
-                                    'Save failed');
+                                Swal.fire({icon:'error',title:'Save Failed',text:(saveResp && saveResp.message) ? saveResp.message : 'Save failed'});
                                 ajaxBtn.disabled = false;
                                 if (span) span.innerText = original;
                             }
                         }).catch(function(err) {
-                            alert('Save request failed: ' + err.message);
+                            Swal.fire({icon:'error',title:'Save Request Failed',text:'Save request failed: ' + err.message});
                             ajaxBtn.disabled = false;
                             if (span) span.innerText = original;
                         });
 
                 }).catch(function(err) {
-                    alert('Fetch request failed: ' + err.message);
+                    Swal.fire({icon:'error',title:'Fetch Request Failed',text:'Fetch request failed: ' + err.message});
                     ajaxBtn.disabled = false;
                     if (span) span.innerText = original;
                 });

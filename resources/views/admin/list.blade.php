@@ -157,7 +157,7 @@
                             </button> --}}
 
                                                         <button class="btn btn-danger deleteBtn"
-                                                            data-id="{{ $item->id }}" data-name="{{ $item->url }}">
+                                                            data-id="{{ $item->id }}" data-name="{{ $item->url }}" data-title="{{$item->title??'This Website'}}">
                                                             <i class="fa fa-trash-o"></i>
                                                         </button>
 
@@ -298,7 +298,7 @@
                     console.log('Direct fetch response:', json);
 
                     if (!json || !json.success) {
-                        alert((json && json.message) ? json.message : 'Failed to fetch WP data.');
+                        Swal.fire({icon:'error',title:'Error',text:(json && json.message) ? json.message : 'Failed to fetch WP data.'});
                     }
 
                     // Step 2: send fetched data to save endpoint
@@ -330,7 +330,7 @@
                             window.location.href = window.location.href.split('?')[0];
                         });
                     } else {
-                        alert((saveResp && saveResp.message) ? saveResp.message : 'Save failed');
+                        Swal.fire({icon:'error',title:'Save Failed',text:(saveResp && saveResp.message) ? saveResp.message : 'Save failed'});
                     }
                 })
                 .catch(function(err) {
@@ -379,9 +379,10 @@
             $(document).on('click', '.deleteBtn', function() {
                 var btn = $(this);
                 var id = btn.data('id');
-                var name = btn.data('name');
+                var name = btn.data('title');
                 var row = btn.closest('tr');
-                if (!confirm('Delete "' + name + '"?')) return;
+                Swal.fire({title:'Delete ' + name + ' ?',text:'This action cannot be undone!',icon:'warning',showCancelButton:true,confirmButtonText:'Delete',cancelButtonText:'Cancel'}).then((result) => {
+                if (!result.isConfirmed) return;
                 var orig = btn.html();
                 btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i>');
                 $.ajax({
@@ -392,19 +393,21 @@
                     },
                     success: function(res) {
                         if (res && res.success) {
+                            Swal.fire({icon:'success',title:'Deleted',text:'Website deleted successfully!'});
                             row.fadeOut(200, function() {
                                 $(this).remove();
                                 updateVisibleCount();
                             });
                         } else {
-                            alert(res.message || 'Failed to delete.');
+                            Swal.fire({icon:'error',title:'Delete Failed',text:res.message || 'Failed to delete.'});
                             btn.prop('disabled', false).html(orig);
                         }
                     },
                     error: function() {
-                        alert('Error while deleting.');
+                        Swal.fire({icon:'error',title:'Error',text:'Error while deleting.'});
                         btn.prop('disabled', false).html(orig);
                     }
+                });
                 });
             });
 

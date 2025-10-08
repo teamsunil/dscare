@@ -64,9 +64,53 @@
 		============================================ -->
     {{-- <script src="{{ asset('admin/js/tawk-chat.js') }}"></script> --}}
         <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
-    <!-- Loader JS -->
-    <script>
-        $(document).ready(function(){$('.page-loader').fadeOut(500)});
-        $(document).on('click','a:not([href^="#"]):not([target="_blank"]):not(.no-loader)',function(){$('.page-loader').fadeIn(200)});
-        $(document).on('submit','form:not(.no-loader)',function(){$('.page-loader').fadeIn(200)});
-    </script>
+  <!-- Loader JS -->
+  <script>
+    (function($){
+      // Track whether navigation was initiated by a user action we handled
+      var userInitiatedNav = false;
+
+      $(function(){
+        // Hide loader on initial DOM ready
+        $('.page-loader').fadeOut(500);
+
+        // Show loader and mark as user-initiated when user clicks a link we want to handle
+        $(document).on('click', 'a:not([href^="#"]):not([target="_blank"]):not(.no-loader)', function(){
+          userInitiatedNav = true;
+          $('.page-loader').fadeIn(200);
+        });
+
+        // Show loader and mark as user-initiated when submitting forms
+        $(document).on('submit', 'form:not(.no-loader)', function(){
+          userInitiatedNav = true;
+          $('.page-loader').fadeIn(200);
+        });
+      });
+
+      // Only show loader on beforeunload if the navigation was initiated via our handlers
+      window.addEventListener('beforeunload', function(e){
+        if (userInitiatedNav) {
+          // show immediately (no animation) to cover the unload gap
+          $('.page-loader').show();
+        }
+      });
+
+      // pageshow fires when the page is shown; event.persisted === true means it was restored from bfcache
+      window.addEventListener('pageshow', function(event){
+        if (event.persisted) {
+          // restored from bfcache (back/forward) - ensure loader is hidden
+          $('.page-loader').hide();
+          userInitiatedNav = false;
+        } else {
+          // normal navigation - make sure loader is hidden once page is ready
+          $('.page-loader').fadeOut(200);
+        }
+      });
+
+      // popstate (history navigation) - treat as non-user-initiated for our loader
+      window.addEventListener('popstate', function(){
+        $('.page-loader').hide();
+        userInitiatedNav = false;
+      });
+    })(jQuery);
+  </script>
