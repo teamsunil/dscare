@@ -1,0 +1,14 @@
+{
+  "name": "website-status-checker",
+  "version": "1.0.0",
+  "description": "Node.js middleware to check website status",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "fetch-data": "node fetchsdata.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

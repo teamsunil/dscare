@@ -123,10 +123,11 @@
                                                     @endif
                                                 </td>
 
-                        <td class="vcenter">
-                          @php $s = strtolower($item->status); @endphp
-                          <span class="badge status-{{ $s }}">{{ ucfirst($item->status) }}</span>
-                        </td>
+                                                <td class="vcenter">
+                                                    @php $s = strtolower($item->website_up_down) ?? 'down'; @endphp
+                                                    {{-- Use semantic status classes and let CSS control colors --}}
+                                                    <span class="badge status-{{ $s }} status-badge">{{ ucfirst($s) }}</span>
+                                                </td>
                          <td class="vcenter">
                           @php $website_status = strtolower($item->website_status); @endphp
                           <span class="badge status-{{ $website_status }}">{{ ucfirst($item->website_status) }}</span>
@@ -463,6 +464,22 @@
         .status-active {
             background: #5cb85c;
             color: #fff;
+        }
+
+        /* Website up/down status badges */
+        .status-badge {
+            padding: 6px 8px;
+            font-size: 12px;
+            color: #fff;
+            border-radius: 3px;
+        }
+
+        .status-up {
+            background-color: #28a745; /* green */
+        }
+
+        .status-down {
+            background-color: #dc3545; /* red */
         }
 
         .status-maintenance {
