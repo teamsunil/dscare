@@ -12,9 +12,11 @@
 </head>
 <body>
     <!-- Page Loader -->
-    <div class="page-loader">
-        <div class="loader"></div>
-    </div>
+    @hasSection('page_loader')
+        <div class="page-loader">
+            <div class="loader"></div>
+        </div>
+    @endif
     
     @include('admin.include.header')
 

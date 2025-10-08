@@ -1,4 +1,7 @@
 @extends('admin.layouts.app')
+
+@section('page_loader', true)
+
 @section('content')
 
 

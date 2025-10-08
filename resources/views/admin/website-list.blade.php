@@ -12,6 +12,10 @@
 </head>
 
 <body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader"></div>
+    </div>
 
     <!-- Beautiful Header -->
     <header class="main-header">
