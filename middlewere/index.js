@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 // Configuration
-const API_BASE_URL = 'http://127.0.0.1:8000/api'; // Change to your Laravel app URL
+const API_BASE_URL = `${process.env.APP_URL}/api`; // Change to your Laravel app URL
 const CHECK_INTERVAL = 1800000; // Check every 30 minutes
 
 async function checkWebsiteStatus() {
