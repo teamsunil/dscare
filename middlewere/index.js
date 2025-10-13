@@ -1,4 +1,6 @@
+import 'dotenv/config';
 import fetch from 'node-fetch';
+// const fetch = require('node-fetch');
 
 // Configuration
 const API_BASE_URL = `${process.env.APP_URL}/api`; // Change to your Laravel app URL
